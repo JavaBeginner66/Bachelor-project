@@ -21,19 +21,20 @@ public class PlayerMovement : MonoBehaviour
     public float playerSpeed;
 
     public bool playerIsShooting;
+    public bool pushbackTimerActive;
+    public float pushbackLength;
+    public float pushbackTimer;
 
     private void Start()
     {
         controller = GetComponent<CharacterController>();
         anim = transform.GetComponentInChildren<Animator>();
+        pushbackTimer = pushbackLength;
     }
 
-    private void Update()
+    private void playerMovement()
     {
-
-     
         anim.ResetTrigger("NormalAttack");
-
 
         inputX = Input.GetAxisRaw("Horizontal");
         inputZ = Input.GetAxisRaw("Vertical");
@@ -54,7 +55,7 @@ public class PlayerMovement : MonoBehaviour
             float xVel = transform.InverseTransformDirection(moveDirection).x;
             anim.SetFloat("zVel", zVel, .1f, Time.deltaTime);
             anim.SetFloat("xVel", xVel, .1f, Time.deltaTime);
-            controller.Move(moveDirection * playerSpeed/3 * Time.deltaTime);
+            controller.Move(moveDirection * playerSpeed / 3 * Time.deltaTime);
 
         }
         else if (moveDirection != Vector3.zero)
@@ -63,7 +64,7 @@ public class PlayerMovement : MonoBehaviour
             controller.Move(moveDirection * playerSpeed * Time.deltaTime);
         }
 
-        
+
 
         // Calculate input magnitude
         animationSpeedMagnitude = new Vector2(inputX, inputZ).sqrMagnitude;
@@ -71,25 +72,25 @@ public class PlayerMovement : MonoBehaviour
         anim.SetFloat("InputX", inputX);
         anim.SetFloat("InputZ", inputX);
 
-        
-  
-        
-        
-/*
-        if (Input.GetMouseButtonDown(0))
-        {
-            anim.SetTrigger("NormalAttack");
-        }
-*/
+
         if (Input.GetMouseButtonDown(1))
         {
             playerIsShooting = true;
-            
+
         }
         else if (Input.GetMouseButtonUp(1))
         {
             playerIsShooting = false;
+            pushbackTimerActive = true;
         }
         anim.SetBool("Shoot", playerIsShooting);
+
+       
+
+    }
+
+    private void Update()
+    {
+        playerMovement();
     }
 }
