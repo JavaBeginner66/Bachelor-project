@@ -26,8 +26,8 @@ public class PlayerMovement : MonoBehaviour
     public float rollTimer;
     public float rollTimerMax;
 
-    public bool rollMode;
-
+    public bool rollCooldown;
+    public bool rollAnimationActive;
 
     public GameObject bowActive;
 
@@ -46,12 +46,17 @@ public class PlayerMovement : MonoBehaviour
     {
         playerInAnimation = false;
     }
+    // Method gets called by animation event on "Roll", and is used to notify that roll animation is over
+    public void rollModeExit()
+    {
+        rollAnimationActive = false;
+    }
 
     private void playerMovement()
     {
         anim.ResetTrigger("NormalAttack");
         anim.ResetTrigger("PushbackTrigger");
-        anim.ResetTrigger("Roll");
+        //anim.ResetTrigger("Roll");
 
         inputX = Input.GetAxisRaw("Horizontal");
         inputZ = Input.GetAxisRaw("Vertical");
@@ -61,19 +66,27 @@ public class PlayerMovement : MonoBehaviour
 
         if (playerIsShooting)
         {
-
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out hit, 100))
-            {
-                transform.LookAt(new Vector3(hit.point.x, transform.position.y, hit.point.z));
-            }
             float zVel = transform.InverseTransformDirection(moveDirection).z;
             float xVel = transform.InverseTransformDirection(moveDirection).x;
             anim.SetFloat("zVel", zVel, .1f, Time.deltaTime);
             anim.SetFloat("xVel", xVel, .1f, Time.deltaTime);
-            controller.Move(moveDirection * playerSpeed / 3 * Time.deltaTime);
+            if (!rollAnimationActive)
+            {
+                if (Physics.Raycast(ray, out hit, 100))
+                {
+                    transform.LookAt(new Vector3(hit.point.x, transform.position.y, hit.point.z));
+                }
+                controller.Move(moveDirection * playerSpeed / 3 * Time.deltaTime);
+            }
+            else
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), desiredRotationSpeed);
+                controller.Move(moveDirection * (playerSpeed*1.5f) * Time.deltaTime);
+            }
+           
+            
 
         }
         else if (moveDirection != Vector3.zero)
@@ -91,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
         anim.SetFloat("InputZ", inputX);
         
         // autoattackTime er ikke nødvendig enda
-        if (!playerInAnimation && !rollMode) 
+        if (!playerInAnimation && !rollCooldown) 
         {
             if (Input.GetMouseButtonDown(1))
             {
@@ -113,21 +126,20 @@ public class PlayerMovement : MonoBehaviour
 
         if (moveDirection != Vector3.zero)
         {
-            if (Input.GetKeyDown(KeyCode.LeftShift) && !rollMode && !playerInAnimation) // 
+            if (Input.GetKeyDown(KeyCode.LeftShift) && !rollCooldown) // &&!playerInAnimation
             {
-                playerIsShooting = false;
-                anim.SetTrigger("Roll");
+                //playerIsShooting = false;               
                 RollMode();
             }
         }
 
-        if (rollMode)
+        if (rollCooldown)
         {
             rollTimer -= Time.deltaTime;
             if (rollTimer <= 0)
             {
                 rollTimer = rollTimerMax;
-                rollMode = false;
+                rollCooldown = false;
             }
         }
 
@@ -136,7 +148,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void RollMode()
     {
-        rollMode = true;
+        anim.SetTrigger("Roll");
+        rollCooldown = true;
+        rollAnimationActive = true;
     }
 
     private void Update()
