@@ -21,20 +21,33 @@ public class PlayerMovement : MonoBehaviour
     public float playerSpeed;
 
     public bool playerIsShooting;
-    public bool pushbackTimerActive;
-    public float pushbackLength;
-    public float pushbackTimer;
+    public bool playerInAnimation;
+    public float autoAttackTimer;
+    public float autoAttackTimerMax;
+
+    public GameObject bowInactive;
+    public GameObject bowActive;
+
+    public GameObject arrow;
+    public GameObject projectileSpawnPoint;
 
     private void Start()
     {
+        bowInactive.SetActive(false);
         controller = GetComponent<CharacterController>();
         anim = transform.GetComponentInChildren<Animator>();
-        pushbackTimer = pushbackLength;
+    }
+
+    /* Method gets called by animation event on "Pushback" animation on  Player*/
+    public void shootingModeExit()
+    {
+        playerInAnimation = false;
     }
 
     private void playerMovement()
     {
         anim.ResetTrigger("NormalAttack");
+        anim.ResetTrigger("PushbackTrigger");
 
         inputX = Input.GetAxisRaw("Horizontal");
         inputZ = Input.GetAxisRaw("Vertical");
@@ -44,6 +57,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (playerIsShooting)
         {
+
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -60,10 +74,12 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (moveDirection != Vector3.zero)
         {
+            
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), desiredRotationSpeed);
             controller.Move(moveDirection * playerSpeed * Time.deltaTime);
-        }
 
+        }
+        
 
 
         // Calculate input magnitude
@@ -71,21 +87,35 @@ public class PlayerMovement : MonoBehaviour
         anim.SetFloat("Blend", animationSpeedMagnitude, 0f, Time.deltaTime);
         anim.SetFloat("InputX", inputX);
         anim.SetFloat("InputZ", inputX);
-
-
-        if (Input.GetMouseButtonDown(1))
+        
+        // autoattackTime er ikke nødvendig enda
+        if (autoAttackTimer <= 0 && !playerInAnimation)
         {
-            playerIsShooting = true;
-
+            if (Input.GetMouseButtonDown(1))
+            {
+                playerIsShooting = true;
+                
+            }
+            if (Input.GetMouseButtonUp(1))
+            {
+                if (playerIsShooting)
+                {
+                    Destroy(Instantiate(arrow, projectileSpawnPoint.transform.position, transform.rotation), 10f);
+                    anim.SetTrigger("PushbackTrigger");
+                    playerIsShooting = false;               
+                    autoAttackTimer = autoAttackTimerMax;               
+                    playerInAnimation = true;  
+                }                            
+            }
+            anim.SetBool("Shoot", playerIsShooting);
         }
-        else if (Input.GetMouseButtonUp(1))
+        else
         {
-            playerIsShooting = false;
-            pushbackTimerActive = true;
+            autoAttackTimer -= Time.deltaTime;
         }
-        anim.SetBool("Shoot", playerIsShooting);
 
-       
+        
+
 
     }
 
