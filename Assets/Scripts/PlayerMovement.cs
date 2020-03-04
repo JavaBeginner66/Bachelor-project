@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -25,7 +23,12 @@ public class PlayerMovement : MonoBehaviour
     public float autoAttackTimer;
     public float autoAttackTimerMax;
 
-    public GameObject bowInactive;
+    public float rollTimer;
+    public float rollTimerMax;
+
+    public bool rollMode;
+
+
     public GameObject bowActive;
 
     public GameObject arrow;
@@ -33,9 +36,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        bowInactive.SetActive(false);
         controller = GetComponent<CharacterController>();
         anim = transform.GetComponentInChildren<Animator>();
+        rollTimer = rollTimerMax;
     }
 
     /* Method gets called by animation event on "Pushback" animation on  Player*/
@@ -48,6 +51,7 @@ public class PlayerMovement : MonoBehaviour
     {
         anim.ResetTrigger("NormalAttack");
         anim.ResetTrigger("PushbackTrigger");
+        anim.ResetTrigger("Roll");
 
         inputX = Input.GetAxisRaw("Horizontal");
         inputZ = Input.GetAxisRaw("Vertical");
@@ -73,11 +77,9 @@ public class PlayerMovement : MonoBehaviour
 
         }
         else if (moveDirection != Vector3.zero)
-        {
-            
+        {           
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), desiredRotationSpeed);
             controller.Move(moveDirection * playerSpeed * Time.deltaTime);
-
         }
         
 
@@ -89,7 +91,7 @@ public class PlayerMovement : MonoBehaviour
         anim.SetFloat("InputZ", inputX);
         
         // autoattackTime er ikke nødvendig enda
-        if (autoAttackTimer <= 0 && !playerInAnimation)
+        if (!playerInAnimation && !rollMode) 
         {
             if (Input.GetMouseButtonDown(1))
             {
@@ -107,16 +109,34 @@ public class PlayerMovement : MonoBehaviour
                     playerInAnimation = true;  
                 }                            
             }
-            anim.SetBool("Shoot", playerIsShooting);
         }
-        else
+
+        if (moveDirection != Vector3.zero)
         {
-            autoAttackTimer -= Time.deltaTime;
+            if (Input.GetKeyDown(KeyCode.LeftShift) && !rollMode && !playerInAnimation) // 
+            {
+                playerIsShooting = false;
+                anim.SetTrigger("Roll");
+                RollMode();
+            }
         }
 
-        
+        if (rollMode)
+        {
+            rollTimer -= Time.deltaTime;
+            if (rollTimer <= 0)
+            {
+                rollTimer = rollTimerMax;
+                rollMode = false;
+            }
+        }
 
+        anim.SetBool("Shoot", playerIsShooting);
+    }
 
+    private void RollMode()
+    {
+        rollMode = true;
     }
 
     private void Update()

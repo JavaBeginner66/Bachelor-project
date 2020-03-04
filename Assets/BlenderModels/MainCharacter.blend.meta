@@ -8,122 +8,115 @@ ModelImporter:
     100004: BowBone_end
     100006: Chest
     100008: Cube
-    100010: Empty
-    100012: Empty.001
-    100014: Empty.002
-    100016: Empty.003
-    100018: Foot.L
-    100020: Foot.R
-    100022: Hand.L
-    100024: Hand.R
-    100026: Head
-    100028: Head_end
-    100030: Hips
-    100032: LegIK.L
-    100034: LegIK.L_end
-    100036: LegIK.R
-    100038: LegIK.R_end
-    100040: LowerArm.L
-    100042: LowerArm.R
-    100044: LowerFinger.L
-    100046: LowerFinger.L_end
-    100048: LowerFinger.R
-    100050: LowerFinger.R_end
-    100052: LowerLeg.L
-    100054: LowerLeg.R
-    100056: LowerThump.L
-    100058: LowerThump.L_end
-    100060: LowerThump.R
-    100062: LowerThump.R_end
-    100064: //RootNode
-    100066: Neck
-    100068: PoleTarget.L
-    100070: PoleTarget.L_end
-    100072: PoleTarget.R
-    100074: PoleTarget.R_end
-    100076: Shoulder.L
-    100078: Shoulder.R
-    100080: Spine
-    100082: SwordBone
-    100084: SwordBone_end
-    100086: Toes.L
-    100088: Toes.L_end
-    100090: Toes.R
-    100092: Toes.R_end
-    100094: UpperArm.L
-    100096: UpperArm.R
-    100098: UpperFinger.L
-    100100: UpperFinger.R
-    100102: UpperLeg.L
-    100104: UpperLeg.R
-    100106: UpperThump.L
-    100108: UpperThump.R
+    100010: Foot.L
+    100012: Foot.R
+    100014: Hand.L
+    100016: Hand.R
+    100018: Head
+    100020: Head_end
+    100022: Hips
+    100024: LegIK.L
+    100026: LegIK.L_end
+    100028: LegIK.R
+    100030: LegIK.R_end
+    100032: LowerArm.L
+    100034: LowerArm.R
+    100036: LowerFinger.L
+    100038: LowerFinger.L_end
+    100040: LowerFinger.R
+    100042: LowerFinger.R_end
+    100044: LowerLeg.L
+    100046: LowerLeg.R
+    100048: LowerThump.L
+    100050: LowerThump.L_end
+    100052: LowerThump.R
+    100054: LowerThump.R_end
+    100056: //RootNode
+    100058: Neck
+    100060: PoleTarget.L
+    100062: PoleTarget.L_end
+    100064: PoleTarget.R
+    100066: PoleTarget.R_end
+    100068: Shoulder.L
+    100070: Shoulder.R
+    100072: Spine
+    100074: SwordBone
+    100076: SwordBone_end
+    100078: Toes.L
+    100080: Toes.L_end
+    100082: Toes.R
+    100084: Toes.R_end
+    100086: UpperArm.L
+    100088: UpperArm.R
+    100090: UpperFinger.L
+    100092: UpperFinger.R
+    100094: UpperLeg.L
+    100096: UpperLeg.R
+    100098: UpperThump.L
+    100100: UpperThump.R
     400000: Armature
     400002: BowBone
     400004: BowBone_end
     400006: Chest
     400008: Cube
-    400010: Empty
-    400012: Empty.001
-    400014: Empty.002
-    400016: Empty.003
-    400018: Foot.L
-    400020: Foot.R
-    400022: Hand.L
-    400024: Hand.R
-    400026: Head
-    400028: Head_end
-    400030: Hips
-    400032: LegIK.L
-    400034: LegIK.L_end
-    400036: LegIK.R
-    400038: LegIK.R_end
-    400040: LowerArm.L
-    400042: LowerArm.R
-    400044: LowerFinger.L
-    400046: LowerFinger.L_end
-    400048: LowerFinger.R
-    400050: LowerFinger.R_end
-    400052: LowerLeg.L
-    400054: LowerLeg.R
-    400056: LowerThump.L
-    400058: LowerThump.L_end
-    400060: LowerThump.R
-    400062: LowerThump.R_end
-    400064: //RootNode
-    400066: Neck
-    400068: PoleTarget.L
-    400070: PoleTarget.L_end
-    400072: PoleTarget.R
-    400074: PoleTarget.R_end
-    400076: Shoulder.L
-    400078: Shoulder.R
-    400080: Spine
-    400082: SwordBone
-    400084: SwordBone_end
-    400086: Toes.L
-    400088: Toes.L_end
-    400090: Toes.R
-    400092: Toes.R_end
-    400094: UpperArm.L
-    400096: UpperArm.R
-    400098: UpperFinger.L
-    400100: UpperFinger.R
-    400102: UpperLeg.L
-    400104: UpperLeg.R
-    400106: UpperThump.L
-    400108: UpperThump.R
+    400010: Foot.L
+    400012: Foot.R
+    400014: Hand.L
+    400016: Hand.R
+    400018: Head
+    400020: Head_end
+    400022: Hips
+    400024: LegIK.L
+    400026: LegIK.L_end
+    400028: LegIK.R
+    400030: LegIK.R_end
+    400032: LowerArm.L
+    400034: LowerArm.R
+    400036: LowerFinger.L
+    400038: LowerFinger.L_end
+    400040: LowerFinger.R
+    400042: LowerFinger.R_end
+    400044: LowerLeg.L
+    400046: LowerLeg.R
+    400048: LowerThump.L
+    400050: LowerThump.L_end
+    400052: LowerThump.R
+    400054: LowerThump.R_end
+    400056: //RootNode
+    400058: Neck
+    400060: PoleTarget.L
+    400062: PoleTarget.L_end
+    400064: PoleTarget.R
+    400066: PoleTarget.R_end
+    400068: Shoulder.L
+    400070: Shoulder.R
+    400072: Spine
+    400074: SwordBone
+    400076: SwordBone_end
+    400078: Toes.L
+    400080: Toes.L_end
+    400082: Toes.R
+    400084: Toes.R_end
+    400086: UpperArm.L
+    400088: UpperArm.R
+    400090: UpperFinger.L
+    400092: UpperFinger.R
+    400094: UpperLeg.L
+    400096: UpperLeg.R
+    400098: UpperThump.L
+    400100: UpperThump.R
     2100000: No Name
     4300000: Cube
     7400000: Armature|Idle
     7400002: Armature|NormalAttack
-    7400004: Armature|Run
-    7400006: Armature|ShootBackwards
-    7400008: Armature|ShootForward
-    7400010: Armature|ShootIdle
-    7400012: Armature|ShootLeft
-    7400014: Armature|ShootPushback
-    7400016: Armature|ShootRight
+    7400004: Armature|Roll
+    7400006: Armature|Run
+    7400008: Armature|ShootBackwards
+    7400010: Armature|ShootForward
+    7400012: Armature|ShootIdle
+    7400014: Armature|ShootLeft
+    7400016: Armature|ShootPushback
+    7400018: Armature|ShootRight
     9500000: //RootNode
     13700000: Cube
     2186277476908879412: ImportLogs
@@ -149,6 +142,9 @@ ModelImporter:
       has import animation warnings that might lower retargeting quality:\nNote: Activate
       translation DOF on avatar to improve retargeting quality.\n\t'Chest' is inbetween
       humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Armature|Roll' has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'Chest'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
       'Armature|ShootPushback' has import animation warnings that might lower retargeting
       quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Chest'
       is inbetween humanoid transforms and has rotation animation that will be discarded.\n"
@@ -197,6 +193,34 @@ ModelImporter:
       takeName: Armature|NormalAttack
       firstFrame: 0
       lastFrame: 19
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Armature|Roll
+      takeName: Armature|Roll
+      firstFrame: 0
+      lastFrame: 22
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -364,7 +388,7 @@ ModelImporter:
       name: Armature|ShootPushback
       takeName: Armature|ShootPushback
       firstFrame: 0
-      lastFrame: 12
+      lastFrame: 7
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -621,16 +645,6 @@ ModelImporter:
       position: {x: 0, y: 0, z: 0}
       rotation: {x: 0, y: 0, z: 0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-    - name: Empty
-      parentName: MainCharacter(Clone)
-      position: {x: -0.7915065, y: -0.055728238, z: -0.7089724}
-      rotation: {x: 0.00000008146034, y: 0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Empty.001
-      parentName: MainCharacter(Clone)
-      position: {x: 1.023681, y: -0.055728238, z: -0.96173346}
-      rotation: {x: 0.000000057601174, y: 0.70710677, z: -0.00000005760117, w: 0.7071068}
-      scale: {x: 1, y: 1, z: 1}
     - name: Cube
       parentName: MainCharacter(Clone)
       position: {x: -0, y: 1.0040118, z: 0}
@@ -835,7 +849,7 @@ ModelImporter:
       parentName: Hips
       position: {x: 0.015859978, y: 0.13216358, z: -0.1969122}
       rotation: {x: -0, y: -0, z: -0, w: 1}
-      scale: {x: 0.9999999, y: 1, z: 1}
+      scale: {x: 1, y: 1, z: 1}
     - name: BowBone_end
       parentName: BowBone
       position: {x: -0, y: 0.22239804, z: 0}
@@ -881,16 +895,6 @@ ModelImporter:
       position: {x: -0, y: 0.38388416, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-    - name: Empty.002
-      parentName: MainCharacter(Clone)
-      position: {x: 3.4092875, y: 0.9796699, z: 3.0739071}
-      rotation: {x: 0.000000015454313, y: 0.70710677, z: -0.000000015454312, w: 0.7071068}
-      scale: {x: 1.5117675, y: 1.5117675, z: 1.5117675}
-    - name: Empty.003
-      parentName: MainCharacter(Clone)
-      position: {x: 2.6118546, y: 0.92490315, z: 3.8489754}
-      rotation: {x: 0.000000015454313, y: 0.70710677, z: -0.000000015454312, w: 0.7071068}
-      scale: {x: 2.0136425, y: 2.0136425, z: 2.0136425}
     armTwist: 0.5
     foreArmTwist: 0.5
     upperLegTwist: 0.5
