@@ -17,6 +17,8 @@ public class PlayerMovement : MonoBehaviour
 
 
     public float playerSpeed;
+    public float normalSpeed;
+    public float rollSpeed;
 
     public bool playerIsShooting;
     public bool playerInAnimation;
@@ -50,6 +52,7 @@ public class PlayerMovement : MonoBehaviour
     public void rollModeExit()
     {
         rollAnimationActive = false;
+        playerInAnimation = false;
     }
 
     private void playerMovement()
@@ -83,7 +86,7 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), desiredRotationSpeed);
-                controller.Move(moveDirection * (playerSpeed*1.5f) * Time.deltaTime);
+                controller.Move(moveDirection * playerSpeed * Time.deltaTime);
             }
            
             
@@ -142,6 +145,12 @@ public class PlayerMovement : MonoBehaviour
                 rollCooldown = false;
             }
         }
+
+        if (rollAnimationActive)
+            playerSpeed = rollSpeed;
+        else
+            playerSpeed = normalSpeed;
+        
 
         anim.SetBool("Shoot", playerIsShooting);
     }
