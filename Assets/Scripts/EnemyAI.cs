@@ -9,6 +9,7 @@ public class EnemyAI : MonoBehaviour
 
     public float chaseSpeed;
     public float patrolSpeed;
+    public float speed;
 
     public Transform target;
     public Transform[] waypoints;
@@ -27,6 +28,8 @@ public class EnemyAI : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         state = State.CHASE;
+        agent.stoppingDistance = 3f;
+        speed = agent.speed;
     }
 
     IEnumerator StateMachine()
@@ -36,7 +39,8 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
-        
+        Debug.Log(Vector3.Distance(this.transform.position, target.transform.position) <= 2f);
+        speed = agent.speed;
         BattleMonitor();
 
         if(state == State.CHASE)
@@ -51,16 +55,17 @@ public class EnemyAI : MonoBehaviour
 
     private void BattleMonitor()
     {
-
+        
     }
 
     private void Chase()
     {
         agent.speed = chaseSpeed;
-        if (Vector3.Distance(this.transform.position, target.transform.position) >= 2)
+        if (Vector3.Distance(this.transform.position, target.transform.position) >= 3f)
         {
-            agent.SetDestination(target.transform.position);
-        }        
+            agent.SetDestination(target.transform.position);  
+        }
+       
     }
 
     private void Patrol()
