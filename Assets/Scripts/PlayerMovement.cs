@@ -36,11 +36,14 @@ public class PlayerMovement : MonoBehaviour
     public GameObject arrow;
     public GameObject projectileSpawnPoint;
 
+    public GameObject bowDrawEffect;
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
         anim = transform.GetComponentInChildren<Animator>();
         rollTimer = rollTimerMax;
+        bowDrawEffect.SetActive(false);
     }
 
     /* Method gets called by animation event on "Pushback" animation on  Player*/
@@ -112,12 +115,13 @@ public class PlayerMovement : MonoBehaviour
             if (Input.GetMouseButtonDown(1))
             {
                 playerIsShooting = true;
-                
+                bowDrawEffect.SetActive(true);
             }
             if (Input.GetMouseButtonUp(1))
             {
                 if (playerIsShooting)
                 {
+                    bowDrawEffect.SetActive(false);
                     Destroy(Instantiate(arrow, projectileSpawnPoint.transform.position, transform.rotation), 10f);
                     anim.SetTrigger("PushbackTrigger");
                     playerIsShooting = false;               
