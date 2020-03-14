@@ -16,6 +16,10 @@ public class EnemyAI : MonoBehaviour
     public int waypointsIndex;
 
     public float stateMachineTimer;
+    public float teleportTimer = 1;
+    public float bulletHellWaves = 10;
+
+    private Coroutine bulletHell1;
 
     public enum State
     {
@@ -27,7 +31,7 @@ public class EnemyAI : MonoBehaviour
     private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        state = State.CHASE;
+        state = State.CASTING;
         agent.stoppingDistance = 3f;
         speed = agent.speed;
     }
@@ -39,18 +43,19 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(Vector3.Distance(this.transform.position, target.transform.position) <= 2f);
+
         speed = agent.speed;
         BattleMonitor();
+       
 
-        if(state == State.CHASE)
+        if (state == State.CHASE)
             Chase();
         
         if (state == State.PATROL)
             Patrol();
 
         if (state == State.CASTING)
-            Cast();
+            BullethellStage1();
     }
 
     private void BattleMonitor()
@@ -83,8 +88,23 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    private void Cast()
+    private void BullethellStage1()
+    {
+        transform.LookAt(target);
+        if (bulletHell1 == null)
+            bulletHell1 = StartCoroutine(BulletHell());
+    }
+    
+    IEnumerator BulletHell()
     {
         agent.speed = 0f;
+        for (int i = 0; i<bulletHellWaves; i++)
+        {         
+          
+            transform.position = waypoints[waypointsIndex].transform.position;
+            waypointsIndex = (waypointsIndex + 1) % waypoints.Length;
+            yield return new WaitForSeconds(teleportTimer);
+        }
+        
     }
 }
