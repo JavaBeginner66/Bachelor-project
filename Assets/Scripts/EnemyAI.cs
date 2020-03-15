@@ -98,13 +98,33 @@ public class EnemyAI : MonoBehaviour
     IEnumerator BulletHell()
     {
         agent.speed = 0f;
-        for (int i = 0; i<bulletHellWaves; i++)
+        for (int i = 0; i<1000; i++)
         {         
           
             transform.position = waypoints[waypointsIndex].transform.position;
             waypointsIndex = (waypointsIndex + 1) % waypoints.Length;
+            SpawnBullet();
+
             yield return new WaitForSeconds(teleportTimer);
         }
         
+    }
+
+    private void SpawnBullet()
+    {
+        GameObject obj = ObjectPool.objectPool.getStoredObject();
+        if (obj != null)
+        {
+            obj.transform.position = transform.position;
+            //obj.transform.rotation = Quaternion.Euler(transform.localEulerAngles.x, transform.localEulerAngles.y, transform.localEulerAngles.z);
+            obj.transform.rotation = transform.rotation;
+            Debug.Log("AI: " + transform.rotation.eulerAngles);
+            Debug.Log("Obj: " + obj.transform.rotation.eulerAngles);
+            obj.SetActive(true);
+        }
+        else
+        {
+            Debug.Log("Utvide?");
+        }
     }
 }
