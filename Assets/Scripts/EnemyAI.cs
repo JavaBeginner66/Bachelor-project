@@ -103,6 +103,7 @@ public class EnemyAI : MonoBehaviour
           
             transform.position = waypoints[waypointsIndex].transform.position;
             waypointsIndex = (waypointsIndex + 1) % waypoints.Length;
+            yield return new WaitForSeconds(.5f);
             SpawnBullet();
 
             yield return new WaitForSeconds(teleportTimer);
@@ -115,11 +116,8 @@ public class EnemyAI : MonoBehaviour
         GameObject obj = ObjectPool.objectPool.getStoredObject();
         if (obj != null)
         {
-            obj.transform.position = transform.position;
-            //obj.transform.rotation = Quaternion.Euler(transform.localEulerAngles.x, transform.localEulerAngles.y, transform.localEulerAngles.z);
+            obj.transform.position = transform.position;          
             obj.transform.rotation = transform.rotation;
-            Debug.Log("AI: " + transform.rotation.eulerAngles);
-            Debug.Log("Obj: " + obj.transform.rotation.eulerAngles);
             obj.SetActive(true);
         }
         else
