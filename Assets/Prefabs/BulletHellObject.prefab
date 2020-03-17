@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 302383301466083726}
   - component: {fileID: 1209738275460509587}
   - component: {fileID: 4782909982936272810}
-  - component: {fileID: 2334600204533017985}
+  - component: {fileID: 718079433249849379}
   m_Layer: 0
   m_Name: BulletHellObject
-  m_TagString: Untagged
+  m_TagString: BulletHellObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -92,7 +92,7 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2334600204533017985
+--- !u!114 &718079433249849379
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,7 +101,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1572420374972975077}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8a6c8c2a36c4cb4e85fa4fabceb3c1e, type: 3}
+  m_Script: {fileID: 11500000, guid: c064a725c2a473a499c23c6676be1f6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5

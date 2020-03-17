@@ -620,11 +620,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82b49ecb32624e94383d6f79e526d3b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scaleSpeed: 5
+  scaleSpeed: 3
   orbPoints: []
   orbs: []
   orbPrefab: {fileID: 1572420374972975077, guid: 220d2957bc922bb41995da34db394898,
     type: 3}
+  movementObject: {fileID: 1451209930660428550}
+  movementObjectSpeed: 5
 --- !u!1 &3118746823697022209
 GameObject:
   m_ObjectHideFlags: 0
@@ -754,10 +756,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1451209930660428550}
-  - component: {fileID: 7816230494286440279}
   m_Layer: 0
   m_Name: FrozenOrb
-  m_TagString: Untagged
+  m_TagString: FrozenOrb
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -777,16 +778,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7816230494286440279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3269418720081956912}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8a6c8c2a36c4cb4e85fa4fabceb3c1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 5

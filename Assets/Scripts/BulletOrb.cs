@@ -8,7 +8,8 @@ public class BulletOrb : MonoBehaviour
     public Transform[] orbPoints;
     public GameObject[] orbs;
 
-    public GameObject orbPrefab;
+    public Transform movementObject;
+    public float movementObjectSpeed = 5f;
 
     private void Start()
     {
@@ -17,13 +18,16 @@ public class BulletOrb : MonoBehaviour
         for (int i = 0; i < transform.childCount; i++)
         {
             orbPoints[i] = transform.GetChild(i);
-            orbs[i] =  Instantiate(orbPrefab);
+            orbs[i] =  ObjectPool.objectPool.getStoredObject(ObjectPool.BulletHellObject);
+            orbs[i].SetActive(true);
         }
 
     }
     void Update()
     {
-        if(transform.localScale.x < 30f)
+        movementObject.position += movementObject.forward * movementObjectSpeed * Time.deltaTime;
+
+        if (transform.localScale.x < 50f)
             transform.localScale += new Vector3(scaleSpeed * Time.deltaTime, 0f, scaleSpeed * Time.deltaTime);
 
         for (int i = 0; i < orbPoints.Length; i++)

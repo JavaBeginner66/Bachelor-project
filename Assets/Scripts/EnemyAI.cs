@@ -13,6 +13,7 @@ public class EnemyAI : MonoBehaviour
 
     public Transform target;
     public Transform[] waypoints;
+    public Transform waypointMiddle;
     public int waypointsIndex;
 
     public float stateMachineTimer;
@@ -92,13 +93,13 @@ public class EnemyAI : MonoBehaviour
     {
         transform.LookAt(target);
         if (bulletHell1 == null)
-            bulletHell1 = StartCoroutine(BulletHell());
+            bulletHell1 = StartCoroutine(FrozenOrbEnum());
     }
     
-    IEnumerator BulletHell()
+    IEnumerator FrozenOrbEnum()
     {
         agent.speed = 0f;
-        for (int i = 0; i<1000; i++)
+        for (int i = 0; i<5; i++)
         {         
           
             transform.position = waypoints[waypointsIndex].transform.position;
@@ -108,17 +109,29 @@ public class EnemyAI : MonoBehaviour
 
             yield return new WaitForSeconds(teleportTimer);
         }
+        StartCoroutine(RotatingCircleEnum());
+    }
+
+    IEnumerator RotatingCircleEnum()
+    {
+        transform.position = waypointMiddle.transform.position;
+        for (int i = 0; i < 10; i++)
+        {
+
+            yield return new WaitForSeconds(.5f);
+        }
         
     }
 
     private void SpawnBullet()
     {
-        GameObject obj = ObjectPool.objectPool.getStoredObject();
+        GameObject obj = ObjectPool.objectPool.getStoredObject(ObjectPool.FrozenOrb);
         if (obj != null)
         {
             obj.transform.position = transform.position;          
             obj.transform.rotation = transform.rotation;
             obj.SetActive(true);
+            
         }
         else
         {
