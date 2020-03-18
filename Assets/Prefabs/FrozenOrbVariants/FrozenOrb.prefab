@@ -623,7 +623,7 @@ MonoBehaviour:
   bulletHellObject: {fileID: 1572420374972975077, guid: 220d2957bc922bb41995da34db394898,
     type: 3}
   bulletHellObjectList: []
-  scaleSpeed: 5
+  scaleSpeed: 10
   orbPoints: []
   movementObject: {fileID: 1451209930660428550}
   movementObjectSpeed: 8
