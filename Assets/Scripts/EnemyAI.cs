@@ -4,6 +4,8 @@ using UnityEngine.AI;
 
 public class EnemyAI : MonoBehaviour
 {
+    public static EnemyAI enemyAI;
+
     public NavMeshAgent agent;  
     private State state;
 
@@ -29,8 +31,14 @@ public class EnemyAI : MonoBehaviour
         CASTING
     }
 
+    public State getState()
+    {
+        return state;
+    }
+
     private void Start()
     {
+        enemyAI = this;
         agent = GetComponent<NavMeshAgent>();
         state = State.CASTING;
         agent.stoppingDistance = 3f;
@@ -44,19 +52,21 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
+        if (GameMasterScript.gameRunning)
+        {
+            speed = agent.speed;
+            BattleMonitor();
 
-        speed = agent.speed;
-        BattleMonitor();
-       
 
-        if (state == State.CHASE)
-            Chase();
-        
-        if (state == State.PATROL)
-            Patrol();
+            if (state == State.CHASE)
+                Chase();
 
-        if (state == State.CASTING)
-            BullethellStage1();
+            if (state == State.PATROL)
+                Patrol();
+
+            if (state == State.CASTING)
+                BullethellStage1();
+        }
     }
 
     private void BattleMonitor()
@@ -99,33 +109,37 @@ public class EnemyAI : MonoBehaviour
     IEnumerator FrozenOrbEnum()
     {
         agent.speed = 0f;
-        for (int i = 0; i<5; i++)
+        Transform[] visitedWaypoints = new Transform[waypoints.Length];
+        for (int i = 0; i<3; i++)
         {         
           
-            transform.position = waypoints[waypointsIndex].transform.position;
-            waypointsIndex = (waypointsIndex + 1) % waypoints.Length;
+            transform.position = waypoints[Random.Range(0, waypoints.Length)].transform.position;
+            //waypointsIndex = (waypointsIndex + 1) % waypoints.Length;
+
             yield return new WaitForSeconds(.5f);
-            SpawnBullet();
+            SpawnBullet(ObjectPool.FrozenOrb);
 
             yield return new WaitForSeconds(teleportTimer);
         }
+      
         StartCoroutine(RotatingCircleEnum());
     }
 
     IEnumerator RotatingCircleEnum()
     {
+
         transform.position = waypointMiddle.transform.position;
         for (int i = 0; i < 10; i++)
         {
-
-            yield return new WaitForSeconds(.5f);
+            SpawnBullet(ObjectPool.FrozenOrbStatic);
+            yield return new WaitForSeconds(1f);
         }
-        
+
     }
 
-    private void SpawnBullet()
+    private void SpawnBullet(string type)
     {
-        GameObject obj = ObjectPool.objectPool.getStoredObject(ObjectPool.FrozenOrb);
+        GameObject obj = ObjectPool.objectPool.getStoredObject(type);
         if (obj != null)
         {
             obj.transform.position = transform.position;          

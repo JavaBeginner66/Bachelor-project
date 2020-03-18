@@ -4,35 +4,68 @@ using UnityEngine;
 
 public class BulletOrb : MonoBehaviour
 {
+
+    public GameObject bulletHellObject;
+    public List<GameObject> bulletHellObjectList;
+
     public float scaleSpeed;
     public Transform[] orbPoints;
-    public GameObject[] orbs;
 
     public Transform movementObject;
     public float movementObjectSpeed = 5f;
+    public float maxTimer;
+    public float endTimer;
 
-    private void Start()
+
+
+    private void Awake()
     {
         orbPoints = new Transform[transform.childCount];
-        orbs = new GameObject[orbPoints.Length];
-        for (int i = 0; i < transform.childCount; i++)
+        for (int i = 0; i < orbPoints.Length; i++)
         {
             orbPoints[i] = transform.GetChild(i);
-            orbs[i] =  ObjectPool.objectPool.getStoredObject(ObjectPool.BulletHellObject);
-            orbs[i].SetActive(true);
-        }
-
+            GameObject obj = Instantiate(bulletHellObject);
+            obj.SetActive(false); // Hvorfor er de aktiverte....
+            bulletHellObjectList.Add(obj);
+        }   
     }
+
+
+
+    private void OnEnable()
+    {
+        if (GameMasterScript.gameRunning)
+        {
+            endTimer = maxTimer;
+            transform.localScale = new Vector3();
+            for (int i = 0; i < orbPoints.Length; i++)
+            {
+                bulletHellObjectList[i].transform.position = orbPoints[i].transform.position;
+                bulletHellObjectList[i].SetActive(true);
+            }
+        }
+    }
+
     void Update()
     {
-        movementObject.position += movementObject.forward * movementObjectSpeed * Time.deltaTime;
+        movementObject.position += movementObject.forward * (movementObjectSpeed * Time.deltaTime);
 
-        if (transform.localScale.x < 50f)
+        if (transform.localScale.x < 70f)
             transform.localScale += new Vector3(scaleSpeed * Time.deltaTime, 0f, scaleSpeed * Time.deltaTime);
 
         for (int i = 0; i < orbPoints.Length; i++)
         {
-            orbs[i].transform.position = orbPoints[i].transform.position;
+            bulletHellObjectList[i].transform.position = orbPoints[i].transform.position;
+        }
+
+        endTimer -= Time.deltaTime;
+        if (endTimer <= 0)
+        {
+            for (int i = 0; i < bulletHellObjectList.Count; i++)
+            {
+                bulletHellObjectList[i].SetActive(false);
+            }
+            transform.parent.gameObject.SetActive(false);
         }
     }
 }

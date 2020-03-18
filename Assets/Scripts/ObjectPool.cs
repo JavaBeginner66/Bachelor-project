@@ -7,35 +7,30 @@ public class ObjectPool : MonoBehaviour
     public static ObjectPool objectPool;
 
     public readonly static string FrozenOrb = "FrozenOrb";
-    public readonly static string BulletHellObject = "BulletHellObject";
+    public readonly static string FrozenOrbStatic = "FrozenOrbStatic";
 
-    public GameObject bulletHellParent;
     public List<GameObject> pool;
-    public GameObject frozenOrb;
-    public GameObject bulletHellObject;
 
-    public float frozenOrbAmount;
-    public float bulletHellObjectAmount;
+    public GameObject frozenOrb;
+    public GameObject frozenOrbStatic;
+
+    public float objectAmount;
 
     // Start is called before the first frame update
     void Start()
     {
         objectPool = this;
         // Creating orbs with 20 bullets
-        for(int i = 0; i<frozenOrbAmount; i++)
-        {
+        
+        for (int i = 0; i<objectAmount; i++)
+        {            
+            GameObject fOrb = Instantiate(frozenOrb);
+            GameObject fOrb2 = Instantiate(frozenOrbStatic);
+            fOrb.SetActive(false);
+            fOrb2.SetActive(false);
+            pool.Add(fOrb);
+            pool.Add(fOrb2);
             
-            GameObject obj = Instantiate(frozenOrb);
-            obj.transform.parent = bulletHellParent.transform;
-            obj.SetActive(false);
-            pool.Add(obj);
-            for (int j = 0; j < bulletHellObjectAmount; j++)
-            {
-                GameObject obj2 = Instantiate(bulletHellObject);
-                obj2.transform.parent = bulletHellParent.transform;
-                obj2.SetActive(false);
-                pool.Add(obj2);
-            }
         }
     }
 
