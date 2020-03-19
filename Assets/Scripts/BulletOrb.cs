@@ -16,8 +16,6 @@ public class BulletOrb : MonoBehaviour
     public float maxTimer;
     public float endTimer;
 
-
-
     private void Awake()
     {
         orbPoints = new Transform[transform.childCount];
@@ -48,10 +46,12 @@ public class BulletOrb : MonoBehaviour
 
     void Update()
     {
+
+        transform.localScale += new Vector3(scaleSpeed * Time.deltaTime, 0f, scaleSpeed * Time.deltaTime);
+
+
         movementObject.position += movementObject.forward * (movementObjectSpeed * Time.deltaTime);
 
-        if (transform.localScale.x < 70f)
-            transform.localScale += new Vector3(scaleSpeed * Time.deltaTime, 0f, scaleSpeed * Time.deltaTime);
 
         for (int i = 0; i < orbPoints.Length; i++)
         {

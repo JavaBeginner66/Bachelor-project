@@ -24,6 +24,8 @@ public class EnemyAI : MonoBehaviour
 
     private Coroutine bulletHell1;
 
+    public GameObject portalEffect;
+
     public enum State
     {
         CHASE,
@@ -38,6 +40,7 @@ public class EnemyAI : MonoBehaviour
 
     private void Start()
     {
+
         enemyAI = this;
         agent = GetComponent<NavMeshAgent>();
         state = State.CASTING;
@@ -109,17 +112,19 @@ public class EnemyAI : MonoBehaviour
     IEnumerator FrozenOrbEnum()
     {
         agent.speed = 0f;
-        Transform[] visitedWaypoints = new Transform[waypoints.Length];
-        for (int i = 0; i<3; i++)
-        {         
-          
-            transform.position = waypoints[Random.Range(0, waypoints.Length)].transform.position;
+        Vector3 nextPos = waypoints[Random.Range(0, waypoints.Length)].transform.position;
+        for (int i = 0; i<10; i++)
+        {
+            
+            transform.position = nextPos;
             //waypointsIndex = (waypointsIndex + 1) % waypoints.Length;
 
-            yield return new WaitForSeconds(.5f);
-            SpawnBullet(ObjectPool.FrozenOrb);
-
             yield return new WaitForSeconds(teleportTimer);
+            SpawnBullet(ObjectPool.FrozenOrb);
+            nextPos = waypoints[Random.Range(0, waypoints.Length)].transform.position;
+            // Bør pooles
+            Destroy(Instantiate(portalEffect, new Vector3(nextPos.x, nextPos.y + .5f, nextPos.z), Quaternion.identity), 10f);
+            yield return new WaitForSeconds(teleportTimer*3);
         }
       
         StartCoroutine(RotatingCircleEnum());
