@@ -59,3 +59,7 @@ sysinfo.txt
 crashlytics-build.properties
 
 *.meta
+*.mat
+*.mat
+*.prefab
+*.unity

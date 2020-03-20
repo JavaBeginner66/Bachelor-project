@@ -26,6 +26,9 @@ public class EnemyAI : MonoBehaviour
 
     public GameObject portalEffect;
 
+    public float healthPool;
+    public float health;
+
     public enum State
     {
         CHASE,
@@ -38,10 +41,24 @@ public class EnemyAI : MonoBehaviour
         return state;
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag.Equals("PlayerArrow"))       
+            takeDamage(StatsScript.PlayerArrowDamage);
+        
+    }
+
+    public void takeDamage(float damage)
+    {
+        health -= damage;
+        Debug.Log("Enemy health" + health);
+    }
+
     private void Start()
     {
 
         enemyAI = this;
+        health = healthPool;
         agent = GetComponent<NavMeshAgent>();
         state = State.CASTING;
         agent.stoppingDistance = 3f;

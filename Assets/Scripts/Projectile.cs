@@ -33,9 +33,20 @@ public class Projectile : MonoBehaviour
 
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag.Equals("Boss1"))
+        {
+            
+            Destroy(gameObject);
+        }
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         hitObject = true;
+
+        
         //GameObject explosion = Instantiate(ps, transform.position, Quaternion.identity);
         //Destroy(explosion, 5f);
     }
