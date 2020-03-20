@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class EnemyAI : MonoBehaviour
 {
@@ -27,7 +28,9 @@ public class EnemyAI : MonoBehaviour
     public GameObject portalEffect;
 
     public float healthPool;
-    public float health;
+    public float currentHealth;
+
+    public Image healthDisplay;
 
     public enum State
     {
@@ -50,15 +53,15 @@ public class EnemyAI : MonoBehaviour
 
     public void takeDamage(float damage)
     {
-        health -= damage;
-        Debug.Log("Enemy health" + health);
+        currentHealth -= damage;
+        healthDisplay.fillAmount = currentHealth / healthPool;
     }
 
     private void Start()
     {
 
         enemyAI = this;
-        health = healthPool;
+        currentHealth = healthPool;
         agent = GetComponent<NavMeshAgent>();
         state = State.CASTING;
         agent.stoppingDistance = 3f;

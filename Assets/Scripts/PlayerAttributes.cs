@@ -1,15 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerAttributes : MonoBehaviour
 {
     public float maxHealth;
-    public float health;
+    public float currentHealth;
+
+    public Image healthDisplay;
 
     private void Start()
     {
-        health = maxHealth;
+        currentHealth = maxHealth;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -20,7 +23,7 @@ public class PlayerAttributes : MonoBehaviour
 
     private void takeDamage(float damage)
     {
-        health -= damage;
-        Debug.Log("PlayerHealth: " + health);
+        currentHealth -= damage;
+        healthDisplay.fillAmount = currentHealth / maxHealth;
     }
 }
