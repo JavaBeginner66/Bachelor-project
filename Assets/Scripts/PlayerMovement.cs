@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -37,6 +38,9 @@ public class PlayerMovement : MonoBehaviour
     public GameObject projectileSpawnPoint;
 
     public GameObject bowDrawEffect;
+
+    public Image dodgeTimerDisplay;
+    public Image shootTimerDisplay;
 
     private void Start()
     {
@@ -143,9 +147,11 @@ public class PlayerMovement : MonoBehaviour
         if (rollCooldown)
         {
             rollTimer -= Time.deltaTime;
+            dodgeTimerDisplay.fillAmount = rollTimer/1.1f;
             if (rollTimer <= 0)
             {
                 rollTimer = rollTimerMax;
+                dodgeTimerDisplay.fillAmount = 100;
                 rollCooldown = false;
             }
         }
