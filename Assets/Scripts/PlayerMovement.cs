@@ -3,47 +3,47 @@ using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public float inputX;
-    public float inputZ;
-    public float desiredRotationSpeed;
+
+    [Header("Inspector Objects")]
     public Animator anim;
-    public float animationSpeedMagnitude;
-    public Camera cam;
     public CharacterController controller;
-
-
     public Transform groundCheck;
-    public float groundDistance = 0.4f;
     public LayerMask groundMask;
-
-
-    public float playerSpeed;
-    public float normalSpeed;
-    public float rollSpeed;
-
-    public bool playerIsShooting;
-    public bool playerInAnimation;
-    public float autoAttackTimer;
-    public float autoAttackTimerMax;
-
-    public float rollTimer;
-    public float rollTimerMax;
-
-    public bool rollCooldown;
-    public bool rollAnimationActive;
-
-    public GameObject bowActive;
 
     public GameObject arrow;
     public GameObject projectileSpawnPoint;
-
     public GameObject bowDrawEffect;
 
     public Image dodgeTimerDisplay;
     public Image shootTimerDisplay;
 
+    [Header("Player modifiable variables ")]
+    public float desiredRotationSpeed;
+    public float groundDistance = 0.4f;
+    public float normalSpeed;
+    public float rollSpeed;
+    public float rollTimerMax;
+    public float attackPower;
+    public float attackPowerModifier;
+
+    [Header("Script-internal variables")]
+    private float inputX;
+    private float inputZ;    
+    private float animationSpeedMagnitude;
+    private float playerSpeed;
+    private bool playerIsShooting;
+    private bool playerInAnimation;
+    private float rollTimer;
+    private bool rollCooldown;
+    private bool rollAnimationActive;
+
+    
+
+    
+
     private void Start()
     {
+        attackPower = StatsScript.PlayerArrowDamage;
         controller = GetComponent<CharacterController>();
         anim = transform.GetComponentInChildren<Animator>();
         rollTimer = rollTimerMax;
@@ -64,9 +64,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void playerMovement()
     {
-        anim.ResetTrigger("NormalAttack");
         anim.ResetTrigger("PushbackTrigger");
-        //anim.ResetTrigger("Roll");
 
         inputX = Input.GetAxisRaw("Horizontal");
         inputZ = Input.GetAxisRaw("Vertical");
@@ -76,6 +74,9 @@ public class PlayerMovement : MonoBehaviour
 
         if (playerIsShooting)
         {
+            attackPower += attackPowerModifier;
+            // Handle steps
+
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             float zVel = transform.InverseTransformDirection(moveDirection).z;
@@ -95,9 +96,6 @@ public class PlayerMovement : MonoBehaviour
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), desiredRotationSpeed);
                 controller.Move(moveDirection * playerSpeed * Time.deltaTime);
             }
-           
-            
-
         }
         else if (moveDirection != Vector3.zero)
         {           
@@ -113,31 +111,24 @@ public class PlayerMovement : MonoBehaviour
         anim.SetFloat("InputX", inputX);
         anim.SetFloat("InputZ", inputX);
         
-        // autoattackTime er ikke nødvendig enda
         if (!playerInAnimation && !rollCooldown) 
         {
             if (Input.GetMouseButtonDown(1))
             {
-                playerIsShooting = true;
-                bowDrawEffect.SetActive(true);
+                playerChannelAttack();              
             }
             if (Input.GetMouseButtonUp(1))
             {
                 if (playerIsShooting)
                 {
-                    bowDrawEffect.SetActive(false);
-                    Destroy(Instantiate(arrow, projectileSpawnPoint.transform.position, transform.rotation), 10f);
-                    anim.SetTrigger("PushbackTrigger");
-                    playerIsShooting = false;               
-                    autoAttackTimer = autoAttackTimerMax;               
-                    playerInAnimation = true;  
+                    playerReleaseAttack();                  
                 }                            
             }
         }
 
         if (moveDirection != Vector3.zero)
         {
-            if (Input.GetKeyDown(KeyCode.LeftShift) && !rollCooldown) // &&!playerInAnimation
+            if (Input.GetKeyDown(KeyCode.LeftShift) && !rollCooldown) 
             {
                 //playerIsShooting = false;               
                 RollMode();
@@ -164,6 +155,25 @@ public class PlayerMovement : MonoBehaviour
 
         anim.SetBool("Shoot", playerIsShooting);
     }
+
+    private void playerChannelAttack()
+    {
+        playerIsShooting = true;
+        bowDrawEffect.SetActive(true);
+       
+    }
+
+    private void playerReleaseAttack()
+    {
+        bowDrawEffect.SetActive(false);
+        Destroy(Instantiate(arrow, projectileSpawnPoint.transform.position, transform.rotation), 10f);
+        anim.SetTrigger("PushbackTrigger");
+        playerIsShooting = false;
+        playerInAnimation = true;
+        // Set the attack power to something
+        attackPower = StatsScript.PlayerArrowDamage;
+    }
+
 
     private void RollMode()
     {
