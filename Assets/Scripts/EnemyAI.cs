@@ -5,32 +5,32 @@ using UnityEngine.UI;
 
 public class EnemyAI : MonoBehaviour
 {
-    public static EnemyAI enemyAI;
 
-    public NavMeshAgent agent;  
-    private State state;
+    [Header("Inspector Objects")]
+    public NavMeshAgent agent;
+    public Transform target;
+    public Transform[] waypoints;
+    public Transform waypointMiddle;    
+    public GameObject portalEffect;
+    public Image healthDisplay;
 
+    [Header("EnemyAI modifiable variables")]
     public float chaseSpeed;
     public float patrolSpeed;
     public float speed;
-
-    public Transform target;
-    public Transform[] waypoints;
-    public Transform waypointMiddle;
-    public int waypointsIndex;
-
-    public float stateMachineTimer;
     public float teleportTimer = 1;
     public float bulletHellWaves = 10;
-
-    private Coroutine bulletHell1;
-
-    public GameObject portalEffect;
-
     public float healthPool;
-    public float currentHealth;
 
-    public Image healthDisplay;
+    [HideInInspector] // Internal script variables
+    public static EnemyAI enemyAI;    
+    private State state;
+    private int waypointsIndex;
+    private float stateMachineTimer;
+    private Coroutine bulletHell1;
+    private float currentHealth;
+
+    
 
     public enum State
     {

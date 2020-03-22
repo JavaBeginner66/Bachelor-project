@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
     public float attackPower;
     public float attackPowerModifier;
 
-    [Header("Script-internal variables")]
+    [HideInInspector] // Internal script variables
     private float inputX;
     private float inputZ;    
     private float animationSpeedMagnitude;
