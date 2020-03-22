@@ -4804,11 +4804,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 0}
-  arrowSpeed: 15
-  slowSpeed: 0
-  addedFlowForce: 0
+  onHitParticleSystem: {fileID: 0}
+  projectileSpeed: 30
+  projectileDamage: 0
   hitObject: 0
-  ps: {fileID: 0}
 --- !u!54 &9158387129993145953
 Rigidbody:
   m_ObjectHideFlags: 0

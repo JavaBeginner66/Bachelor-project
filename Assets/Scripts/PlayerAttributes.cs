@@ -17,7 +17,7 @@ public class PlayerAttributes : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag.Equals("BulletHellObject"))
+        if (other.tag.Equals(StatsScript.BulletHellDamageTag))
             takeDamage(StatsScript.BullethellDamage);
     }
 

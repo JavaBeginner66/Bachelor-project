@@ -4,24 +4,42 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
+    [Header("Inspector Objects")]
     public Rigidbody rb;
+    public GameObject onHitParticleSystem;
 
-    public float arrowSpeed;
-    public float slowSpeed;
-    public float addedFlowForce;
-
+    [Header("Modifiable variables")]
+    public float projectileSpeed;
+    public float projectileDamage;
+    
+    [HideInInspector]
     public bool hitObject;
 
-    public GameObject ps;
+    
 
     // Start is called before the first frame update
     void Start()
     {
         hitObject = false;
         rb = GetComponent<Rigidbody>();
-        rb.AddForce(transform.forward * arrowSpeed, ForceMode.Impulse);
+        rb.AddForce(transform.forward * projectileSpeed, ForceMode.Impulse);
         rb.useGravity = false;
+        projectileDamage = StatsScript.ProjectileBaseDamage;
     }
+
+    /**
+     * Projectile will act as a individual object carrying values from player to enemy
+     * */
+    public void setProjectileDamage(float dmg)
+    {
+        this.projectileDamage = dmg;
+    }
+
+    public float getProjectileDamage()
+    {
+        return this.projectileDamage;
+    }
+
 
     // Update is called once per frame
     void Update()

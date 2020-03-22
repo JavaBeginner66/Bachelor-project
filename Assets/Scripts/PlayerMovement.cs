@@ -43,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        attackPower = StatsScript.PlayerArrowDamage;
+        attackPower = StatsScript.ProjectileBaseDamage;
         controller = GetComponent<CharacterController>();
         anim = transform.GetComponentInChildren<Animator>();
         rollTimer = rollTimerMax;
@@ -166,12 +166,17 @@ public class PlayerMovement : MonoBehaviour
     private void playerReleaseAttack()
     {
         bowDrawEffect.SetActive(false);
-        Destroy(Instantiate(arrow, projectileSpawnPoint.transform.position, transform.rotation), 10f);
+        // Creating a projectile, and setting the projectile damage in this current instance
+        GameObject projectile = Instantiate(arrow, projectileSpawnPoint.transform.position, transform.rotation);
+        Projectile projectileScript = projectile.GetComponent<Projectile>();
+        projectileScript.setProjectileDamage(attackPower);
+
+        Debug.Log(projectile.GetComponent<Projectile>().getProjectileDamage());
+
         anim.SetTrigger("PushbackTrigger");
         playerIsShooting = false;
         playerInAnimation = true;
-        // Set the attack power to something
-        attackPower = StatsScript.PlayerArrowDamage;
+        
     }
 
 
