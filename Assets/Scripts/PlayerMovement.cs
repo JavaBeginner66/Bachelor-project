@@ -17,6 +17,8 @@ public class PlayerMovement : MonoBehaviour
     public Image dodgeTimerDisplay;
     public Image shootTimerDisplay;
 
+    public Projectile projectileScriptPrefab;
+
     [Header("Player modifiable variables ")]
     public float desiredRotationSpeed;
     public float groundDistance = 0.4f;
@@ -167,16 +169,14 @@ public class PlayerMovement : MonoBehaviour
     {
         bowDrawEffect.SetActive(false);
         // Creating a projectile, and setting the projectile damage in this current instance
-        GameObject projectile = Instantiate(arrow, projectileSpawnPoint.transform.position, transform.rotation);
-        Projectile projectileScript = projectile.GetComponent<Projectile>();
-        projectileScript.setProjectileDamage(attackPower);
 
-        Debug.Log(projectile.GetComponent<Projectile>().getProjectileDamage());
+        Projectile projClone = Instantiate(projectileScriptPrefab, projectileSpawnPoint.transform.position, transform.rotation);
+        projClone.setProjectileDamage(attackPower);
+        attackPower = StatsScript.ProjectileBaseDamage;
 
         anim.SetTrigger("PushbackTrigger");
         playerIsShooting = false;
-        playerInAnimation = true;
-        
+        playerInAnimation = true;       
     }
 
 

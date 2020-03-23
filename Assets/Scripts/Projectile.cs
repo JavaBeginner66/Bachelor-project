@@ -24,7 +24,6 @@ public class Projectile : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.AddForce(transform.forward * projectileSpeed, ForceMode.Impulse);
         rb.useGravity = false;
-        projectileDamage = StatsScript.ProjectileBaseDamage;
     }
 
     /**

@@ -48,14 +48,13 @@ public class EnemyAI : MonoBehaviour
     {
         if (other.tag.Equals(StatsScript.ProjectileBaseDamageTag))        
             takeDamage(other);
-            
-
-        
+                  
     }
 
     public void takeDamage(Collider projectile)
     {
-        currentHealth -= projectile.gameObject.GetComponent<Projectile>().getProjectileDamage();
+        Debug.Log(projectile.gameObject.GetComponent<Projectile>().getProjectileDamage());
+        currentHealth -= projectile.GetComponent<Projectile>().getProjectileDamage();
         healthDisplay.fillAmount = currentHealth / healthPool;
     }
 
