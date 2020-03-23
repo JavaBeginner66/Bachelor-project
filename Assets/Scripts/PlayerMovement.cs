@@ -12,7 +12,8 @@ public class PlayerMovement : MonoBehaviour
 
     public GameObject arrow;
     public GameObject projectileSpawnPoint;
-    public GameObject bowDrawEffect;
+    public GameObject shootingEffect1;
+    public GameObject shootingEffect2;
 
     public Image dodgeTimerDisplay;
     public Image shootTimerDisplay;
@@ -49,7 +50,8 @@ public class PlayerMovement : MonoBehaviour
         controller = GetComponent<CharacterController>();
         anim = transform.GetComponentInChildren<Animator>();
         rollTimer = rollTimerMax;
-        bowDrawEffect.SetActive(false);
+        shootingEffect2.SetActive(false);
+        shootingEffect1.SetActive(false);
     }
 
     /* Method gets called by animation event on "Pushback" animation on  Player*/
@@ -161,13 +163,12 @@ public class PlayerMovement : MonoBehaviour
     private void playerChannelAttack()
     {
         playerIsShooting = true;
-        bowDrawEffect.SetActive(true);
-       
+        shootingEffect1.SetActive(true);
     }
 
     private void playerReleaseAttack()
     {
-        bowDrawEffect.SetActive(false);
+        shootingEffect1.SetActive(false);
         // Creating a projectile, and setting the projectile damage in this current instance
 
         Projectile projClone = Instantiate(projectileScriptPrefab, projectileSpawnPoint.transform.position, transform.rotation);
