@@ -27,7 +27,14 @@ public class PlayerMovement : MonoBehaviour
     public float rollSpeed;
     public float rollTimerMax;
     public float attackPower;
+    public float maxAttackPower;
     public float attackPowerModifier;
+    public float attackPowerModifierStage1;
+    public float attackPowerModifierStage2;
+    public float attackPowerModifierStage3;
+    public float channelStage2;
+    public float channelStage3;
+
 
     [HideInInspector] // Internal script variables
     private float inputX;
@@ -47,6 +54,7 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         attackPower = StatsScript.ProjectileBaseDamage;
+        attackPowerModifier = attackPowerModifierStage1;
         controller = GetComponent<CharacterController>();
         anim = transform.GetComponentInChildren<Animator>();
         rollTimer = rollTimerMax;
@@ -66,6 +74,20 @@ public class PlayerMovement : MonoBehaviour
         playerInAnimation = false;
     }
 
+    private void monitorChannelEffects()
+    {
+        if(attackPower <= maxAttackPower)
+            attackPower += attackPowerModifier;
+
+        if (attackPower > channelStage2)
+        {
+            shootingEffect1.SetActive(false);
+            attackPowerModifier = attackPowerModifierStage2;
+            if(!shootingEffect2.activeSelf)
+                shootingEffect2.SetActive(true);
+        }
+    }
+
     private void playerMovement()
     {
         anim.ResetTrigger("PushbackTrigger");
@@ -78,8 +100,9 @@ public class PlayerMovement : MonoBehaviour
 
         if (playerIsShooting)
         {
-            attackPower += attackPowerModifier;
-            // Handle steps
+            
+
+            monitorChannelEffects();
 
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -169,6 +192,8 @@ public class PlayerMovement : MonoBehaviour
     private void playerReleaseAttack()
     {
         shootingEffect1.SetActive(false);
+        shootingEffect2.SetActive(false);
+        attackPowerModifier = attackPowerModifierStage1;
         // Creating a projectile, and setting the projectile damage in this current instance
 
         Projectile projClone = Instantiate(projectileScriptPrefab, projectileSpawnPoint.transform.position, transform.rotation);
