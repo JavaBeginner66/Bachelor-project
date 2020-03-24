@@ -11,7 +11,7 @@ public class StatsScript : MonoBehaviour
     public static readonly string Boss1 = "Boss1";
 
     [Header("Float base stats")]
-    public static readonly float ProjectileBaseDamage = 10f;
+    public static readonly float ProjectileBaseDamage = 0f;
     public static readonly float BullethellDamage = 5f;
 
     private void Awake()
