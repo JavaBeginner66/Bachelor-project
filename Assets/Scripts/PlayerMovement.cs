@@ -18,9 +18,7 @@ public class PlayerMovement : MonoBehaviour
 
     public Image dodgeTimerDisplay;
     public Image shootTimerDisplay;
-    public Image damageMeter1;
-    public Image damageMeter2;
-    public Image damageMeter3;
+    public Image damageMeterDisplay;
 
     public Projectile projectileScriptPrefab;
 
@@ -85,13 +83,12 @@ public class PlayerMovement : MonoBehaviour
         if(attackPower <= maxAttackPower)
             attackPower += attackPowerModifier;
 
-        damageMeter1.fillAmount = attackPower / channelStage2;
+        damageMeterDisplay.fillAmount = attackPower / maxAttackPower;
 
         if (attackPower > channelStage2)
         {
             shootingEffect1.SetActive(false);
             attackPowerModifier = attackPowerModifierStage2;
-            damageMeter2.fillAmount = attackPower / channelStage3;
             if(!shootingEffect2.activeSelf)
                 shootingEffect2.SetActive(true);
         }
@@ -99,7 +96,6 @@ public class PlayerMovement : MonoBehaviour
         {
             shootingEffect2.SetActive(false);
             attackPowerModifier = attackPowerModifierStage3;
-            damageMeter3.fillAmount = attackPower / maxAttackPower;
             if (!shootingEffect3.activeSelf)
                 shootingEffect3.SetActive(true);
         }
@@ -211,9 +207,7 @@ public class PlayerMovement : MonoBehaviour
         shootingEffect1.SetActive(false);
         shootingEffect2.SetActive(false);
         shootingEffect3.SetActive(false);
-        damageMeter1.fillAmount = 0f;
-        damageMeter2.fillAmount = 0f;
-        damageMeter3.fillAmount = 0f;
+        damageMeterDisplay.fillAmount = 0f;
         attackPowerModifier = attackPowerModifierStage1;
         // Creating a projectile, and setting the projectile damage in this current instance
 
