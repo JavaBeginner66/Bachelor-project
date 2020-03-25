@@ -15,11 +15,12 @@ public class Projectile : MonoBehaviour
     [HideInInspector]
     public bool hitObject;
 
-    
+
 
     // Start is called before the first frame update
     void Start()
     {
+        
         hitObject = false;
         rb = GetComponent<Rigidbody>();
         rb.AddForce(transform.forward * projectileSpeed, ForceMode.Impulse);

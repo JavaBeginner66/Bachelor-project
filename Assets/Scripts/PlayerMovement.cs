@@ -10,7 +10,10 @@ public class PlayerMovement : MonoBehaviour
     public Transform groundCheck;
     public LayerMask groundMask;
 
-    public GameObject arrow;
+    public GameObject projectileToShoot;
+    public GameObject projectile1;
+    public GameObject projectile2;
+    public GameObject projectile3;
     public GameObject projectileSpawnPoint;
     public GameObject shootingEffect1;
     public GameObject shootingEffect2;
@@ -20,7 +23,6 @@ public class PlayerMovement : MonoBehaviour
     public Image shootTimerDisplay;
     public Image damageMeterDisplay;
 
-    public Projectile projectileScriptPrefab;
 
     [Header("Player modifiable variables ")]
     public float desiredRotationSpeed;
@@ -64,6 +66,8 @@ public class PlayerMovement : MonoBehaviour
         shootingEffect2.SetActive(false);      
         shootingEffect3.SetActive(false);
 
+        projectileToShoot = projectile1;
+
     }
 
     /* Method gets called by animation event on "Pushback" animation on  Player*/
@@ -89,6 +93,7 @@ public class PlayerMovement : MonoBehaviour
         {
             shootingEffect1.SetActive(false);
             attackPowerModifier = attackPowerModifierStage2;
+            projectileToShoot = projectile2;
             if(!shootingEffect2.activeSelf)
                 shootingEffect2.SetActive(true);
         }
@@ -96,6 +101,7 @@ public class PlayerMovement : MonoBehaviour
         {
             shootingEffect2.SetActive(false);
             attackPowerModifier = attackPowerModifierStage3;
+            projectileToShoot = projectile3;
             if (!shootingEffect3.activeSelf)
                 shootingEffect3.SetActive(true);
         }
@@ -211,10 +217,11 @@ public class PlayerMovement : MonoBehaviour
         attackPowerModifier = attackPowerModifierStage1;
         // Creating a projectile, and setting the projectile damage in this current instance
 
-        Projectile projClone = Instantiate(projectileScriptPrefab, projectileSpawnPoint.transform.position, transform.rotation);
-        projClone.setProjectileDamage(attackPower);
+        GameObject proj = Instantiate(projectileToShoot, projectileSpawnPoint.transform.position, transform.rotation);
+        Destroy(proj, 10f);
+        proj.GetComponent<Projectile>().setProjectileDamage(attackPower);
         attackPower = StatsScript.ProjectileBaseDamage;
-
+        projectileToShoot = projectile1;
         anim.SetTrigger("PushbackTrigger");
         playerIsShooting = false;
         playerInAnimation = true;       
