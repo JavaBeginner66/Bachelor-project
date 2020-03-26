@@ -14,10 +14,12 @@ public class PlayerMovement : MonoBehaviour
     public GameObject projectile1;
     public GameObject projectile2;
     public GameObject projectile3;
+    public GameObject projectile4;
     public GameObject projectileSpawnPoint;
     public GameObject shootingEffect1;
     public GameObject shootingEffect2;
     public GameObject shootingEffect3;
+    public GameObject shootingEffect4;
 
     public Image dodgeTimerDisplay;
     public Image shootTimerDisplay;
@@ -36,8 +38,10 @@ public class PlayerMovement : MonoBehaviour
     public float attackPowerModifierStage1;
     public float attackPowerModifierStage2;
     public float attackPowerModifierStage3;
+    public float attackPowerModifierStage4;
     public float channelStage2;
     public float channelStage3;
+    public float channelStage4;
 
 
     [HideInInspector] // Internal script variables
@@ -65,6 +69,7 @@ public class PlayerMovement : MonoBehaviour
         shootingEffect1.SetActive(false);
         shootingEffect2.SetActive(false);      
         shootingEffect3.SetActive(false);
+        shootingEffect4.SetActive(false);
 
         projectileToShoot = projectile1;
 
@@ -104,6 +109,14 @@ public class PlayerMovement : MonoBehaviour
             projectileToShoot = projectile3;
             if (!shootingEffect3.activeSelf)
                 shootingEffect3.SetActive(true);
+        }
+        if (attackPower > channelStage4)
+        {
+            shootingEffect3.SetActive(false);
+            attackPowerModifier = attackPowerModifierStage4;
+            projectileToShoot = projectile4;
+            if (!shootingEffect4.activeSelf)
+                shootingEffect4.SetActive(true);
         }
     }
 
@@ -213,6 +226,7 @@ public class PlayerMovement : MonoBehaviour
         shootingEffect1.SetActive(false);
         shootingEffect2.SetActive(false);
         shootingEffect3.SetActive(false);
+        shootingEffect4.SetActive(false);
         damageMeterDisplay.fillAmount = 0f;
         attackPowerModifier = attackPowerModifierStage1;
         // Creating a projectile, and setting the projectile damage in this current instance
