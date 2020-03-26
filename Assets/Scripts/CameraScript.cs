@@ -45,11 +45,9 @@ public class CameraScript : MonoBehaviour
         transform.position = Vector3.SmoothDamp(transform.position, player.position + offset, ref velocity, smoothTime);
 
         if(channelingState != playerScript.getPlayerChannelingState())
-        {
-            
-           // if (!inTransition)
-            //{
-                Debug.Log("YO");
+        {           
+            if (!inTransition)
+            {
                 inTransition = true;
                 switch (playerScript.getPlayerChannelingState())
                 {
@@ -79,15 +77,17 @@ public class CameraScript : MonoBehaviour
                         channelingState = PlayerMovement.ChannelingState.PHASE4;
                         break;
                 }
-            //}
+            }
         }   
     }
 
     IEnumerator LerpFromTo(Vector3 pos1, Vector3 pos2, float duration)
     {
+        //float distance = Vector3.Distance(pos1, pos2);
         for (float t = 0f; t < duration; t += Time.deltaTime)
         {
-            //transform.position = Vector3.Lerp(pos1, pos2, t / duration);'
+            //transform.position = Vector3.Lerp(pos1, pos2, t / duration);
+            
             offset = Vector3.Lerp(pos1, pos2, t / duration);
             yield return 0;
         }
