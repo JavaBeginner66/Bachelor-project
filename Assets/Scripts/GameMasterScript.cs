@@ -6,6 +6,8 @@ public class GameMasterScript : MonoBehaviour
 {
     public static bool gameRunning;
 
+    public GameObject player;
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.C))
@@ -13,5 +15,10 @@ public class GameMasterScript : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.V))
             gameRunning = false;
+    }
+
+    public GameObject getPlayer()
+    {
+        return player;
     }
 }

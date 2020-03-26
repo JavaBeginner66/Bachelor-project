@@ -43,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
     public float channelStage3;
     public float channelStage4;
 
+    public ChannelingState cState;
 
     [HideInInspector] // Internal script variables
     private float inputX;
@@ -57,7 +58,9 @@ public class PlayerMovement : MonoBehaviour
 
     
 
-    
+
+
+
 
     private void Start()
     {
@@ -72,7 +75,22 @@ public class PlayerMovement : MonoBehaviour
         shootingEffect4.SetActive(false);
 
         projectileToShoot = projectile1;
+        cState = ChannelingState.PHASE_ZERO;
 
+    }
+
+    public enum ChannelingState
+    {
+        PHASE_ZERO,
+        PHASE1,
+        PHASE2,
+        PHASE3,
+        PHASE4,
+    }
+
+    public ChannelingState getPlayerChannelingState()
+    {
+        return this.cState;
     }
 
     /* Method gets called by animation event on "Pushback" animation on  Player*/
@@ -93,9 +111,11 @@ public class PlayerMovement : MonoBehaviour
             attackPower += attackPowerModifier;
 
         damageMeterDisplay.fillAmount = attackPower / maxAttackPower;
+        cState = ChannelingState.PHASE1;
 
         if (attackPower > channelStage2)
         {
+            cState = ChannelingState.PHASE2;
             shootingEffect1.SetActive(false);
             attackPowerModifier = attackPowerModifierStage2;
             projectileToShoot = projectile2;
@@ -104,6 +124,7 @@ public class PlayerMovement : MonoBehaviour
         }
         if(attackPower > channelStage3)
         {
+            cState = ChannelingState.PHASE3;
             shootingEffect2.SetActive(false);
             attackPowerModifier = attackPowerModifierStage3;
             projectileToShoot = projectile3;
@@ -112,6 +133,7 @@ public class PlayerMovement : MonoBehaviour
         }
         if (attackPower > channelStage4)
         {
+            cState = ChannelingState.PHASE4;
             shootingEffect3.SetActive(false);
             attackPowerModifier = attackPowerModifierStage4;
             projectileToShoot = projectile4;
@@ -229,6 +251,7 @@ public class PlayerMovement : MonoBehaviour
         shootingEffect4.SetActive(false);
         damageMeterDisplay.fillAmount = 0f;
         attackPowerModifier = attackPowerModifierStage1;
+        cState = ChannelingState.PHASE_ZERO;
         // Creating a projectile, and setting the projectile damage in this current instance
 
         GameObject proj = Instantiate(projectileToShoot, projectileSpawnPoint.transform.position, transform.rotation);
