@@ -58,7 +58,3 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
-*.meta
-*.mat
-*.mat
-*.asset
