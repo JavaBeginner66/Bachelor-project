@@ -21,7 +21,7 @@ public class PlayerMovement : MonoBehaviour
     public GameObject shootingEffect3;
     public GameObject shootingEffect4;
 
-    public Image dodgeTimerDisplay;
+    public Image[] dashCharges;
     public Image shootTimerDisplay;
     public Image damageMeterDisplay;
 
@@ -42,6 +42,10 @@ public class PlayerMovement : MonoBehaviour
     public float channelStage2;
     public float channelStage3;
     public float channelStage4;
+
+    public int availableDashes;
+    public float dashFillTime;
+    public float maxDashFillTime;
 
     public ChannelingState cState;
 
@@ -74,18 +78,19 @@ public class PlayerMovement : MonoBehaviour
         shootingEffect3.SetActive(false);
         shootingEffect4.SetActive(false);
 
+
         projectileToShoot = projectile1;
         cState = ChannelingState.PHASE_ZERO;
-
+        availableDashes = 1;
     }
 
     public enum ChannelingState
     {
-        PHASE_ZERO,
-        PHASE1,
-        PHASE2,
-        PHASE3,
-        PHASE4,
+        PHASE_ZERO = 0,
+        PHASE1 = 1,
+        PHASE2 = 2,
+        PHASE3 = 3,
+        PHASE4 = 4,
     }
 
     public ChannelingState getPlayerChannelingState()
@@ -202,30 +207,29 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (playerIsShooting)
                 {
-                    playerReleaseAttack();                  
+                    playerReleaseAttack();
+                    for (int i = 0; i < dashCharges.Length; i++)
+                    {
+                        dashCharges[i].fillAmount = 0f;
+                    }
                 }                            
             }
         }
 
         if (moveDirection != Vector3.zero)
         {
-            if (Input.GetKeyDown(KeyCode.LeftShift) && !rollCooldown) 
+            if (Input.GetKeyDown(KeyCode.LeftShift) && !rollCooldown && availableDashes >= 1 && dashCharges[0].fillAmount == 1) 
             {
-                //playerIsShooting = false;               
+                //playerIsShooting = false;    
+                dashCharges[availableDashes-1].fillAmount = 0f;
+                availableDashes--;
                 RollMode();
             }
         }
 
         if (rollCooldown)
         {
-            rollTimer -= Time.deltaTime;
-            dodgeTimerDisplay.fillAmount = rollTimer/1.1f;
-            if (rollTimer <= 0)
-            {
-                rollTimer = rollTimerMax;
-                dodgeTimerDisplay.fillAmount = 100;
-                rollCooldown = false;
-            }
+            manageDash();
         }
 
         if (rollAnimationActive)
@@ -235,6 +239,29 @@ public class PlayerMovement : MonoBehaviour
         
 
         anim.SetBool("Shoot", playerIsShooting);
+
+        dashFillTime += Time.deltaTime;
+        if ((int)cState + 1 > availableDashes)
+        {
+            if (dashFillTime >= maxDashFillTime)
+            {
+                dashCharges[0].fillAmount = 1;
+                availableDashes++;
+                dashFillTime = 0;
+            }
+        }
+        if(availableDashes >= 1)
+            dashCharges[availableDashes-1].fillAmount = dashFillTime / maxDashFillTime;
+    }
+
+    private void manageDash()
+    {     
+        rollTimer -= Time.deltaTime;
+        if (rollTimer <= 0)
+        {
+            rollTimer = rollTimerMax;
+            rollCooldown = false;
+        }
     }
 
     private void playerChannelAttack()
@@ -250,6 +277,8 @@ public class PlayerMovement : MonoBehaviour
         shootingEffect3.SetActive(false);
         shootingEffect4.SetActive(false);
         damageMeterDisplay.fillAmount = 0f;
+        availableDashes = 0;
+        dashFillTime = maxDashFillTime;
         attackPowerModifier = attackPowerModifierStage1;
         cState = ChannelingState.PHASE_ZERO;
         // Creating a projectile, and setting the projectile damage in this current instance
