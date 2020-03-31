@@ -30,8 +30,6 @@ public class PlayerMovement : MonoBehaviour
     public float desiredRotationSpeed;
     public float groundDistance = 0.4f;
     public float normalSpeed;
-    public float rollSpeed;
-    public float rollTimerMax;
     public float attackPower;
     public float maxAttackPower;
     public float attackPowerModifier;
@@ -46,33 +44,28 @@ public class PlayerMovement : MonoBehaviour
     public int availableDashes;
     public float dashFillTime;
     public float maxDashFillTime;
+    public float teleportDistance;
 
     public ChannelingState cState;
 
-    [HideInInspector] // Internal script variables
+    //[HideInInspector] // Internal script variables
     private float inputX;
     private float inputZ;    
     private float animationSpeedMagnitude;
     private float playerSpeed;
-    private bool playerIsShooting;
-    private bool playerInAnimation;
-    private float rollTimer;
-    private bool rollCooldown;
-    private bool rollAnimationActive;
-
-    
-
-
-
+    public bool playerIsShooting;
+    public bool playerInTeleport;
+    public float teleportTimer;
+    public float teleportTimerMax;
 
 
     private void Start()
     {
         attackPower = StatsScript.ProjectileBaseDamage;
+        playerSpeed = normalSpeed;
         attackPowerModifier = attackPowerModifierStage1;
         controller = GetComponent<CharacterController>();
         anim = transform.GetComponentInChildren<Animator>();
-        rollTimer = rollTimerMax;
         shootingEffect1.SetActive(false);
         shootingEffect2.SetActive(false);      
         shootingEffect3.SetActive(false);
@@ -96,18 +89,6 @@ public class PlayerMovement : MonoBehaviour
     public ChannelingState getPlayerChannelingState()
     {
         return this.cState;
-    }
-
-    /* Method gets called by animation event on "Pushback" animation on  Player*/
-    public void shootingModeExit()
-    {
-        playerInAnimation = false;
-    }
-    // Method gets called by animation event on "Roll", and is used to notify that roll animation is over
-    public void rollModeExit()
-    {
-        rollAnimationActive = false;
-        playerInAnimation = false;
     }
 
     private void monitorChannelEffects()
@@ -149,7 +130,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void playerMovement()
     {
-        anim.ResetTrigger("PushbackTrigger");
 
         inputX = Input.GetAxisRaw("Horizontal");
         inputZ = Input.GetAxisRaw("Vertical");
@@ -158,9 +138,7 @@ public class PlayerMovement : MonoBehaviour
         moveDirection = moveDirection.normalized;
 
         if (playerIsShooting)
-        {
-            
-
+        {           
             monitorChannelEffects();
 
             RaycastHit hit;
@@ -169,19 +147,14 @@ public class PlayerMovement : MonoBehaviour
             float xVel = transform.InverseTransformDirection(moveDirection).x;
             anim.SetFloat("zVel", zVel, .1f, Time.deltaTime);
             anim.SetFloat("xVel", xVel, .1f, Time.deltaTime);
-            if (!rollAnimationActive)
+      
+            if (Physics.Raycast(ray, out hit, 100))
             {
-                if (Physics.Raycast(ray, out hit, 100))
-                {
-                    transform.LookAt(new Vector3(hit.point.x, transform.position.y, hit.point.z));
-                }
-                controller.Move(moveDirection * playerSpeed / 3 * Time.deltaTime);
+                transform.LookAt(new Vector3(hit.point.x, transform.position.y, hit.point.z));
             }
-            else
-            {
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), desiredRotationSpeed);
-                controller.Move(moveDirection * playerSpeed * Time.deltaTime);
-            }
+            controller.Move(moveDirection * playerSpeed / 3 * Time.deltaTime);
+            
+
         }
         else if (moveDirection != Vector3.zero)
         {           
@@ -197,7 +170,7 @@ public class PlayerMovement : MonoBehaviour
         anim.SetFloat("InputX", inputX);
         anim.SetFloat("InputZ", inputX);
         
-        if (!playerInAnimation && !rollCooldown) 
+        if (!playerInTeleport) 
         {
             if (Input.GetMouseButtonDown(1))
             {
@@ -207,35 +180,26 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (playerIsShooting)
                 {
-                    playerReleaseAttack();
-                    for (int i = 0; i < dashCharges.Length; i++)
-                    {
-                        dashCharges[i].fillAmount = 0f;
-                    }
+                    playerReleaseAttack();                   
                 }                            
             }
         }
 
-        if (moveDirection != Vector3.zero)
-        {
-            if (Input.GetKeyDown(KeyCode.LeftShift) && !rollCooldown && availableDashes >= 1 && dashCharges[0].fillAmount == 1) 
+  
+        if (Input.GetKeyDown(KeyCode.LeftShift) && !playerInTeleport && availableDashes >= 1 && dashCharges[0].fillAmount == 1) 
+        { 
+            dashCharges[availableDashes-1].fillAmount = 0f;
+            availableDashes--;
+            TeleportMode();
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit, 100))
             {
-                //playerIsShooting = false;    
-                dashCharges[availableDashes-1].fillAmount = 0f;
-                availableDashes--;
-                RollMode();
+                controller.enabled = false;
+                transform.position = new Vector3(hit.point.x, transform.position.y, hit.point.z);
+                controller.enabled = true;
             }
         }
-
-        if (rollCooldown)
-        {
-            manageDash();
-        }
-
-        if (rollAnimationActive)
-            playerSpeed = rollSpeed;
-        else
-            playerSpeed = normalSpeed;
         
 
         anim.SetBool("Shoot", playerIsShooting);
@@ -252,15 +216,15 @@ public class PlayerMovement : MonoBehaviour
         }
         if(availableDashes >= 1)
             dashCharges[availableDashes-1].fillAmount = dashFillTime / maxDashFillTime;
-    }
 
-    private void manageDash()
-    {     
-        rollTimer -= Time.deltaTime;
-        if (rollTimer <= 0)
+        if (playerInTeleport)
         {
-            rollTimer = rollTimerMax;
-            rollCooldown = false;
+            teleportTimer -= Time.deltaTime;
+            if (teleportTimer <= 0)
+            {
+                teleportTimer = teleportTimerMax;
+                playerInTeleport = false;
+            }
         }
     }
 
@@ -272,6 +236,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void playerReleaseAttack()
     {
+        // Reset dash displays
+        for (int i = 0; i < dashCharges.Length; i++)
+        {
+            dashCharges[i].fillAmount = 0f;
+        }
+        // Reset everything to default or start value
         shootingEffect1.SetActive(false);
         shootingEffect2.SetActive(false);
         shootingEffect3.SetActive(false);
@@ -281,24 +251,22 @@ public class PlayerMovement : MonoBehaviour
         dashFillTime = maxDashFillTime;
         attackPowerModifier = attackPowerModifierStage1;
         cState = ChannelingState.PHASE_ZERO;
-        // Creating a projectile, and setting the projectile damage in this current instance
 
+        // Creating a projectile, and setting the projectile damage in this current instance
         GameObject proj = Instantiate(projectileToShoot, projectileSpawnPoint.transform.position, transform.rotation);
         Destroy(proj, 10f);
         proj.GetComponent<Projectile>().setProjectileDamage(attackPower);
         attackPower = StatsScript.ProjectileBaseDamage;
         projectileToShoot = projectile1;
-        anim.SetTrigger("PushbackTrigger");
-        playerIsShooting = false;
-        playerInAnimation = true;       
+
+        // Exit shooting mode
+        playerIsShooting = false;    
     }
 
 
-    private void RollMode()
+    private void TeleportMode()
     {
-        anim.SetTrigger("Roll");
-        rollCooldown = true;
-        rollAnimationActive = true;
+        playerInTeleport = true;
     }
 
     private void Update()
