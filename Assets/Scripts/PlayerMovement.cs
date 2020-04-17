@@ -45,6 +45,8 @@ public class PlayerMovement : MonoBehaviour
     public float dashFillTime;
     public float maxDashFillTime;
     public float teleportDistance;
+    public float attackCooldown;
+    public float attackCooldownMax;
 
     public ChannelingState cState;
 
@@ -75,6 +77,7 @@ public class PlayerMovement : MonoBehaviour
         projectileToShoot = projectile1;
         cState = ChannelingState.PHASE_ZERO;
         availableDashes = 1;
+        attackCooldown = attackCooldownMax;
     }
 
     public enum ChannelingState
@@ -193,7 +196,7 @@ public class PlayerMovement : MonoBehaviour
             TeleportMode();
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit, 100))
+            if (Physics.Raycast(ray, out hit, 100f))
             {
                 controller.enabled = false;
                 transform.position = new Vector3(hit.point.x, transform.position.y, hit.point.z);

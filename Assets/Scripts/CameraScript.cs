@@ -49,34 +49,22 @@ public class CameraScript : MonoBehaviour
             if (!inTransition)
             {
                 inTransition = true;
-                switch (playerScript.getPlayerChannelingState())
+                if(playerScript.getPlayerChannelingState() >= PlayerMovement.ChannelingState.PHASE1)
                 {
-                    case PlayerMovement.ChannelingState.PHASE_ZERO:
-                        StartCoroutine(LerpFromTo(offset,
-                            new Vector3(0, positionPhase0.x, positionPhase0.y), transitionDuration));
-                        channelingState = PlayerMovement.ChannelingState.PHASE_ZERO;
-                        break;
-                    case PlayerMovement.ChannelingState.PHASE1:
-                        StartCoroutine(LerpFromTo(offset,
-                            new Vector3(0, positionPhase1.x, positionPhase1.y), transitionDuration));
-                        channelingState = PlayerMovement.ChannelingState.PHASE1;
-                        break;
-                    case PlayerMovement.ChannelingState.PHASE2:
-                        StartCoroutine(LerpFromTo(offset,
-                            new Vector3(0, positionPhase2.x, positionPhase2.y), transitionDuration));
-                        channelingState = PlayerMovement.ChannelingState.PHASE2;
-                        break;
-                    case PlayerMovement.ChannelingState.PHASE3:
-                        StartCoroutine(LerpFromTo(offset,
-                            new Vector3(0, positionPhase3.x, positionPhase3.y), transitionDuration));
-                        channelingState = PlayerMovement.ChannelingState.PHASE3;
-                        break;
-                    case PlayerMovement.ChannelingState.PHASE4:
-                        StartCoroutine(LerpFromTo(offset,
-                            new Vector3(0, positionPhase4.x, positionPhase4.y), transitionDuration));
-                        channelingState = PlayerMovement.ChannelingState.PHASE4;
-                        break;
+                    StartCoroutine(LerpFromTo(offset,
+                            new Vector3(0, positionPhase4.x, positionPhase4.y), 
+                            transitionDuration
+                            ));
+                    channelingState = PlayerMovement.ChannelingState.PHASE1;
                 }
+                else
+                {                   
+                    StartCoroutine(LerpFromTo(offset,
+                            new Vector3(0, positionPhase1.x, positionPhase1.y),
+                            transitionDuration
+                            ));
+                    channelingState = PlayerMovement.ChannelingState.PHASE_ZERO;
+                }              
             }
         }   
     }
@@ -91,6 +79,7 @@ public class CameraScript : MonoBehaviour
             offset = Vector3.Lerp(pos1, pos2, t / duration);
             yield return 0;
         }
+        Debug.Log("IEnum");
         //transform.position = pos2;
         offset = pos2;
         inTransition = false;
