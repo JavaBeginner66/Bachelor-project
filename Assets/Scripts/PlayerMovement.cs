@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -29,7 +30,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Player modifiable variables ")]
     public float desiredRotationSpeed;
     public float groundDistance = 0.4f;
-    public float normalSpeed;
+    public float runningSpeed;
+    public float ChannelStateSpeed;
     public float attackPower;
     public float maxAttackPower;
     public float attackPowerModifier;
@@ -59,12 +61,14 @@ public class PlayerMovement : MonoBehaviour
     public bool playerInTeleport;
     public float teleportTimer;
     public float teleportTimerMax;
+    public float teleportLagDuration;
+    public float teleportLagMaxDuration;
 
 
     private void Start()
     {
         attackPower = StatsScript.ProjectileBaseDamage;
-        playerSpeed = normalSpeed;
+        playerSpeed = runningSpeed;
         attackPowerModifier = attackPowerModifierStage1;
         controller = GetComponent<CharacterController>();
         anim = transform.GetComponentInChildren<Animator>();
@@ -78,6 +82,7 @@ public class PlayerMovement : MonoBehaviour
         cState = ChannelingState.PHASE_ZERO;
         availableDashes = 1;
         attackCooldown = attackCooldownMax;
+        teleportLagDuration = teleportLagMaxDuration;
     }
 
     public enum ChannelingState
@@ -140,41 +145,45 @@ public class PlayerMovement : MonoBehaviour
         Vector3 moveDirection = new Vector3(inputX, 0f, inputZ);
         moveDirection = moveDirection.normalized;
 
-        if (playerIsShooting)
-        {           
-            monitorChannelEffects();
-
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            float zVel = transform.InverseTransformDirection(moveDirection).z;
-            float xVel = transform.InverseTransformDirection(moveDirection).x;
-            anim.SetFloat("zVel", zVel, .1f, Time.deltaTime);
-            anim.SetFloat("xVel", xVel, .1f, Time.deltaTime);
-      
-            if (Physics.Raycast(ray, out hit, 100))
-            {
-                transform.LookAt(new Vector3(hit.point.x, transform.position.y, hit.point.z));
-            }
-            controller.Move(moveDirection * playerSpeed / 3 * Time.deltaTime);
-            
-
-        }
-        else if (moveDirection != Vector3.zero)
-        {           
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), desiredRotationSpeed);
-            controller.Move(moveDirection * playerSpeed * Time.deltaTime);
-        }
-        
-
-
-        // Calculate input magnitude
-        animationSpeedMagnitude = new Vector2(inputX, inputZ).sqrMagnitude;
-        anim.SetFloat("Blend", animationSpeedMagnitude, 0f, Time.deltaTime);
-        anim.SetFloat("InputX", inputX);
-        anim.SetFloat("InputZ", inputX);
-        
-        if (!playerInTeleport) 
+        // Stops player movement if in teleport
+        if (!playerInTeleport)
         {
+            if (playerIsShooting)
+            {
+                monitorChannelEffects();
+
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                float zVel = transform.InverseTransformDirection(moveDirection).z;
+                float xVel = transform.InverseTransformDirection(moveDirection).x;
+                anim.SetFloat("zVel", zVel, .1f, Time.deltaTime);
+                anim.SetFloat("xVel", xVel, .1f, Time.deltaTime);
+
+                if (Physics.Raycast(ray, out hit, 100))
+                {
+                    transform.LookAt(new Vector3(hit.point.x, transform.position.y, hit.point.z));
+                }
+                controller.Move(moveDirection * ChannelStateSpeed * Time.deltaTime);
+
+
+            }
+            else if (moveDirection != Vector3.zero)
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), desiredRotationSpeed);
+                controller.Move(moveDirection * playerSpeed * Time.deltaTime);
+            }
+
+
+
+
+            // Calculate input magnitude
+            animationSpeedMagnitude = new Vector2(inputX, inputZ).sqrMagnitude;
+            anim.SetFloat("Blend", animationSpeedMagnitude, 0f, Time.deltaTime);
+            anim.SetFloat("InputX", inputX);
+            anim.SetFloat("InputZ", inputX);
+      
+        
+
             if (Input.GetMouseButtonDown(1))
             {
                 playerChannelAttack();              
@@ -185,25 +194,36 @@ public class PlayerMovement : MonoBehaviour
                 {
                     playerReleaseAttack();                   
                 }                            
+            }        
+        }
+
+        if (playerIsShooting)
+        {
+            if (Input.GetKeyDown(KeyCode.LeftShift) && !playerInTeleport && availableDashes >= 1 && dashCharges[0].fillAmount == 1)
+            {
+                dashCharges[availableDashes - 1].fillAmount = 0f;
+                availableDashes--;
+                TeleportMode();
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out hit, 100f))
+                {
+                    StartCoroutine(TeleportLag(new Vector3(hit.point.x, transform.position.y, hit.point.z), teleportLagDuration));
+                }
             }
         }
 
-  
-        if (Input.GetKeyDown(KeyCode.LeftShift) && !playerInTeleport && availableDashes >= 1 && dashCharges[0].fillAmount == 1) 
-        { 
-            dashCharges[availableDashes-1].fillAmount = 0f;
-            availableDashes--;
-            TeleportMode();
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit, 100f))
-            {
-                controller.enabled = false;
-                transform.position = new Vector3(hit.point.x, transform.position.y, hit.point.z);
-                controller.enabled = true;
-            }
+        IEnumerator TeleportLag(Vector3 newPos, float lagDuration)
+        {
+            
+            yield return new WaitForSeconds(lagDuration);
+
+            controller.enabled = false;
+            transform.position = newPos;
+            controller.enabled = true;
         }
-        
+
+
 
         anim.SetBool("Shoot", playerIsShooting);
 
@@ -222,6 +242,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (playerInTeleport)
         {
+            Debug.Log("Hello");
             teleportTimer -= Time.deltaTime;
             if (teleportTimer <= 0)
             {

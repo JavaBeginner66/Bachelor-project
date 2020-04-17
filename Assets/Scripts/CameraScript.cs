@@ -17,6 +17,7 @@ public class CameraScript : MonoBehaviour
     public Vector2 positionPhase2;
     public Vector2 positionPhase3;
     public Vector2 positionPhase4;
+    public Vector2 positionPhase5;
     public Vector2 currentPosition;
 
     public float transitionDuration;
@@ -37,6 +38,10 @@ public class CameraScript : MonoBehaviour
         playerScript = player.GetComponent<PlayerMovement>();
         //offset = transform.position - player.transform.position;
         channelingState = playerScript.getPlayerChannelingState();
+        StartCoroutine(LerpFromTo(offset,
+                            new Vector3(0, positionPhase1.x, positionPhase1.y),
+                            transitionDuration
+                            ));
     }
 
     // Update is called once per frame
@@ -52,7 +57,7 @@ public class CameraScript : MonoBehaviour
                 if(playerScript.getPlayerChannelingState() >= PlayerMovement.ChannelingState.PHASE1)
                 {
                     StartCoroutine(LerpFromTo(offset,
-                            new Vector3(0, positionPhase4.x, positionPhase4.y), 
+                            new Vector3(0, positionPhase5.x, positionPhase5.y), 
                             transitionDuration
                             ));
                     channelingState = PlayerMovement.ChannelingState.PHASE1;
@@ -79,7 +84,6 @@ public class CameraScript : MonoBehaviour
             offset = Vector3.Lerp(pos1, pos2, t / duration);
             yield return 0;
         }
-        Debug.Log("IEnum");
         //transform.position = pos2;
         offset = pos2;
         inTransition = false;
