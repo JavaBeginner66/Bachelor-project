@@ -21,8 +21,11 @@ public class PlayerMovement : MonoBehaviour
     public GameObject shootingEffect2;
     public GameObject shootingEffect3;
     public GameObject shootingEffect4;
+    public GameObject teleportStartEffect;
+    public GameObject teleportEndEffect;
 
     public Image[] dashCharges;
+    public Image[] shieldCharges;
     public Image shootTimerDisplay;
     public Image damageMeterDisplay;
 
@@ -44,8 +47,11 @@ public class PlayerMovement : MonoBehaviour
     public float channelStage4;
 
     public int availableDashes;
+    public int availableShields;
     public float dashFillTime;
     public float maxDashFillTime;
+    public float shieldFillTime;
+    public float maxShieldFillTime;
     public float teleportDistance;
     public float attackCooldown;
     public float attackCooldownMax;
@@ -76,11 +82,13 @@ public class PlayerMovement : MonoBehaviour
         shootingEffect2.SetActive(false);      
         shootingEffect3.SetActive(false);
         shootingEffect4.SetActive(false);
-
+        teleportStartEffect.SetActive(false);
+        teleportEndEffect.SetActive(false);
 
         projectileToShoot = projectile1;
         cState = ChannelingState.PHASE_ZERO;
         availableDashes = 1;
+        availableShields = 1;
         attackCooldown = attackCooldownMax;
         teleportLagDuration = teleportLagMaxDuration;
     }
@@ -215,12 +223,14 @@ public class PlayerMovement : MonoBehaviour
 
         IEnumerator TeleportLag(Vector3 newPos, float lagDuration)
         {
-            
+            teleportEndEffect.SetActive(false);
+            teleportStartEffect.SetActive(true);
             yield return new WaitForSeconds(lagDuration);
-
+            teleportStartEffect.SetActive(false);
             controller.enabled = false;
             transform.position = newPos;
             controller.enabled = true;
+            teleportEndEffect.SetActive(true);
         }
 
 
@@ -237,12 +247,27 @@ public class PlayerMovement : MonoBehaviour
                 dashFillTime = 0;
             }
         }
+
+            if (!playerIsShooting)
+            {
+                shieldFillTime += Time.deltaTime;
+
+                if (shieldFillTime >= maxShieldFillTime)
+                {
+                    shieldCharges[0].fillAmount = 1;
+                    availableShields++;
+                    shieldFillTime = 0;
+                }
+                if (availableShields <= 5)
+                    shieldCharges[availableShields-1].fillAmount = shieldFillTime / maxShieldFillTime;
+            }
+
+
         if(availableDashes >= 1)
             dashCharges[availableDashes-1].fillAmount = dashFillTime / maxDashFillTime;
 
         if (playerInTeleport)
         {
-            Debug.Log("Hello");
             teleportTimer -= Time.deltaTime;
             if (teleportTimer <= 0)
             {
@@ -256,6 +281,18 @@ public class PlayerMovement : MonoBehaviour
     {
         playerIsShooting = true;
         shootingEffect1.SetActive(true);
+        // Remove the current charging shield charge
+        if (availableShields <= 4)
+        {
+            shieldCharges[availableShields - 1].fillAmount = 0f;
+            shieldFillTime = 0f;
+        }
+    }
+
+    public void playerShieldDamage()
+    {
+        shieldCharges[availableShields - 1].fillAmount = 0f;
+        availableShields--;      
     }
 
     private void playerReleaseAttack()
@@ -289,7 +326,7 @@ public class PlayerMovement : MonoBehaviour
 
 
     private void TeleportMode()
-    {
+    {      
         playerInTeleport = true;
     }
 

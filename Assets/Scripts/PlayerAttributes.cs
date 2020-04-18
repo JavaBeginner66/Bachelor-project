@@ -5,14 +5,11 @@ using UnityEngine.UI;
 
 public class PlayerAttributes : MonoBehaviour
 {
-    public float maxHealth;
-    public float currentHealth;
-
-    public Image healthDisplay;
+    public PlayerMovement playerMovement;
 
     private void Start()
     {
-        currentHealth = maxHealth;
+        playerMovement = GetComponent<PlayerMovement>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -23,7 +20,6 @@ public class PlayerAttributes : MonoBehaviour
 
     private void takeDamage(float damage)
     {
-        currentHealth -= damage;
-        healthDisplay.fillAmount = currentHealth / maxHealth;
+        playerMovement.playerShieldDamage();
     }
 }

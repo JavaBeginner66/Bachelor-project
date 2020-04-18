@@ -15252,7 +15252,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 534669902}
   m_LocalRotation: {x: 0.4677445, y: -0, z: -0, w: 0.88386375}
-  m_LocalPosition: {x: 0, y: 13.88, z: -14.9}
+  m_LocalPosition: {x: 0, y: 21, z: -19.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -15279,6 +15279,7 @@ MonoBehaviour:
   positionPhase2: {x: 15, y: -9.85}
   positionPhase3: {x: 18, y: -12.47}
   positionPhase4: {x: 21, y: -14.05}
+  positionPhase5: {x: 24, y: -16.5}
   currentPosition: {x: 0, y: 0}
   transitionDuration: 0.5
   inTransition: 0
@@ -30777,6 +30778,34 @@ PrefabInstance:
       propertyPath: m_Name
       value: MainCharacter 1
       objectReference: {fileID: 0}
+    - target: {fileID: 400014, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.035856746
+      objectReference: {fileID: 0}
+    - target: {fileID: 400014, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.0017975997
+      objectReference: {fileID: 0}
+    - target: {fileID: 400014, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.05003899
+      objectReference: {fileID: 0}
+    - target: {fileID: 400014, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9981018
+      objectReference: {fileID: 0}
+    - target: {fileID: 400014, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.000000037252903
+      objectReference: {fileID: 0}
+    - target: {fileID: 400014, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.27601197
+      objectReference: {fileID: 0}
+    - target: {fileID: 400014, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.0000000045401976
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
       propertyPath: m_LocalRotation.x
       value: -0.7069847
@@ -30888,34 +30917,6 @@ PrefabInstance:
     - target: {fileID: 400012, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0.000000022351742
-      objectReference: {fileID: 0}
-    - target: {fileID: 400014, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.035856746
-      objectReference: {fileID: 0}
-    - target: {fileID: 400014, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.0017975997
-      objectReference: {fileID: 0}
-    - target: {fileID: 400014, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.05003899
-      objectReference: {fileID: 0}
-    - target: {fileID: 400014, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9981018
-      objectReference: {fileID: 0}
-    - target: {fileID: 400014, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.000000037252903
-      objectReference: {fileID: 0}
-    - target: {fileID: 400014, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.27601197
-      objectReference: {fileID: 0}
-    - target: {fileID: 400014, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.0000000045401976
       objectReference: {fileID: 0}
     - target: {fileID: 400016, guid: 8f6fb3b484c6bdb46aace01cb4d1176d, type: 3}
       propertyPath: m_LocalRotation.x
@@ -31834,7 +31835,8 @@ MonoBehaviour:
   damageMeterDisplay: {fileID: 1192365576}
   desiredRotationSpeed: 0.2
   groundDistance: 0.4
-  normalSpeed: 5
+  runningSpeed: 12
+  ChannelStateSpeed: 2
   attackPower: 0
   maxAttackPower: 3000
   attackPowerModifier: 0
@@ -31849,11 +31851,15 @@ MonoBehaviour:
   dashFillTime: 0
   maxDashFillTime: 2
   teleportDistance: 10
+  attackCooldown: 0
+  attackCooldownMax: 0
   cState: 0
   playerIsShooting: 0
   playerInTeleport: 0
   teleportTimer: 0
-  teleportTimerMax: 0.3
+  teleportTimerMax: 0.4
+  teleportLagDuration: 0
+  teleportLagMaxDuration: 0.2
 --- !u!95 &1378917491
 Animator:
   serializedVersion: 3
