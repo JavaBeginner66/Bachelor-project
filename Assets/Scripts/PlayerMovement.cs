@@ -29,6 +29,8 @@ public class PlayerMovement : MonoBehaviour
     public Image shootTimerDisplay;
     public Image damageMeterDisplay;
 
+    public GameObject[] visualShieldCount;
+
 
     [Header("Player modifiable variables ")]
     public float desiredRotationSpeed;
@@ -69,6 +71,7 @@ public class PlayerMovement : MonoBehaviour
     public float teleportTimerMax;
     public float teleportLagDuration;
     public float teleportLagMaxDuration;
+    public float maxShieldAmount;
 
 
     private void Start()
@@ -88,9 +91,11 @@ public class PlayerMovement : MonoBehaviour
         projectileToShoot = projectile1;
         cState = ChannelingState.PHASE_ZERO;
         availableDashes = 1;
-        availableShields = 1;
+        availableShields = 0;
         attackCooldown = attackCooldownMax;
         teleportLagDuration = teleportLagMaxDuration;
+        maxShieldAmount = 3;
+
     }
 
     public enum ChannelingState
@@ -146,6 +151,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void playerMovement()
     {
+        Debug.Log(availableShields);
+
+        if (Input.GetKeyDown(KeyCode.A))
+            playerShieldDamage();
 
         inputX = Input.GetAxisRaw("Horizontal");
         inputZ = Input.GetAxisRaw("Vertical");
@@ -247,19 +256,22 @@ public class PlayerMovement : MonoBehaviour
                 dashFillTime = 0;
             }
         }
-
+            // Manage shield charges if player is isnt charging shot
             if (!playerIsShooting)
             {
-                shieldFillTime += Time.deltaTime;
+                if(!(availableShields >= maxShieldAmount+1))
+                    shieldFillTime += Time.deltaTime;
 
                 if (shieldFillTime >= maxShieldFillTime)
                 {
-                    shieldCharges[0].fillAmount = 1;
-                    availableShields++;
+                    shieldCharges[0].fillAmount = 1;                   
                     shieldFillTime = 0;
+                    if(availableShields <= maxShieldAmount)
+                        availableShields++;
                 }
-                if (availableShields <= 5)
-                    shieldCharges[availableShields-1].fillAmount = shieldFillTime / maxShieldFillTime;
+                if (availableShields <= maxShieldAmount)
+                    shieldCharges[availableShields].fillAmount = shieldFillTime / maxShieldFillTime;
+            
             }
 
 
@@ -282,17 +294,21 @@ public class PlayerMovement : MonoBehaviour
         playerIsShooting = true;
         shootingEffect1.SetActive(true);
         // Remove the current charging shield charge
-        if (availableShields <= 4)
+        if (availableShields <= maxShieldAmount)
         {
-            shieldCharges[availableShields - 1].fillAmount = 0f;
+            shieldCharges[availableShields].fillAmount = 0f;
             shieldFillTime = 0f;
         }
     }
 
     public void playerShieldDamage()
-    {
-        shieldCharges[availableShields - 1].fillAmount = 0f;
-        availableShields--;      
+    {   
+        if(availableShields >= maxShieldAmount+1)
+            shieldCharges[availableShields-1].fillAmount = 0f;
+        else
+            shieldCharges[availableShields].fillAmount = 0f;
+
+        availableShields--; 
     }
 
     private void playerReleaseAttack()
