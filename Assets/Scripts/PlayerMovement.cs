@@ -29,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
     public Image shootTimerDisplay;
     public Image damageMeterDisplay;
 
-    public GameObject[] visualShieldCount;
+    public GameObject[] visualShieldCharges;
 
 
     [Header("Player modifiable variables ")]
@@ -256,23 +256,26 @@ public class PlayerMovement : MonoBehaviour
                 dashFillTime = 0;
             }
         }
-            // Manage shield charges if player is isnt charging shot
-            if (!playerIsShooting)
-            {
-                if(!(availableShields >= maxShieldAmount+1))
-                    shieldFillTime += Time.deltaTime;
+        // Manage shield charges if player is isnt charging shot
+        if (!playerIsShooting)
+        {
+            if(!(availableShields >= maxShieldAmount+1))
+                shieldFillTime += Time.deltaTime;
 
-                if (shieldFillTime >= maxShieldFillTime)
-                {
-                    shieldCharges[0].fillAmount = 1;                   
-                    shieldFillTime = 0;
-                    if(availableShields <= maxShieldAmount)
-                        availableShields++;
-                }
+            if (shieldFillTime >= maxShieldFillTime)
+            {
+                shieldCharges[0].fillAmount = 1;                   
+                shieldFillTime = 0;
                 if (availableShields <= maxShieldAmount)
-                    shieldCharges[availableShields].fillAmount = shieldFillTime / maxShieldFillTime;
-            
+                {
+                    availableShields++;
+                    calculateShields();                                 
+                }
             }
+            if (availableShields <= maxShieldAmount)
+                shieldCharges[availableShields].fillAmount = shieldFillTime / maxShieldFillTime;
+            
+        }
 
 
         if(availableDashes >= 1)
@@ -301,6 +304,18 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void calculateShields()
+    {
+        for (int i = 0; i < visualShieldCharges.Length; i++)
+        {
+            visualShieldCharges[i].SetActive(false);
+        }
+        for (int i = 0; i < availableShields; i++)
+        {
+            visualShieldCharges[i].SetActive(true);
+        }
+    }
+
     public void playerShieldDamage()
     {   
         if(availableShields >= maxShieldAmount+1)
@@ -308,7 +323,9 @@ public class PlayerMovement : MonoBehaviour
         else
             shieldCharges[availableShields].fillAmount = 0f;
 
-        availableShields--; 
+        
+        availableShields--;
+        calculateShields();
     }
 
     private void playerReleaseAttack()
