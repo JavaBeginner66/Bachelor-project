@@ -9,6 +9,9 @@ TagManager:
   - BulletHellObject
   - PlayerArrow
   - Boss1
+  - Test
+  - TargetCircle
+  - QuarterCircle
   layers:
   - Default
   - TransparentFX

@@ -143,7 +143,7 @@ public class EnemyAI : MonoBehaviour
     {
         agent.speed = 0f;
         Vector3 nextPos = waypoints[Random.Range(0, waypoints.Length)].transform.position;
-        for (int i = 0; i<10; i++)
+        for (int i = 0; i<1; i++)
         {
             
             transform.position = nextPos;
@@ -154,11 +154,34 @@ public class EnemyAI : MonoBehaviour
             nextPos = waypoints[Random.Range(0, waypoints.Length)].transform.position;
             // Bør pooles
             Destroy(Instantiate(portalEffect, new Vector3(nextPos.x, nextPos.y + .5f, nextPos.z), Quaternion.identity), 10f);
-            StartCoroutine(TargetCircle());
+            
             yield return new WaitForSeconds(teleportTimer*3);
         }
-      
-        StartCoroutine(RotatingCircleEnum());
+        StartCoroutine(QuarterCircleZone());
+        //StartCoroutine(RotatingCircleEnum());
+    }
+
+    IEnumerator QuarterCircleZone()
+    {       
+        for (int i = 0; i < 6; i++)
+        {
+            GameObject quarterCircleZone = Instantiate(groundQuarterStatic);
+            Transform collider = quarterCircleZone.transform.Find("Collider").transform;
+            Destroy(quarterCircleZone, 5f);
+            /*
+            RectTransform zoneCanvas = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas").GetComponent<RectTransform>();
+            zoneCanvas.rotation = Quaternion.Euler(90f, i*90, zoneCanvas.rotation.z);
+            */
+            quarterCircleZone.transform.rotation = Quaternion.Euler(0f, i * 90, 0f);
+            Image fillArea = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
+            for (float j = 0; j < 1.01f; j+= .01f)
+            {
+                fillArea.fillAmount = j;
+                yield return new WaitForSeconds(.01f);
+            }
+            collider.gameObject.SetActive(true);
+            yield return new WaitForSeconds(3f);
+        }
     }
 
     IEnumerator TargetCircle()
@@ -168,7 +191,6 @@ public class EnemyAI : MonoBehaviour
         Transform collider = canvasCircle.transform.Find("TargetCircleCollider");
         RectTransform fillCircle = canvasCircle.transform.Find("TargetCircleCanvas").Find("Outer").Find("Inner").transform.GetComponent<RectTransform>();
 
-        Debug.Log(fillCircle.tag);
         for (float i = 0; i <= 1.01f; i+=.02f)
         {          
             fillCircle.localScale = new Vector3(i, i, i);

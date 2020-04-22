@@ -19,10 +19,14 @@ public class PlayerAttributes : MonoBehaviour
 
         if (other.tag.Equals("TargetCircle"))
             takeDamage(10f);
+
+        if (other.tag.Equals("QuarterCircle"))
+            takeDamage(10f);
     }
 
     private void takeDamage(float damage)
     {
+        Debug.Log("Damage taken");
         playerMovement.playerShieldDamage();
     }
 }
