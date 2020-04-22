@@ -16,6 +16,9 @@ public class PlayerAttributes : MonoBehaviour
     {
         if (other.tag.Equals(StatsScript.BulletHellDamageTag))
             takeDamage(StatsScript.BullethellDamage);
+
+        if (other.tag.Equals("TargetCircle"))
+            takeDamage(10f);
     }
 
     private void takeDamage(float damage)

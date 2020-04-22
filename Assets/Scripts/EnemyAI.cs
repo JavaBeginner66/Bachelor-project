@@ -164,7 +164,8 @@ public class EnemyAI : MonoBehaviour
     IEnumerator TargetCircle()
     {
         GameObject canvasCircle = Instantiate(targetCircle, new Vector3(target.position.x, 0f, target.position.z), Quaternion.identity);
-        //targetCircle.SetActive(true);
+        Destroy(canvasCircle, 1f);
+        Transform collider = canvasCircle.transform.Find("TargetCircleCollider");
         RectTransform fillCircle = canvasCircle.transform.Find("TargetCircleCanvas").Find("Outer").Find("Inner").transform.GetComponent<RectTransform>();
 
         Debug.Log(fillCircle.tag);
@@ -173,7 +174,7 @@ public class EnemyAI : MonoBehaviour
             fillCircle.localScale = new Vector3(i, i, i);
             yield return new WaitForSeconds(.01f);
         }
-        
+        collider.gameObject.SetActive(true);
         
     }
 
