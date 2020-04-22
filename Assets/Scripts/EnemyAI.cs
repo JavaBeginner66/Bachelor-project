@@ -13,6 +13,7 @@ public class EnemyAI : MonoBehaviour
     public Transform waypointMiddle;    
     public GameObject portalEffect;
     public Image healthDisplay;
+    public GameObject rotatingWalls;
 
     [Header("EnemyAI modifiable variables")]
     public float chaseSpeed;
@@ -66,6 +67,7 @@ public class EnemyAI : MonoBehaviour
         state = State.CASTING;
         agent.stoppingDistance = 3f;
         speed = agent.speed;
+        rotatingWalls.SetActive(false);
     }
 
     IEnumerator StateMachine()
