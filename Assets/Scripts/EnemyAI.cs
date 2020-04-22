@@ -13,7 +13,10 @@ public class EnemyAI : MonoBehaviour
     public Transform waypointMiddle;    
     public GameObject portalEffect;
     public Image healthDisplay;
+    // Different field abilities
     public GameObject rotatingWalls;
+    public GameObject targetCircle;
+    public GameObject groundQuarterStatic;
 
     [Header("EnemyAI modifiable variables")]
     public float chaseSpeed;
@@ -83,6 +86,7 @@ public class EnemyAI : MonoBehaviour
             BattleMonitor();
 
 
+
             if (state == State.CHASE)
                 Chase();
 
@@ -91,6 +95,10 @@ public class EnemyAI : MonoBehaviour
 
             if (state == State.CASTING)
                 BullethellStage1();
+
+
+            
+
         }
     }
 
@@ -146,10 +154,27 @@ public class EnemyAI : MonoBehaviour
             nextPos = waypoints[Random.Range(0, waypoints.Length)].transform.position;
             // Bør pooles
             Destroy(Instantiate(portalEffect, new Vector3(nextPos.x, nextPos.y + .5f, nextPos.z), Quaternion.identity), 10f);
+            StartCoroutine(TargetCircle());
             yield return new WaitForSeconds(teleportTimer*3);
         }
       
         StartCoroutine(RotatingCircleEnum());
+    }
+
+    IEnumerator TargetCircle()
+    {
+        GameObject canvasCircle = Instantiate(targetCircle, new Vector3(target.position.x, 0f, target.position.z), Quaternion.identity);
+        //targetCircle.SetActive(true);
+        RectTransform fillCircle = canvasCircle.transform.Find("TargetCircleCanvas").Find("Outer").Find("Inner").transform.GetComponent<RectTransform>();
+
+        Debug.Log(fillCircle.tag);
+        for (float i = 0; i <= 1.01f; i+=.02f)
+        {          
+            fillCircle.localScale = new Vector3(i, i, i);
+            yield return new WaitForSeconds(.01f);
+        }
+        
+        
     }
 
     IEnumerator RotatingCircleEnum()

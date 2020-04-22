@@ -151,10 +151,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void playerMovement()
     {
-        Debug.Log(availableShields);
 
-        if (Input.GetKeyDown(KeyCode.A))
-            playerShieldDamage();
 
         inputX = Input.GetAxisRaw("Horizontal");
         inputZ = Input.GetAxisRaw("Vertical");
