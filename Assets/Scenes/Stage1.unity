@@ -296,10 +296,13 @@ MonoBehaviour:
   portalEffect: {fileID: 4101719475127644993, guid: ee3c02112d865984c99a9cf96383a05d,
     type: 3}
   healthDisplay: {fileID: 1049656738}
-  rotatingWalls: {fileID: 1980555066}
+  rotatingWalls: {fileID: 4672951408493671040, guid: 30787d031f644d245a31531c253a7e49,
+    type: 3}
   targetCircle: {fileID: 5896281267348389144, guid: 47dec6730698c234386dfd3b6da0f938,
     type: 3}
   groundQuarterStatic: {fileID: 784684931592023105, guid: 1200833379969d948ad363585097d177,
+    type: 3}
+  groundQuarterDouble: {fileID: 784684931592023105, guid: e3b60f642e27f0d4fad50cd29a6aa082,
     type: 3}
   chaseSpeed: 10
   patrolSpeed: 5
@@ -307,6 +310,7 @@ MonoBehaviour:
   teleportTimer: 1
   bulletHellWaves: 10
   healthPool: 1000
+  stateMachineTimer: 0
 --- !u!195 &11336023
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -45133,80 +45137,6 @@ Transform:
   m_Father: {fileID: 1774381265}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1096192761
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4672951408493671040, guid: 30787d031f644d245a31531c253a7e49,
-        type: 3}
-      propertyPath: m_Name
-      value: RotatingWalls
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672951408493671040, guid: 30787d031f644d245a31531c253a7e49,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672951408493671101, guid: 30787d031f644d245a31531c253a7e49,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672951408493671101, guid: 30787d031f644d245a31531c253a7e49,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672951408493671101, guid: 30787d031f644d245a31531c253a7e49,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672951408493671101, guid: 30787d031f644d245a31531c253a7e49,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672951408493671101, guid: 30787d031f644d245a31531c253a7e49,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672951408493671101, guid: 30787d031f644d245a31531c253a7e49,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672951408493671101, guid: 30787d031f644d245a31531c253a7e49,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672951408493671101, guid: 30787d031f644d245a31531c253a7e49,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672951408493671101, guid: 30787d031f644d245a31531c253a7e49,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672951408493671101, guid: 30787d031f644d245a31531c253a7e49,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4672951408493671101, guid: 30787d031f644d245a31531c253a7e49,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 30787d031f644d245a31531c253a7e49, type: 3}
 --- !u!1 &1099850897
 GameObject:
   m_ObjectHideFlags: 0
@@ -45596,7 +45526,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1271738583
 PrefabInstance:
@@ -86726,12 +86656,6 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!1 &1980555066 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4672951408493671040, guid: 30787d031f644d245a31531c253a7e49,
-    type: 3}
-  m_PrefabInstance: {fileID: 1096192761}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2009895248
 PrefabInstance:
   m_ObjectHideFlags: 0

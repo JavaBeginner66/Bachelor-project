@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
@@ -26,22 +27,37 @@ public class EnemyAI : MonoBehaviour
     public float teleportTimer = 1;
     public float bulletHellWaves = 10;
     public float healthPool;
+    public float stateMachineTimer;
 
     [HideInInspector] // Internal script variables
     public static EnemyAI enemyAI;    
     private State state;
-    private int waypointsIndex;
-    private float stateMachineTimer;
-    private Coroutine bulletHell1;
+    private Phase phase;
+    private int waypointsIndex;   
     private float currentHealth;
+    // Coroutines
+    private Coroutine movingBulletHellCoroutine;
+    private Coroutine rotatingBulletHellCoroutine;
+    private Coroutine targetCircleCoroutine;
+    private Coroutine quartercircleCoroutine;
+    private Coroutine movingWallsCoroutine;
+    private List<Coroutine> coroutineList;
 
-    
+
+
 
     public enum State
     {
         CHASE,
         PATROL,
         CASTING
+    }
+
+    public enum Phase
+    {
+        PHASE1,
+        PHASE2,
+        PHASE3
     }
 
     public State getState()
@@ -68,15 +84,61 @@ public class EnemyAI : MonoBehaviour
         enemyAI = this;
         currentHealth = healthPool;
         agent = GetComponent<NavMeshAgent>();
-        state = State.CASTING;
+        state = State.PATROL;
+        phase = Phase.PHASE1;
         agent.stoppingDistance = 3f;
         speed = agent.speed;
-        rotatingWalls.SetActive(false);
+        // Adding coroutines to list
+        coroutineList.Add(movingBulletHellCoroutine);
+        coroutineList.Add(rotatingBulletHellCoroutine);
+        coroutineList.Add(targetCircleCoroutine);
+        coroutineList.Add(quartercircleCoroutine);
+        coroutineList.Add(movingWallsCoroutine);
+
+        // Start the statemachine
+        StartCoroutine(StateMachine());
+
     }
 
     IEnumerator StateMachine()
     {
-        yield return new WaitForSeconds(stateMachineTimer);
+        while (GameMasterScript.gameRunning)
+        {
+            if (state == State.CASTING)
+            {
+                if (phase == Phase.PHASE1)
+                {
+                    phase1Routines();
+                }
+                else if (phase == Phase.PHASE2)
+                {
+                    phase2Routines();
+                }
+                else if (phase == Phase.PHASE3)
+                {
+                    phase3Routines();
+                }
+            }
+            yield return new WaitForSeconds(stateMachineTimer);
+        }
+        
+    }
+
+    private void phase1Routines()
+    {
+        // Run through routines and pick out 1 at a time. Dont pick same twice in a row
+        Coroutine current = coroutineList[Random.Range(0, coroutineList.Count)];
+
+    }
+
+    private void phase2Routines()
+    {
+        // Run through routines and pick out 2 at a time + rotation. Dont pick same twice in a row
+    }
+
+    private void phase3Routines()
+    {
+        // Run through routines and pick out 3 at a time + rotation. Dont pick same twice in a row
     }
 
     private void Update()
@@ -96,10 +158,6 @@ public class EnemyAI : MonoBehaviour
 
             if (state == State.CASTING)
                 BullethellStage1();
-
-
-            
-
         }
     }
 
@@ -136,12 +194,13 @@ public class EnemyAI : MonoBehaviour
     private void BullethellStage1()
     {
         transform.LookAt(target);
-        if (bulletHell1 == null)
-            bulletHell1 = StartCoroutine(FrozenOrbEnum());
+        if (movingBulletHellCoroutine == null)
+            movingBulletHellCoroutine = StartCoroutine(FrozenOrbEnum());
     }
     
     IEnumerator FrozenOrbEnum()
     {
+        state = State.CASTING;
         agent.speed = 0f;
         Vector3 nextPos = waypoints[Random.Range(0, waypoints.Length)].transform.position;
         for (int i = 0; i<1; i++)
@@ -158,18 +217,19 @@ public class EnemyAI : MonoBehaviour
             
             yield return new WaitForSeconds(teleportTimer*3);
         }
-        StartCoroutine(QuarterCircleZone("double", false));
+        StartCoroutine(QuarterCircleZone("double", false, 5));
         //StartCoroutine(RotatingCircleEnum());
     }
 
 
-    IEnumerator QuarterCircleZone(string prefabVersion, bool willRotate)
+    IEnumerator QuarterCircleZone(string prefabVersion, bool willRotate, int rounds)
     {
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < rounds; i++)
         {
             GameObject quarterCircleZone;
             Image fillArea1 = null;
             Image fillArea2 = null;
+            float angle = 90 * Random.Range(0, 4);
 
             if (prefabVersion.Equals("single"))
             {
@@ -182,7 +242,7 @@ public class EnemyAI : MonoBehaviour
             }
             fillArea1 = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
             Transform collider = quarterCircleZone.transform.Find("Collider").transform;
-            quarterCircleZone.transform.rotation = Quaternion.Euler(0f, i * 180, 0f); // 90 * random
+            quarterCircleZone.transform.rotation = Quaternion.Euler(0f, angle, 0f); // 90 * random
             
 
             for (float j = 0; j < 1.01f; j += .005f)
@@ -229,6 +289,11 @@ public class EnemyAI : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
 
+    }
+
+    IEnumerator rotatingWallsEnum()
+    {
+        yield return new WaitForSeconds(1f);
     }
 
     private void SpawnBullet(string type)

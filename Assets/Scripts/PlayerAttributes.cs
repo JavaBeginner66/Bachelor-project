@@ -15,16 +15,19 @@ public class PlayerAttributes : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag.Equals(StatsScript.BulletHellDamageTag))
-            takeDamage(StatsScript.BullethellDamage);
+            takeDamage();
 
         if (other.tag.Equals("TargetCircle"))
-            takeDamage(10f);
+            takeDamage();
 
         if (other.tag.Equals("QuarterCircle"))
-            takeDamage(10f);
+            takeDamage();
+
+        if (other.tag.Equals("RotatingWalls"))
+            takeDamage();
     }
 
-    private void takeDamage(float damage)
+    private void takeDamage()
     {
         Debug.Log("Damage taken");
         playerMovement.playerShieldDamage();

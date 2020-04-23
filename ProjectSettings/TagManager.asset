@@ -12,6 +12,7 @@ TagManager:
   - Test
   - TargetCircle
   - QuarterCircle
+  - RotatingWalls
   layers:
   - Default
   - TransparentFX
