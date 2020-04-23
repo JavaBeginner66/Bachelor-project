@@ -17,6 +17,7 @@ public class EnemyAI : MonoBehaviour
     public GameObject rotatingWalls;
     public GameObject targetCircle;
     public GameObject groundQuarterStatic;
+    public GameObject groundQuarterDouble;
 
     [Header("EnemyAI modifiable variables")]
     public float chaseSpeed;
@@ -150,35 +151,53 @@ public class EnemyAI : MonoBehaviour
             //waypointsIndex = (waypointsIndex + 1) % waypoints.Length;
 
             yield return new WaitForSeconds(teleportTimer);
-            SpawnBullet(ObjectPool.FrozenOrb);
+            //SpawnBullet(ObjectPool.FrozenOrb);
             nextPos = waypoints[Random.Range(0, waypoints.Length)].transform.position;
             // Bør pooles
             Destroy(Instantiate(portalEffect, new Vector3(nextPos.x, nextPos.y + .5f, nextPos.z), Quaternion.identity), 10f);
             
             yield return new WaitForSeconds(teleportTimer*3);
         }
-        StartCoroutine(QuarterCircleZone());
+        StartCoroutine(QuarterCircleZone("double", false));
         //StartCoroutine(RotatingCircleEnum());
     }
 
-    IEnumerator QuarterCircleZone()
-    {       
+
+    IEnumerator QuarterCircleZone(string prefabVersion, bool willRotate)
+    {
         for (int i = 0; i < 6; i++)
         {
-            GameObject quarterCircleZone = Instantiate(groundQuarterStatic);
-            Transform collider = quarterCircleZone.transform.Find("Collider").transform;
-            Destroy(quarterCircleZone, 5f);
-            /*
-            RectTransform zoneCanvas = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas").GetComponent<RectTransform>();
-            zoneCanvas.rotation = Quaternion.Euler(90f, i*90, zoneCanvas.rotation.z);
-            */
-            quarterCircleZone.transform.rotation = Quaternion.Euler(0f, i * 90, 0f);
-            Image fillArea = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
-            for (float j = 0; j < 1.01f; j+= .01f)
+            GameObject quarterCircleZone;
+            Image fillArea1 = null;
+            Image fillArea2 = null;
+
+            if (prefabVersion.Equals("single"))
             {
-                fillArea.fillAmount = j;
+                quarterCircleZone = Instantiate(groundQuarterStatic);               
+            }
+            else
+            {
+                quarterCircleZone = Instantiate(groundQuarterDouble);
+                fillArea2 = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas2").transform.Find("Outer").Find("Inner").GetComponent<Image>();
+            }
+            fillArea1 = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
+            Transform collider = quarterCircleZone.transform.Find("Collider").transform;
+            quarterCircleZone.transform.rotation = Quaternion.Euler(0f, i * 180, 0f); // 90 * random
+            
+
+            for (float j = 0; j < 1.01f; j += .005f)
+            {
+                fillArea1.fillAmount = j;
+                if(fillArea2 != null)
+                    fillArea2.fillAmount = j;
+                               
+
+                if(willRotate)
+                    quarterCircleZone.transform.Rotate(new Vector3(0f, 1f, 0f), 30f * Time.deltaTime);
+
                 yield return new WaitForSeconds(.01f);
             }
+            Destroy(quarterCircleZone, .5f);
             collider.gameObject.SetActive(true);
             yield return new WaitForSeconds(3f);
         }
@@ -221,10 +240,6 @@ public class EnemyAI : MonoBehaviour
             obj.transform.rotation = transform.rotation;
             obj.SetActive(true);
             
-        }
-        else
-        {
-            Debug.Log("Utvide?");
         }
     }
 }
