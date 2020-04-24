@@ -7,6 +7,12 @@ public class GameMasterScript : MonoBehaviour
     public static bool gameRunning;
 
     public GameObject player;
+    public EnemyAI enemyAI;
+
+    private void Start()
+    {
+        enemyAI = EnemyAI.enemyAI;
+    }
 
     private void Update()
     {
@@ -15,6 +21,9 @@ public class GameMasterScript : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.V))
             gameRunning = false;
+
+        if (Input.GetKeyDown(KeyCode.E))
+            StartCoroutine (enemyAI.StateMachine());
     }
 
     public GameObject getPlayer()

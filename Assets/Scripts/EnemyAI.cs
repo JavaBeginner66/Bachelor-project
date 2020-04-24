@@ -35,13 +35,17 @@ public class EnemyAI : MonoBehaviour
     private Phase phase;
     private int waypointsIndex;   
     private float currentHealth;
-    // Coroutines
-    private Coroutine movingBulletHellCoroutine;
-    private Coroutine rotatingBulletHellCoroutine;
-    private Coroutine targetCircleCoroutine;
-    private Coroutine quartercircleCoroutine;
-    private Coroutine movingWallsCoroutine;
-    private List<Coroutine> coroutineList;
+    // Coroutine references
+    private IEnumerable movingBulletHellCoroutine;
+    private IEnumerable rotatingBulletHellCoroutine;
+    private IEnumerable targetCircleCoroutine;
+    private IEnumerable quartercircleCoroutine;
+    private IEnumerable movingWallsCoroutine;
+    private List<IEnumerable> coroutineList;
+
+    private Coroutine currentRunning1;
+
+    public Text tempText;
 
 
 
@@ -84,26 +88,44 @@ public class EnemyAI : MonoBehaviour
         enemyAI = this;
         currentHealth = healthPool;
         agent = GetComponent<NavMeshAgent>();
-        state = State.PATROL;
+        state = State.CASTING;
         phase = Phase.PHASE1;
         agent.stoppingDistance = 3f;
         speed = agent.speed;
-        // Adding coroutines to list
+
+        // Setting coroutine references
+        movingBulletHellCoroutine = MovingBulletHellEnum();
+        rotatingBulletHellCoroutine = RotatingBulletHellEnum();
+        targetCircleCoroutine = TargetCircleEnum();        
+        movingWallsCoroutine = rotatingWallsEnum();
+        // Delegates?
+        quartercircleCoroutine = QuarterCircleEnum("double", false, 5);
+        //quartercircleCoroutine = QuarterCircleEnum(null, false, 0);
+        //quartercircleCoroutine = QuarterCircleEnum(null, false, 0);
+
+        // Adding coroutines to list     
+        /*
         coroutineList.Add(movingBulletHellCoroutine);
         coroutineList.Add(rotatingBulletHellCoroutine);
         coroutineList.Add(targetCircleCoroutine);
         coroutineList.Add(quartercircleCoroutine);
         coroutineList.Add(movingWallsCoroutine);
-
+        */
+        
         // Start the statemachine
-        StartCoroutine(StateMachine());
+        //StartCoroutine(StateMachine());
+
+        //StartCoroutine(test());
 
     }
 
-    IEnumerator StateMachine()
+
+    public IEnumerator StateMachine()
     {
+        
         while (GameMasterScript.gameRunning)
-        {
+        {        
+           
             if (state == State.CASTING)
             {
                 if (phase == Phase.PHASE1)
@@ -127,7 +149,13 @@ public class EnemyAI : MonoBehaviour
     private void phase1Routines()
     {
         // Run through routines and pick out 1 at a time. Dont pick same twice in a row
-        Coroutine current = coroutineList[Random.Range(0, coroutineList.Count)];
+        
+        if (currentRunning1 == null)
+        {           
+            IEnumerator newRoutine = movingBulletHellCoroutine.GetEnumerator();
+            currentRunning1 = StartCoroutine(newRoutine);
+        }
+
 
     }
 
@@ -141,6 +169,7 @@ public class EnemyAI : MonoBehaviour
         // Run through routines and pick out 3 at a time + rotation. Dont pick same twice in a row
     }
 
+    /*
     private void Update()
     {
         if (GameMasterScript.gameRunning)
@@ -160,7 +189,7 @@ public class EnemyAI : MonoBehaviour
                 BullethellStage1();
         }
     }
-
+    */
     private void BattleMonitor()
     {
         
@@ -194,35 +223,34 @@ public class EnemyAI : MonoBehaviour
     private void BullethellStage1()
     {
         transform.LookAt(target);
+        /*
         if (movingBulletHellCoroutine == null)
             movingBulletHellCoroutine = StartCoroutine(FrozenOrbEnum());
+        */
     }
-    
-    IEnumerator FrozenOrbEnum()
+
+    IEnumerable MovingBulletHellEnum()
     {
         state = State.CASTING;
         agent.speed = 0f;
         Vector3 nextPos = waypoints[Random.Range(0, waypoints.Length)].transform.position;
-        for (int i = 0; i<1; i++)
+        for (int i = 0; i<5; i++)
         {
             
             transform.position = nextPos;
-            //waypointsIndex = (waypointsIndex + 1) % waypoints.Length;
 
             yield return new WaitForSeconds(teleportTimer);
-            //SpawnBullet(ObjectPool.FrozenOrb);
+            SpawnBullet(ObjectPool.FrozenOrb);
             nextPos = waypoints[Random.Range(0, waypoints.Length)].transform.position;
             // Bør pooles
             Destroy(Instantiate(portalEffect, new Vector3(nextPos.x, nextPos.y + .5f, nextPos.z), Quaternion.identity), 10f);
             
             yield return new WaitForSeconds(teleportTimer*3);
         }
-        StartCoroutine(QuarterCircleZone("double", false, 5));
-        //StartCoroutine(RotatingCircleEnum());
     }
 
 
-    IEnumerator QuarterCircleZone(string prefabVersion, bool willRotate, int rounds)
+    IEnumerable QuarterCircleEnum(string prefabVersion, bool willRotate, int rounds)
     {
         for (int i = 0; i < rounds; i++)
         {
@@ -242,7 +270,7 @@ public class EnemyAI : MonoBehaviour
             }
             fillArea1 = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
             Transform collider = quarterCircleZone.transform.Find("Collider").transform;
-            quarterCircleZone.transform.rotation = Quaternion.Euler(0f, angle, 0f); // 90 * random
+            quarterCircleZone.transform.rotation = Quaternion.Euler(0f, angle, 0f); 
             
 
             for (float j = 0; j < 1.01f; j += .005f)
@@ -263,23 +291,26 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    IEnumerator TargetCircle()
+    IEnumerable TargetCircleEnum()
     {
-        GameObject canvasCircle = Instantiate(targetCircle, new Vector3(target.position.x, 0f, target.position.z), Quaternion.identity);
-        Destroy(canvasCircle, 1f);
-        Transform collider = canvasCircle.transform.Find("TargetCircleCollider");
-        RectTransform fillCircle = canvasCircle.transform.Find("TargetCircleCanvas").Find("Outer").Find("Inner").transform.GetComponent<RectTransform>();
+        for (int i = 0; i < 6; i++)
+        {
+            GameObject canvasCircle = Instantiate(targetCircle, new Vector3(target.position.x, 0f, target.position.z), Quaternion.identity);
+            Destroy(canvasCircle, 1f);
+            Transform collider = canvasCircle.transform.Find("TargetCircleCollider");
+            RectTransform fillCircle = canvasCircle.transform.Find("TargetCircleCanvas").Find("Outer").Find("Inner").transform.GetComponent<RectTransform>();
 
-        for (float i = 0; i <= 1.01f; i+=.02f)
-        {          
-            fillCircle.localScale = new Vector3(i, i, i);
-            yield return new WaitForSeconds(.01f);
-        }
-        collider.gameObject.SetActive(true);
-        
+            for (float j = 0; j <= 1.01f; j+=.02f)
+            {          
+                fillCircle.localScale = new Vector3(i, i, i);
+                yield return new WaitForSeconds(.01f);
+            }
+            collider.gameObject.SetActive(true);
+            yield return new WaitForSeconds(1f);
+        }           
     }
 
-    IEnumerator RotatingCircleEnum()
+    IEnumerable RotatingBulletHellEnum()
     {
 
         transform.position = waypointMiddle.transform.position;
@@ -291,10 +322,13 @@ public class EnemyAI : MonoBehaviour
 
     }
 
-    IEnumerator rotatingWallsEnum()
+    IEnumerable rotatingWallsEnum()
     {
-        yield return new WaitForSeconds(1f);
+        Destroy(Instantiate(rotatingWalls), 15f);
+        yield return new WaitForSeconds(15f);     
     }
+    
+
 
     private void SpawnBullet(string type)
     {
