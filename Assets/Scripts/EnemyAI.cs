@@ -42,11 +42,8 @@ public class EnemyAI : MonoBehaviour
     private Coroutine targetCircleCoroutine;   
     private Coroutine rotatingWallsCoroutine;
     private Coroutine quartercircleCoroutine;
-    //private List<IEnumerable> coroutineList;
 
-    private bool currentRunning1;
-    private bool currentRunning2;
-    private bool currentRunning3;
+    private bool coroutineRunning;
 
     public Text tempText;
 
@@ -67,7 +64,8 @@ public class EnemyAI : MonoBehaviour
     {
         CHASE,
         PATROL,
-        CASTING
+        CASTING,
+        IDLE
     }
 
     public enum Phase
@@ -102,21 +100,20 @@ public class EnemyAI : MonoBehaviour
         while (GameMasterScript.gameRunning)
         {        
            
-            if (state == State.CASTING)
+
+            if (phase == Phase.PHASE1)
             {
-                if (phase == Phase.PHASE1)
-                {
-                    phase1Routines();
-                }
-                else if (phase == Phase.PHASE2)
-                {
-                    phase2Routines();
-                }
-                else if (phase == Phase.PHASE3)
-                {
-                    phase3Routines();
-                }
+                phase1Routines();
             }
+            else if (phase == Phase.PHASE2)
+            {
+                phase2Routines();
+            }
+            else if (phase == Phase.PHASE3)
+            {
+                phase3Routines();
+            }
+            
             yield return new WaitForSeconds(stateMachineTimer);
         }
         
@@ -125,72 +122,66 @@ public class EnemyAI : MonoBehaviour
     private void phase1Routines()
     {
         // Run through routines and pick out 1 at a time. Dont pick same twice in a row
-        if (currentRunning1 == false)
+        if (coroutineRunning == false)
         {
-            currentRunning1 = true;
-            switch (1)
+            coroutineRunning = true;
+            switch (Random.Range(1, 6))
             {
                 case 1:
-                        movingBulletHellCoroutine = StartCoroutine(MovingBulletHellEnum());
-                        break;
+                    state = State.IDLE;
+                    movingBulletHellCoroutine = StartCoroutine(MovingBulletHellEnum());                    
+                    break;
                 case 2:
-                        rotatingBulletHellCoroutine = StartCoroutine(RotatingBulletHellEnum());
-                        break;
+                    state = State.IDLE;
+                    rotatingBulletHellCoroutine = StartCoroutine(RotatingBulletHellEnum());                   
+                    break;
                 case 3:
-                        targetCircleCoroutine = StartCoroutine(TargetCircleEnum());
-                        break;
+                    state = State.CHASE;
+                    targetCircleCoroutine = StartCoroutine(TargetCircleEnum());                   
+                    break;
                 case 4:
-                        rotatingWallsCoroutine = StartCoroutine(RotatingWallsEnum());
-                        break;
+                    state = State.IDLE;
+                    rotatingWallsCoroutine = StartCoroutine(RotatingWallsEnum());                   
+                    break;
                 case 5:
-                        quartercircleCoroutine = StartCoroutine(QuarterCircleEnum("single", true));
-                        break;
+                    state = State.CHASE;
+                    quartercircleCoroutine = StartCoroutine(QuarterCircleEnum("single", false));                   
+                    break;
             }
         }
     }
 
-    private void routineEnd()
-    {
-
-    }
-
-
-    private void startRoutines()
-    {
-        
-    }
-
     private void phase2Routines()
     {
-        // Run through routines and pick out 2 at a time + rotation. Dont pick same twice in a row
-        switch (Random.Range(1, 5))
-        {
-            case 1:
-                if (movingBulletHellCoroutine == null)
-                    movingBulletHellCoroutine = StartCoroutine(MovingBulletHellEnum());
-                break;
-            case 2:
-                if (rotatingBulletHellCoroutine == null)
-                    rotatingBulletHellCoroutine = StartCoroutine(RotatingBulletHellEnum());
-                break;
-            case 3:
-                if (targetCircleCoroutine == null)
-                    targetCircleCoroutine = StartCoroutine(TargetCircleEnum());
-                break;
-            case 4:
-                if (rotatingWallsCoroutine == null)
-                    rotatingWallsCoroutine = StartCoroutine(RotatingWallsEnum());
-                break;
-            case 5:
-                if (quartercircleCoroutine == null)
-                    quartercircleCoroutine = StartCoroutine(QuarterCircleEnum("single", true));
-                break;
-        }
+        
+        
     }
 
     private void phase3Routines()
     {
-        // Run through routines and pick out 3 at a time + rotation. Dont pick same twice in a row
+        switch (Random.Range(1, 6))
+        {
+            case 1:
+                if (movingBulletHellCoroutine == null && rotatingBulletHellCoroutine == null)
+                    movingBulletHellCoroutine = StartCoroutine(MovingBulletHellEnum());
+                break;
+            case 2:
+                if (rotatingBulletHellCoroutine == null && movingBulletHellCoroutine == null )                 
+                    rotatingBulletHellCoroutine = StartCoroutine(RotatingBulletHellEnum());
+                break;
+            case 3:
+                if(targetCircleCoroutine == null)
+                    targetCircleCoroutine = StartCoroutine(TargetCircleEnum());
+                break;
+            case 4:
+                if (rotatingWallsCoroutine == null && movingBulletHellCoroutine == null)
+                    rotatingWallsCoroutine = StartCoroutine(RotatingWallsEnum());
+                break;
+            case 5:
+                if(quartercircleCoroutine == null)
+                    quartercircleCoroutine = StartCoroutine(QuarterCircleEnum("double", true));
+                break;
+        }
     }
 
     
@@ -198,21 +189,24 @@ public class EnemyAI : MonoBehaviour
     {
         if(lookAtPlayer)
             transform.LookAt(target);
-        /*
-                if (GameMasterScript.gameRunning)
-                {
-                    speed = agent.speed;
+        
+        if (GameMasterScript.gameRunning)
+        {
+            speed = agent.speed;
 
-                    if (state == State.CHASE)
-                        Chase();
+            if (state == State.CHASE)
+                Chase();
 
-                    if (state == State.PATROL)
-                        Patrol();
+            if (state == State.PATROL)
+                state = State.PATROL;
 
-                    if (state == State.CASTING)
-                        BullethellStage1();
-                }
-        */
+            if (state == State.CASTING)
+                state = State.CASTING;
+
+            if(state == State.IDLE)
+                agent.speed = 0;
+        }
+        
     }
     
 
@@ -243,7 +237,6 @@ public class EnemyAI : MonoBehaviour
 
     IEnumerator MovingBulletHellEnum()
     {
-        currentRunning1 = true;
 
         lookAtPlayer = true;
         state = State.CASTING;
@@ -264,14 +257,14 @@ public class EnemyAI : MonoBehaviour
             yield return new WaitForSeconds(teleportTimer*3);
         }
         movingBulletHellCoroutine = null;
-        currentRunning1 = false;
+        coroutineRunning = false;
         lookAtPlayer = false;
     }
 
 
     IEnumerator QuarterCircleEnum(string prefabVersion, bool willRotate)
     {
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 2; i++)
         {
             GameObject quarterCircleZone;
             Image fillArea1 = null;
@@ -306,10 +299,10 @@ public class EnemyAI : MonoBehaviour
             }
             Destroy(quarterCircleZone, .5f);
             collider.gameObject.SetActive(true);
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(2f);
         }
         quartercircleCoroutine = null;
-        currentRunning1 = false;
+        coroutineRunning = false;
     }
 
     IEnumerator TargetCircleEnum()
@@ -317,7 +310,7 @@ public class EnemyAI : MonoBehaviour
         for (int i = 0; i < 6; i++)
         {
             GameObject canvasCircle = Instantiate(targetCircle, new Vector3(target.position.x, 0f, target.position.z), Quaternion.identity);
-            Destroy(canvasCircle, 1.1f);
+            Destroy(canvasCircle, 1.2f);
             Transform collider = canvasCircle.transform.Find("TargetCircleCollider");
             RectTransform fillCircle = canvasCircle.transform.Find("TargetCircleCanvas").Find("Outer").Find("Inner").transform.GetComponent<RectTransform>();
 
@@ -330,7 +323,7 @@ public class EnemyAI : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
         targetCircleCoroutine = null;
-        currentRunning1 = false;
+        coroutineRunning = false;
     }
 
     IEnumerator RotatingBulletHellEnum()
@@ -343,7 +336,7 @@ public class EnemyAI : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
         rotatingBulletHellCoroutine = null;
-        currentRunning1 = false;
+        coroutineRunning = false;
     }
 
     IEnumerator RotatingWallsEnum()
@@ -353,7 +346,7 @@ public class EnemyAI : MonoBehaviour
         Destroy(Instantiate(rotatingWalls), 20f);
         yield return new WaitForSeconds(20f);
         rotatingWallsCoroutine = null;
-        currentRunning1 = false;
+        coroutineRunning = false;
     }
     
 
