@@ -269,8 +269,10 @@ public class PlayerMovement : MonoBehaviour
                     calculateShields();                                 
                 }
             }
+            /*
             if (availableShields <= maxShieldAmount)
                 shieldCharges[availableShields].fillAmount = shieldFillTime / maxShieldFillTime;
+                */
             
         }
 
