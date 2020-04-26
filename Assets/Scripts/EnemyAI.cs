@@ -8,30 +8,30 @@ public class EnemyAI : MonoBehaviour
 {
 
     [Header("Inspector Objects")]
-    public NavMeshAgent agent;
     public Transform target;
     public Transform[] waypoints;
     public Transform waypointMiddle;    
     public GameObject portalEffect;
     public Image healthDisplay;
     // Different field abilities
-    public GameObject rotatingWalls;
-    public GameObject targetCircle;
-    public GameObject groundQuarterStatic;
-    public GameObject groundQuarterDouble;
+    public GameObject rotatingWallsPrefab;
+    public GameObject targetCirclePrefab;
+    public GameObject groundQuarterStaticPrefab;
+    public GameObject groundQuarterDoublePrefab;
+    public GameObject bossAttackPrefab;
+
+    public State state;
 
     [Header("EnemyAI modifiable variables")]
-    public float chaseSpeed;
-    public float patrolSpeed;
-    public float speed;
     public float teleportTimer = 1;
     public float bulletHellWaves = 10;
     public float healthPool;
     public float stateMachineTimer;
+    public float currentMoveSpeed;
+    public float moveSpeed;
 
     [HideInInspector] // Internal script variables
-    public static EnemyAI enemyAI;    
-    private State state;
+    public static EnemyAI enemyAI;
     private Phase phase;
     private int waypointsIndex;   
     private float currentHealth;
@@ -42,6 +42,7 @@ public class EnemyAI : MonoBehaviour
     private Coroutine targetCircleCoroutine;   
     private Coroutine rotatingWallsCoroutine;
     private Coroutine quartercircleCoroutine;
+    private Coroutine bossAttackCoroutine;
 
     private bool coroutineRunning;
 
@@ -49,14 +50,10 @@ public class EnemyAI : MonoBehaviour
 
     private void Start()
     {
-
         enemyAI = this;
         currentHealth = healthPool;
-        agent = GetComponent<NavMeshAgent>();
         state = State.CASTING;
         phase = Phase.PHASE1;
-        agent.stoppingDistance = 3f;
-        speed = agent.speed;
 
     }
 
@@ -137,7 +134,7 @@ public class EnemyAI : MonoBehaviour
                     break;
                 case 3:
                     state = State.CHASE;
-                    targetCircleCoroutine = StartCoroutine(TargetCircleEnum());                   
+                    targetCircleCoroutine = StartCoroutine(TargetCircleEnum());
                     break;
                 case 4:
                     state = State.IDLE;
@@ -189,10 +186,9 @@ public class EnemyAI : MonoBehaviour
     {
         if(lookAtPlayer)
             transform.LookAt(target);
-        
+
         if (GameMasterScript.gameRunning)
         {
-            speed = agent.speed;
 
             if (state == State.CHASE)
                 Chase();
@@ -203,26 +199,37 @@ public class EnemyAI : MonoBehaviour
             if (state == State.CASTING)
                 state = State.CASTING;
 
-            if(state == State.IDLE)
-                agent.speed = 0;
+            if (state == State.IDLE)
+                currentMoveSpeed = 0f;
         }
+
+    }
+
+    private void FixedUpdate()
+    {
         
     }
-    
+
 
     private void Chase()
     {
-        agent.speed = chaseSpeed;
+        lookAtPlayer = true;
+        currentMoveSpeed = moveSpeed;
         if (Vector3.Distance(this.transform.position, target.transform.position) >= 3f)
         {
-            agent.SetDestination(target.transform.position);  
+            transform.position = Vector3.MoveTowards(transform.position, target.position, currentMoveSpeed * Time.deltaTime);
+        }
+        if(Vector3.Distance(this.transform.position, target.transform.position) < 3f)
+        {
+            if (bossAttackCoroutine == null)
+                bossAttackCoroutine = StartCoroutine(BossAttackEnum());
         }
        
     }
 
+    /*
     private void Patrol()
     {
-        agent.speed = patrolSpeed;
 
         if(Vector3.Distance(this.transform.position, waypoints[waypointsIndex].transform.position) >= 2)
         {
@@ -234,13 +241,33 @@ public class EnemyAI : MonoBehaviour
             waypointsIndex = (waypointsIndex + 1) % waypoints.Length;
         }
     }
+    */
+
+    IEnumerator BossAttackEnum()
+    {
+        state = State.IDLE;
+        lookAtPlayer = false;
+
+        GameObject damageZone = Instantiate(bossAttackPrefab, new Vector3(transform.position.x, 0f, transform.position.z), transform.rotation);
+        Image fillArea = damageZone.transform.Find("FillAreaCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
+        Transform collider = damageZone.transform.Find("Collider").transform;
+
+        for (float i = 0; i < 1.01f; i += .01f)
+        {
+            fillArea.fillAmount = i;
+
+            yield return new WaitForSeconds(.01f);
+        }
+        Destroy(damageZone, .5f);
+        collider.gameObject.SetActive(true);
+        state = State.CHASE;
+        bossAttackCoroutine = null;
+    }
 
     IEnumerator MovingBulletHellEnum()
     {
 
         lookAtPlayer = true;
-        state = State.CASTING;
-        agent.speed = 0f;
         Vector3 nextPos = waypoints[Random.Range(0, waypoints.Length)].transform.position;
         for (int i = 0; i<5; i++)
         {
@@ -273,11 +300,11 @@ public class EnemyAI : MonoBehaviour
 
             if (prefabVersion.Equals("single"))
             {
-                quarterCircleZone = Instantiate(groundQuarterStatic);               
+                quarterCircleZone = Instantiate(groundQuarterStaticPrefab);               
             }
             else
             {
-                quarterCircleZone = Instantiate(groundQuarterDouble);
+                quarterCircleZone = Instantiate(groundQuarterDoublePrefab);
                 fillArea2 = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas2").transform.Find("Outer").Find("Inner").GetComponent<Image>();
             }
             fillArea1 = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
@@ -305,11 +332,13 @@ public class EnemyAI : MonoBehaviour
         coroutineRunning = false;
     }
 
+   
+
     IEnumerator TargetCircleEnum()
     {
         for (int i = 0; i < 6; i++)
         {
-            GameObject canvasCircle = Instantiate(targetCircle, new Vector3(target.position.x, 0f, target.position.z), Quaternion.identity);
+            GameObject canvasCircle = Instantiate(targetCirclePrefab, new Vector3(target.position.x, 0f, target.position.z), Quaternion.identity);
             Destroy(canvasCircle, 1.2f);
             Transform collider = canvasCircle.transform.Find("TargetCircleCollider");
             RectTransform fillCircle = canvasCircle.transform.Find("TargetCircleCanvas").Find("Outer").Find("Inner").transform.GetComponent<RectTransform>();
@@ -343,7 +372,7 @@ public class EnemyAI : MonoBehaviour
     {
         transform.position = waypointMiddle.transform.position;
         // Lag ut-animasjon
-        Destroy(Instantiate(rotatingWalls), 20f);
+        Destroy(Instantiate(rotatingWallsPrefab), 20f);
         yield return new WaitForSeconds(20f);
         rotatingWallsCoroutine = null;
         coroutineRunning = false;
