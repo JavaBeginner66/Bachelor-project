@@ -26,7 +26,7 @@ public class EnemyAI : MonoBehaviour
     public float teleportTimer = 1;
     public float bulletHellWaves = 10;
     public float healthPool;
-    public float stateMachineTimer;
+    public float phaseMachineTimer;
     public float currentMoveSpeed;
     public float moveSpeed;
 
@@ -36,28 +36,38 @@ public class EnemyAI : MonoBehaviour
     private int waypointsIndex;   
     private float currentHealth;
     private bool lookAtPlayer;
-    // Coroutine references
-    private Coroutine movingBulletHellCoroutine;
-    private Coroutine rotatingBulletHellCoroutine;
-    private Coroutine targetCircleCoroutine;   
-    private Coroutine rotatingWallsCoroutine;
-    private Coroutine quartercircleCoroutine;
-    private Coroutine bossAttackCoroutine;
 
-    private bool coroutineRunning;
+    // Coroutine running checks
+    private bool movingBulletHellCoroutine;
+    private bool rotatingBulletHellCoroutine;  
+    private bool rotatingWallsCoroutine;
+    private bool bossAttackCoroutine;
+    private bool bossChaseEnabled;
+
+    // Coroutine strings
+    private readonly string MovingBulletHellEnumRef = "MovingBulletHellEnum";
+    private readonly string RotatingBulletHellEnumRef = "RotatingBulletHellEnum";
+    private readonly string TargetCircleEnumRef = "TargetCircleEnum";
+    private readonly string QuarterDoubleCircleEnumRef = "DoubleQuarterCircleEnum";
+    private readonly string QuarterSingleCircleEnumRef = "SingleQuarterCircleEnum";
+    private readonly string RotatingWallsEnumRef = "RotatingWallsEnum";
+    private readonly string BossAttackEnumRef = "BossAttackEnum";
+    private readonly string EnableBossChaseEnumRef = "EnableBossChaseEnum";
 
     public Text tempText;
 
     private float chaseTimerMax;
     private float chaseTimer;
+    public bool phaseRunning;
+    private float bossActiveTime = 10f;
 
     private void Start()
     {
         enemyAI = this;
         currentHealth = healthPool;
         state = State.CASTING;
-        phase = Phase.PHASE3;
-        chaseTimerMax = 3f;
+        phase = Phase.PHASE8;
+        chaseTimerMax = 2f;
 
     }
 
@@ -71,14 +81,19 @@ public class EnemyAI : MonoBehaviour
 
     public enum Phase
     {
-        PHASE1,
-        PHASE2,
-        PHASE3
+        PHASE0 = 0, PHASE1 = 1, PHASE2 = 2,
+        PHASE3 = 3, PHASE4 = 4, PHASE5 = 5,
+        PHASE6 = 6, PHASE7 = 7, PHASE8 = 8
     }
 
     public State getState()
     {
         return state;
+    }
+
+    public void setPhase(Phase newPhase)
+    {
+        phase = newPhase;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -95,108 +110,77 @@ public class EnemyAI : MonoBehaviour
     }
 
 
-    public IEnumerator StateMachine()
+    public IEnumerator PhaseMachine()
     {
-        
+        phaseMachineTimer = 3;
         while (GameMasterScript.gameRunning)
-        {        
-           
+        {            
+            if (!phaseRunning)
+            {
+                switch (phase)
+                {
+                    case Phase.PHASE0:                                          
+                        StartCoroutine(doCoroutines(EnableBossChaseEnumRef));
+                        break;
+                    case Phase.PHASE1:
+                        StartCoroutine(doCoroutines(EnableBossChaseEnumRef, RotatingWallsEnumRef));                        
+                        break;
+                    case Phase.PHASE2:
+                        StartCoroutine(doCoroutines(EnableBossChaseEnumRef, QuarterSingleCircleEnumRef));                                             
+                        break;
+                    case Phase.PHASE3:
+                        StartCoroutine(doCoroutines(EnableBossChaseEnumRef, RotatingBulletHellEnumRef));
+                        break;
+                    case Phase.PHASE4:
+                        StartCoroutine(doCoroutines(EnableBossChaseEnumRef, TargetCircleEnumRef, RotatingWallsEnumRef));
+                        break;
+                    case Phase.PHASE5:
+                        StartCoroutine(doCoroutines(EnableBossChaseEnumRef, QuarterDoubleCircleEnumRef, MovingBulletHellEnumRef));
+                        break;
+                    case Phase.PHASE6:
+                        StartCoroutine(doCoroutines(EnableBossChaseEnumRef, TargetCircleEnumRef, MovingBulletHellEnumRef, QuarterSingleCircleEnumRef));
+                        break;
+                    case Phase.PHASE7:
+                        StartCoroutine(doCoroutines(EnableBossChaseEnumRef, QuarterDoubleCircleEnumRef, 
+                                                    RotatingBulletHellEnumRef, TargetCircleEnumRef, RotatingWallsEnumRef));
+                        break;
+                    case Phase.PHASE8:
+                        StartCoroutine(doCoroutines(QuarterDoubleCircleEnumRef, MovingBulletHellEnumRef,TargetCircleEnumRef,
+                                                      RotatingWallsEnumRef, QuarterSingleCircleEnumRef, RotatingBulletHellEnumRef));
+                        break;
 
-            if (phase == Phase.PHASE1)
-            {
-                stateMachineTimer = 3;
-                phase1Routines();
+                }
             }
-            else if (phase == Phase.PHASE2)
-            {
-                stateMachineTimer = 2;
-                phase2Routines();
-            }
-            else if (phase == Phase.PHASE3)
-            {
-                stateMachineTimer = 1;
-                phase3Routines();
-            }
-            
-            yield return new WaitForSeconds(stateMachineTimer);
+            yield return new WaitForSeconds(phaseMachineTimer);
         }
         
     }
 
-    private void phase1Routines()
+    IEnumerator doCoroutines(params string[] routines)
     {
-        if (!coroutineRunning && bossAttackCoroutine == null)
+        
+        phaseRunning = true;
+        Phase currentPhase = phase;
+
+        while (currentPhase == phase)
         {
-            coroutineRunning = true;
-            switch (Random.Range(1, 6))
+
+            foreach (var routine in routines)
             {
-                case 1:
-                    state = State.CASTING;
-                    movingBulletHellCoroutine = StartCoroutine(MovingBulletHellEnum());                    
-                    break;
-                case 2:
-                    state = State.CASTING;
-                    rotatingBulletHellCoroutine = StartCoroutine(RotatingBulletHellEnum());                   
-                    break;
-                case 3:
-                    state = State.CHASE;
-                    chaseTimer = 0f;
-                    targetCircleCoroutine = StartCoroutine(TargetCircleEnum());
-                    break;
-                case 4:
-                    state = State.CASTING;
-                    rotatingWallsCoroutine = StartCoroutine(RotatingWallsEnum());                   
-                    break;
-                case 5:
-                    state = State.CHASE;
-                    chaseTimer = 0f;
-                    quartercircleCoroutine = StartCoroutine(QuarterCircleEnum("single", false));                   
-                    break;
+                while (mainRoutinesRunning())
+                    yield return new WaitForSeconds(1f);
+              
+                StartCoroutine(routine);               
             }
         }
+        phaseRunning = false;
     }
 
-    private void phase2Routines()
-    {
-        
-        
-    }
-
-    private void phase3Routines()
-    {
-        // This is a mess
-        state = State.CASTING;
-        switch (Random.Range(1, 6))
-        {
-            case 1:
-                if (mainRoutinesRunning())
-                    movingBulletHellCoroutine = StartCoroutine(MovingBulletHellEnum());
-                break;
-            case 2:
-                if (mainRoutinesRunning())                 
-                    rotatingBulletHellCoroutine = StartCoroutine(RotatingBulletHellEnum());
-                break;
-            case 3:                                               
-                if (targetCircleCoroutine == null)
-                    targetCircleCoroutine = StartCoroutine(TargetCircleEnum());
-                break;
-            case 4:
-                if (mainRoutinesRunning())
-                    rotatingWallsCoroutine = StartCoroutine(RotatingWallsEnum());
-                break;
-            case 5:
-                if (quartercircleCoroutine == null)
-                    quartercircleCoroutine = StartCoroutine(QuarterCircleEnum("double", true));
-                break;
-        }
-    }
-
-    private bool mainRoutinesRunning() => 
-        (rotatingBulletHellCoroutine == null && movingBulletHellCoroutine == null 
-        && bossAttackCoroutine == null && rotatingWallsCoroutine == null);
+    private bool mainRoutinesRunning() =>
+        rotatingBulletHellCoroutine || movingBulletHellCoroutine || bossAttackCoroutine || rotatingWallsCoroutine || bossChaseEnabled;
 
 
-    
+
     private void Update()
     {
         
@@ -224,28 +208,29 @@ public class EnemyAI : MonoBehaviour
 
     private void Chase()
     {
-        if (chaseTimer <= 0f)
-        {           
-            lookAtPlayer = true;
-            currentMoveSpeed = moveSpeed;
-            if (Vector3.Distance(this.transform.position, target.transform.position) >= 3f)
-            {
-                transform.position = Vector3.MoveTowards(transform.position, target.position, currentMoveSpeed * Time.deltaTime);
-            }
-            if (Vector3.Distance(this.transform.position, target.transform.position) < 3f)
-            {
-                if (bossAttackCoroutine == null)
-                    bossAttackCoroutine = StartCoroutine(BossAttackEnum());
-
-                chaseTimer = chaseTimerMax;
-            }
-        }
-        else
+        if (bossChaseEnabled)
         {
-            chaseTimer -= Time.deltaTime;
-        }
+            if (chaseTimer <= 0f)
+            {
+                lookAtPlayer = true;
+                currentMoveSpeed = moveSpeed;
+                if (Vector3.Distance(this.transform.position, target.transform.position) >= 3f)
+                {
+                    transform.position = Vector3.MoveTowards(transform.position, target.position, currentMoveSpeed * Time.deltaTime);
+                }
+                if (Vector3.Distance(this.transform.position, target.transform.position) < 3f)
+                {
+                    if (!bossAttackCoroutine)
+                        StartCoroutine(BossAttackEnum());
 
-       
+                    chaseTimer = chaseTimerMax;
+                }
+            }
+            else
+            {
+                chaseTimer -= Time.deltaTime;
+            }
+        }    
     }
 
     /*
@@ -264,12 +249,22 @@ public class EnemyAI : MonoBehaviour
     }
     */
 
+    IEnumerator EnableBossChaseEnum()
+    {
+        bossChaseEnabled = true;
+        state = State.CHASE;
+        yield return new WaitForSeconds(bossActiveTime); // var
+        state = State.CASTING;
+        bossChaseEnabled = false;
+    }
+
     IEnumerator BossAttackEnum()
     {
+        bossAttackCoroutine = true;
         state = State.CASTING;
         lookAtPlayer = false;
 
-        GameObject damageZone = Instantiate(bossAttackPrefab, new Vector3(transform.position.x, 0f, transform.position.z), transform.rotation);
+        GameObject damageZone = Instantiate(bossAttackPrefab, new Vector3(transform.position.x, .1f, transform.position.z), transform.rotation);
         Image fillArea = damageZone.transform.Find("FillAreaCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
         Transform collider = damageZone.transform.Find("Collider").transform;
 
@@ -285,12 +280,12 @@ public class EnemyAI : MonoBehaviour
         if(state == State.CASTING)
             state = State.CHASE;
 
-        bossAttackCoroutine = null;
+        bossAttackCoroutine = false;
     }
 
     IEnumerator MovingBulletHellEnum()
     {
-
+        movingBulletHellCoroutine = true;
         lookAtPlayer = true;
         Vector3 nextPos = waypoints[Random.Range(0, waypoints.Length)].transform.position;
         for (int i = 0; i<5; i++)
@@ -307,44 +302,29 @@ public class EnemyAI : MonoBehaviour
             
             yield return new WaitForSeconds(teleportTimer*3);
         }
-        movingBulletHellCoroutine = null;
-        coroutineRunning = false;
+        movingBulletHellCoroutine = false;
         lookAtPlayer = false;
     }
 
 
-    IEnumerator QuarterCircleEnum(string prefabVersion, bool willRotate)
+   
+    IEnumerator SingleQuarterCircleEnum()
     {
         for (int i = 0; i < 2; i++)
         {
-            GameObject quarterCircleZone;
-            Image fillArea1 = null;
-            Image fillArea2 = null;
             float angle = 90 * Random.Range(0, 4);
 
-            if (prefabVersion.Equals("single"))
-            {
-                quarterCircleZone = Instantiate(groundQuarterStaticPrefab);               
-            }
-            else
-            {
-                quarterCircleZone = Instantiate(groundQuarterDoublePrefab);
-                fillArea2 = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas2").transform.Find("Outer").Find("Inner").GetComponent<Image>();
-            }
-            fillArea1 = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
+
+            GameObject quarterCircleZone = Instantiate(groundQuarterStaticPrefab);
+            Image fillArea = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
             Transform collider = quarterCircleZone.transform.Find("Collider").transform;
-            quarterCircleZone.transform.rotation = Quaternion.Euler(0f, angle, 0f); 
-            
+            quarterCircleZone.transform.rotation = Quaternion.Euler(0f, angle, 0f);
+
 
             for (float j = 0; j < 1.01f; j += .005f)
             {
-                fillArea1.fillAmount = j;
-                if(fillArea2 != null)
-                    fillArea2.fillAmount = j;
-                               
-
-                if(willRotate)
-                    quarterCircleZone.transform.Rotate(new Vector3(0f, 1f, 0f), 30f * Time.deltaTime);
+                fillArea.fillAmount = j;
+                quarterCircleZone.transform.Rotate(new Vector3(0f, 1f, 0f), 30f * Time.deltaTime);
 
                 yield return new WaitForSeconds(.01f);
             }
@@ -352,55 +332,83 @@ public class EnemyAI : MonoBehaviour
             collider.gameObject.SetActive(true);
             yield return new WaitForSeconds(2f);
         }
-        quartercircleCoroutine = null;
-        coroutineRunning = false;
     }
 
-   
+    IEnumerator DoubleQuarterCircleEnum()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            GameObject quarterCircleZone;
+            Image fillArea1 = null;
+            Image fillArea2 = null;
+            float angle = 90 * Random.Range(0, 4);
+
+
+            quarterCircleZone = Instantiate(groundQuarterDoublePrefab);
+            fillArea2 = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas2").transform.Find("Outer").Find("Inner").GetComponent<Image>();
+
+            fillArea1 = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
+            Transform collider = quarterCircleZone.transform.Find("Collider").transform;
+            quarterCircleZone.transform.rotation = Quaternion.Euler(0f, angle, 0f);
+
+
+            for (float j = 0; j < 1.01f; j += .005f)
+            {
+                fillArea1.fillAmount = j;
+                if (fillArea2 != null)
+                    fillArea2.fillAmount = j;
+
+
+                quarterCircleZone.transform.Rotate(new Vector3(0f, 1f, 0f), 30f * Time.deltaTime);
+
+                yield return new WaitForSeconds(.01f);
+            }
+            Destroy(quarterCircleZone, .5f);
+            collider.gameObject.SetActive(true);
+            yield return new WaitForSeconds(2f);
+        }
+    }
 
     IEnumerator TargetCircleEnum()
     {
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 9; i++)
         {
             GameObject canvasCircle = Instantiate(targetCirclePrefab, new Vector3(target.position.x, 0f, target.position.z), Quaternion.identity);
             
             Transform collider = canvasCircle.transform.Find("TargetCircleCollider");
             RectTransform fillCircle = canvasCircle.transform.Find("TargetCircleCanvas").Find("Outer").Find("Inner").transform.GetComponent<RectTransform>();
 
-            for (float j = 0; j <= 1.01f; j+=.02f)
+            for (float j = 0; j <= 1.01f; j+=.015f)
             {          
                 fillCircle.localScale = new Vector3(j, j, j);
                 yield return new WaitForSeconds(.01f);
             }
             collider.gameObject.SetActive(true);
             Destroy(canvasCircle, 0.1f);
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(2f);
         }
-        targetCircleCoroutine = null;
-        coroutineRunning = false;
     }
 
     IEnumerator RotatingBulletHellEnum()
     {
-
+        rotatingBulletHellCoroutine = true;
         transform.position = waypointMiddle.transform.position;
         for (int i = 0; i < 10; i++)
         {
             SpawnBullet(ObjectPool.FrozenOrbStatic);
             yield return new WaitForSeconds(1f);
         }
-        rotatingBulletHellCoroutine = null;
-        coroutineRunning = false;
+        rotatingBulletHellCoroutine = false;
     }
 
     IEnumerator RotatingWallsEnum()
     {
+        rotatingWallsCoroutine = true;
         transform.position = waypointMiddle.transform.position;
         // Lag ut-animasjon
         Destroy(Instantiate(rotatingWallsPrefab), 20f);
         yield return new WaitForSeconds(20f);
-        rotatingWallsCoroutine = null;
-        coroutineRunning = false;
+        rotatingWallsCoroutine = false;
     }
     
 
