@@ -73,6 +73,9 @@ public class PlayerMovement : MonoBehaviour
     public float teleportLagMaxDuration;
     public float maxShieldAmount;
 
+    private float gravity = -1f;
+    private Vector3 addedVelocity;
+
 
     private void Start()
     {
@@ -96,6 +99,8 @@ public class PlayerMovement : MonoBehaviour
         teleportLagDuration = teleportLagMaxDuration;
         maxShieldAmount = 3;
 
+        
+
     }
 
     public enum ChannelingState
@@ -113,9 +118,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void monitorChannelEffects()
-    {
-        if(attackPower <= maxAttackPower)
-            attackPower += attackPowerModifier;
+    {       
 
         damageMeterDisplay.fillAmount = attackPower / maxAttackPower;
         cState = ChannelingState.PHASE1;
@@ -151,12 +154,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void playerMovement()
     {
-
+        if (transform.position.y >= 5f)
+            Debug.Log("Levitating");
 
         inputX = Input.GetAxisRaw("Horizontal");
         inputZ = Input.GetAxisRaw("Vertical");
 
         Vector3 moveDirection = new Vector3(inputX, 0f, inputZ);
+        addedVelocity.y += gravity * Time.deltaTime;
         moveDirection = moveDirection.normalized;
 
         // Stops player movement if in teleport
@@ -187,7 +192,7 @@ public class PlayerMovement : MonoBehaviour
                 controller.Move(moveDirection * playerSpeed * Time.deltaTime);
             }
 
-
+            controller.Move(addedVelocity * Time.deltaTime);
 
 
             // Calculate input magnitude
@@ -299,6 +304,9 @@ public class PlayerMovement : MonoBehaviour
                 playerInTeleport = false;
             }
         }
+        if(playerIsShooting)
+            if (attackPower <= maxAttackPower)
+                attackPower += attackPowerModifier;
     }
 
     private void playerChannelAttack()
