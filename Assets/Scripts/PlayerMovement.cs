@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using TMPro;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -28,9 +29,10 @@ public class PlayerMovement : MonoBehaviour
     public Image[] dashCharges;
     public Image[] shieldCharges;
     public Image shootTimerDisplay;
-    public Image damageMeterDisplay;
 
     public GameObject[] visualShieldCharges;
+
+    public TextMeshProUGUI attackPowerText;
 
 
     [Header("Player modifiable variables ")]
@@ -58,6 +60,7 @@ public class PlayerMovement : MonoBehaviour
     public float teleportDistance;
     public float attackCooldown;
     public float attackCooldownMax;
+    public float teleportLagMaxDuration;
 
     public ChannelingState cState;
 
@@ -71,11 +74,12 @@ public class PlayerMovement : MonoBehaviour
     private float teleportTimer;
     private float teleportTimerMax;
     private float teleportLagDuration;
-    private float teleportLagMaxDuration;
     private float maxShieldAmount;
     private float gravity;
 
     private Vector3 addedVelocity;
+
+    private Color phase1 = Color.blue;
 
 
     private void Start()
@@ -126,7 +130,6 @@ public class PlayerMovement : MonoBehaviour
     private void monitorChannelEffects()
     {       
 
-        damageMeterDisplay.fillAmount = attackPower / maxAttackPower;
         cState = ChannelingState.PHASE1;
 
         if (attackPower > channelStage2)
@@ -164,8 +167,6 @@ public class PlayerMovement : MonoBehaviour
      */
     private void playerMovement()
     {
-        if (transform.position.y >= 5f)
-            Debug.Log("Levitating");
 
         inputX = Input.GetAxisRaw("Horizontal");
         inputZ = Input.GetAxisRaw("Vertical");
@@ -254,20 +255,6 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // Teleporting freezes player-movement for a bit and triggers animation
-        IEnumerator TeleportLag(Vector3 newPos, float lagDuration)
-        {
-            teleportEndEffect.SetActive(false);
-            teleportStartEffect.SetActive(true);
-            yield return new WaitForSeconds(lagDuration);
-            teleportStartEffect.SetActive(false);
-            controller.enabled = false;
-            transform.position = newPos;
-            controller.enabled = true;
-            teleportEndEffect.SetActive(true);
-        }
-
-
         // Channeling animation
         anim.SetBool("Shoot", playerIsShooting);
 
@@ -325,6 +312,31 @@ public class PlayerMovement : MonoBehaviour
         if(playerIsShooting)
             if (attackPower <= maxAttackPower)
                 attackPower += attackPowerModifier;
+
+        // Display attack power on GUI text
+        attackPowerText.text = attackPower.ToString("F0");
+    }
+
+    //private TMP_Text m_TextComponent;
+    private void lerpColorAndSize(int newSize, Color color)
+    {
+        // Animasjon for size
+        //m_TextComponent = GetComponent<TMP_Text>();
+        //Color.Lerp(m_TextComponent.)
+        
+    }
+
+    // Teleporting freezes player-movement for a bit and triggers animation
+    IEnumerator TeleportLag(Vector3 newPos, float lagDuration)
+    {
+        teleportEndEffect.SetActive(false);
+        teleportStartEffect.SetActive(true);
+        yield return new WaitForSeconds(lagDuration);
+        teleportStartEffect.SetActive(false);
+        controller.enabled = false;
+        transform.position = newPos;
+        controller.enabled = true;
+        teleportEndEffect.SetActive(true);
     }
 
     private void playerChannelAttack()
@@ -373,7 +385,6 @@ public class PlayerMovement : MonoBehaviour
         shootingEffect2.SetActive(false);
         shootingEffect3.SetActive(false);
         shootingEffect4.SetActive(false);
-        damageMeterDisplay.fillAmount = 0f;
         availableDashes = 0;
         dashFillTime = maxDashFillTime;
         attackPowerModifier = attackPowerModifierStage1;
