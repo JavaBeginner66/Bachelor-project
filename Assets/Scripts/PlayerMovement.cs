@@ -224,10 +224,15 @@ public class PlayerMovement : MonoBehaviour
                 
                 if (Physics.Raycast(ray, out hitRay, 100f))
                 {
-                    if (Physics.Linecast(transform.position, new Vector3(hitRay.point.x, transform.position.y, hitRay.point.z), out hitLine)) 
-                        StartCoroutine(TeleportLag(new Vector3(hitLine.point.x, transform.position.y, hitLine.point.z), teleportLagDuration));
+                    if (Physics.Linecast(transform.position, new Vector3(hitRay.point.x, transform.position.y, hitRay.point.z), out hitLine))
+                    {
+                        Vector3 newPos = Vector3.Lerp(transform.position, new Vector3(hitLine.point.x, transform.position.y, hitLine.point.z), .75f);
+                        StartCoroutine(TeleportLag(newPos, teleportLagDuration));
+                    }
                     else
+                    {
                         StartCoroutine(TeleportLag(new Vector3(hitRay.point.x, transform.position.y, hitRay.point.z), teleportLagDuration));
+                    }
                 }       
             }
         }
