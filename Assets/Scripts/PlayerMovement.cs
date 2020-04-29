@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform groundCheck;
     public LayerMask groundMask;
 
+    // Prefabs
     public GameObject projectileToShoot;
     public GameObject projectile1;
     public GameObject projectile2;
@@ -65,15 +66,15 @@ public class PlayerMovement : MonoBehaviour
     private float inputZ;    
     private float animationSpeedMagnitude;
     private float playerSpeed;
-    public bool playerIsShooting;
-    public bool playerInTeleport;
-    public float teleportTimer;
-    public float teleportTimerMax;
-    public float teleportLagDuration;
-    public float teleportLagMaxDuration;
-    public float maxShieldAmount;
+    private bool playerIsShooting;
+    private bool playerInTeleport;
+    private float teleportTimer;
+    private float teleportTimerMax;
+    private float teleportLagDuration;
+    private float teleportLagMaxDuration;
+    private float maxShieldAmount;
+    private float gravity;
 
-    private float gravity = -1f;
     private Vector3 addedVelocity;
 
 
@@ -98,8 +99,9 @@ public class PlayerMovement : MonoBehaviour
         attackCooldown = attackCooldownMax;
         teleportLagDuration = teleportLagMaxDuration;
         maxShieldAmount = 3;
+        gravity = -1f;
 
-        
+
 
     }
 
@@ -117,6 +119,10 @@ public class PlayerMovement : MonoBehaviour
         return this.cState;
     }
 
+    /**
+     * Method monitors which phase channeling is in, and 
+     * sets a new attack multiplier and adds new effects for corresponding phase
+     */
     private void monitorChannelEffects()
     {       
 
@@ -152,6 +158,10 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    /**
+     * Method is called from Update()
+     * Controlls everything from playermovement to skillset and abilities
+     */
     private void playerMovement()
     {
         if (transform.position.y >= 5f)
@@ -167,6 +177,7 @@ public class PlayerMovement : MonoBehaviour
         // Stops player movement if in teleport
         if (!playerInTeleport)
         {
+            // If player is in channeling mode, change movement to mouse-oriented
             if (playerIsShooting)
             {
                 monitorChannelEffects();
@@ -216,6 +227,7 @@ public class PlayerMovement : MonoBehaviour
             }        
         }
 
+        // Code block listens for GetKeyDown and executes code to teleport player and manage dashes
         if (playerIsShooting)
         {
             if (Input.GetKeyDown(KeyCode.LeftShift) && !playerInTeleport && availableDashes >= 1 && dashCharges[0].fillAmount == 1)
@@ -242,6 +254,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
+        // Teleporting freezes player-movement for a bit and triggers animation
         IEnumerator TeleportLag(Vector3 newPos, float lagDuration)
         {
             teleportEndEffect.SetActive(false);
@@ -255,9 +268,10 @@ public class PlayerMovement : MonoBehaviour
         }
 
 
-
+        // Channeling animation
         anim.SetBool("Shoot", playerIsShooting);
 
+        // Fill up dash charges corresponding the channeling phase player is in
         dashFillTime += Time.deltaTime;
         if ((int)cState + 1 > availableDashes)
         {
@@ -268,6 +282,7 @@ public class PlayerMovement : MonoBehaviour
                 dashFillTime = 0;
             }
         }
+
         // Manage shield charges if player is isnt charging shot
         if (!playerIsShooting)
         {
@@ -285,16 +300,18 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
 
+            // Fill up shield charges visually
             if (availableShields <= maxShieldAmount)
                 shieldCharges[availableShields].fillAmount = shieldFillTime / maxShieldFillTime;
                 
             
         }
 
-
+        // Fill up dash charges visually
         if(availableDashes >= 1)
             dashCharges[availableDashes-1].fillAmount = dashFillTime / maxDashFillTime;
 
+        // Manage teleport timer
         if (playerInTeleport)
         {
             teleportTimer -= Time.deltaTime;
@@ -304,6 +321,7 @@ public class PlayerMovement : MonoBehaviour
                 playerInTeleport = false;
             }
         }
+        // Increase attack power while player is charging
         if(playerIsShooting)
             if (attackPower <= maxAttackPower)
                 attackPower += attackPowerModifier;
@@ -321,18 +339,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void calculateShields()
-    {
-        for (int i = 0; i < visualShieldCharges.Length; i++)
-        {
-            visualShieldCharges[i].SetActive(false);
-        }
-        for (int i = 0; i < availableShields; i++)
-        {
-            visualShieldCharges[i].SetActive(true);
-        }
-    }
-
     public void playerShieldDamage()
     {   
         if(availableShields >= maxShieldAmount+1)
@@ -343,6 +349,16 @@ public class PlayerMovement : MonoBehaviour
         
         availableShields--;
         calculateShields();
+    }
+
+    private void calculateShields()
+    {
+        // Disable all shields
+        for (int i = 0; i < visualShieldCharges.Length; i++)
+            visualShieldCharges[i].SetActive(false);
+        // Enable shields
+        for (int i = 0; i < availableShields; i++)
+            visualShieldCharges[i].SetActive(true);
     }
 
     private void playerReleaseAttack()

@@ -14,6 +14,7 @@ public class EnemyAI : MonoBehaviour
     public GameObject portalEffect;
     public GameObject portalStands;
     public Image healthDisplay;
+
     // Different field abilities
     public GameObject rotatingWallsPrefab;
     public GameObject targetCirclePrefab;
@@ -25,8 +26,7 @@ public class EnemyAI : MonoBehaviour
     public Phase phase;
 
     [Header("EnemyAI modifiable variables")]
-    public float teleportTimer = 1;
-    public float bulletHellWaves = 10;
+    public float teleportTimer;
     public float healthPool;
     public float phaseMachineTimer;
     public float currentMoveSpeed;
@@ -40,7 +40,7 @@ public class EnemyAI : MonoBehaviour
     private float chaseTimerMax;
     private float chaseTimer;
     private bool phaseRunning;
-    private float bossActiveTime = 10f;
+    private float bossActiveTime;
 
     // Coroutine running checks
     private bool movingBulletHellCoroutine;
@@ -66,6 +66,8 @@ public class EnemyAI : MonoBehaviour
         state = State.CASTING;
         phase = Phase.PHASE0;
         chaseTimerMax = 2f;
+        teleportTimer = 1f;
+        bossActiveTime = 10f;
     }
 
     public enum State
@@ -107,6 +109,9 @@ public class EnemyAI : MonoBehaviour
     }
 
 
+    /*
+     * Runs coroutines based on which PHASE the boss is currently in.
+     */
     public IEnumerator PhaseMachine()
     {
         phaseMachineTimer = 3;
@@ -152,11 +157,18 @@ public class EnemyAI : MonoBehaviour
         }      
     }
 
+    /* 
+     * Method used to transition to next phase outside of script.
+     * The current routines will finish before the next phase starts.
+     */
     public void nextPhase()
     {
         phase++;
     }
 
+    /*
+     * Runs the coroutines given in parameter list in order
+     */
     IEnumerator doCoroutines(params string[] routines)
     {
         
@@ -167,6 +179,7 @@ public class EnemyAI : MonoBehaviour
         {
             foreach (var routine in routines)
             {
+                // If a major routine where the boss transform is not occupied is not running, start a new routine
                 while (mainRoutinesRunning())
                     yield return new WaitForSeconds(1f);
               
@@ -182,13 +195,9 @@ public class EnemyAI : MonoBehaviour
 
 
     private void Update()
-    {
-        
-
+    {      
         if(lookAtPlayer)
             transform.LookAt(target);
-
-        
 
         if (GameMasterScript.gameRunning)
         {
