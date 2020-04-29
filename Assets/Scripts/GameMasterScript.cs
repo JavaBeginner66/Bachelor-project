@@ -19,6 +19,8 @@ public class GameMasterScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
             gameRunning = true;
 
+        if (Input.GetKeyDown(KeyCode.V))
+            enemyAI.nextPhase();
 
         if (Input.GetKeyDown(KeyCode.E))
             StartCoroutine (enemyAI.PhaseMachine());

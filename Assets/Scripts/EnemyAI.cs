@@ -12,6 +12,7 @@ public class EnemyAI : MonoBehaviour
     public Transform[] waypoints;
     public Transform waypointMiddle;    
     public GameObject portalEffect;
+    public GameObject portalStands;
     public Image healthDisplay;
     // Different field abilities
     public GameObject rotatingWallsPrefab;
@@ -21,6 +22,7 @@ public class EnemyAI : MonoBehaviour
     public GameObject bossAttackPrefab;
 
     public State state;
+    public Phase phase;
 
     [Header("EnemyAI modifiable variables")]
     public float teleportTimer = 1;
@@ -32,10 +34,13 @@ public class EnemyAI : MonoBehaviour
 
     [HideInInspector] // Internal script variables
     public static EnemyAI enemyAI;
-    private Phase phase;
     private int waypointsIndex;   
     private float currentHealth;
     private bool lookAtPlayer;
+    private float chaseTimerMax;
+    private float chaseTimer;
+    private bool phaseRunning;
+    private float bossActiveTime = 10f;
 
     // Coroutine running checks
     private bool movingBulletHellCoroutine;
@@ -51,24 +56,16 @@ public class EnemyAI : MonoBehaviour
     private readonly string QuarterDoubleCircleEnumRef = "DoubleQuarterCircleEnum";
     private readonly string QuarterSingleCircleEnumRef = "SingleQuarterCircleEnum";
     private readonly string RotatingWallsEnumRef = "RotatingWallsEnum";
-    private readonly string BossAttackEnumRef = "BossAttackEnum";
     private readonly string EnableBossChaseEnumRef = "EnableBossChaseEnum";
-
-    public Text tempText;
-
-    private float chaseTimerMax;
-    private float chaseTimer;
-    public bool phaseRunning;
-    private float bossActiveTime = 10f;
+    
 
     private void Start()
     {
         enemyAI = this;
         currentHealth = healthPool;
         state = State.CASTING;
-        phase = Phase.PHASE8;
+        phase = Phase.PHASE0;
         chaseTimerMax = 2f;
-
     }
 
     public enum State
@@ -152,8 +149,12 @@ public class EnemyAI : MonoBehaviour
                 }
             }
             yield return new WaitForSeconds(phaseMachineTimer);
-        }
-        
+        }      
+    }
+
+    public void nextPhase()
+    {
+        phase++;
     }
 
     IEnumerator doCoroutines(params string[] routines)
@@ -164,7 +165,6 @@ public class EnemyAI : MonoBehaviour
 
         while (currentPhase == phase)
         {
-
             foreach (var routine in routines)
             {
                 while (mainRoutinesRunning())
@@ -253,7 +253,7 @@ public class EnemyAI : MonoBehaviour
     {
         bossChaseEnabled = true;
         state = State.CHASE;
-        yield return new WaitForSeconds(bossActiveTime); // var
+        yield return new WaitForSeconds(bossActiveTime);
         state = State.CASTING;
         bossChaseEnabled = false;
     }
@@ -316,6 +316,7 @@ public class EnemyAI : MonoBehaviour
 
 
             GameObject quarterCircleZone = Instantiate(groundQuarterStaticPrefab);
+
             Image fillArea = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
             Transform collider = quarterCircleZone.transform.Find("Collider").transform;
             quarterCircleZone.transform.rotation = Quaternion.Euler(0f, angle, 0f);

@@ -218,12 +218,17 @@ public class PlayerMovement : MonoBehaviour
                 dashCharges[availableDashes - 1].fillAmount = 0f;
                 availableDashes--;
                 TeleportMode();
-                RaycastHit hit;
+                RaycastHit hitRay;
+                RaycastHit hitLine;
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out hit, 100f))
+                
+                if (Physics.Raycast(ray, out hitRay, 100f))
                 {
-                    StartCoroutine(TeleportLag(new Vector3(hit.point.x, transform.position.y, hit.point.z), teleportLagDuration));
-                }
+                    if (Physics.Linecast(transform.position, new Vector3(hitRay.point.x, transform.position.y, hitRay.point.z), out hitLine)) 
+                        StartCoroutine(TeleportLag(new Vector3(hitLine.point.x, transform.position.y, hitLine.point.z), teleportLagDuration));
+                    else
+                        StartCoroutine(TeleportLag(new Vector3(hitRay.point.x, transform.position.y, hitRay.point.z), teleportLagDuration));
+                }       
             }
         }
 
@@ -269,10 +274,10 @@ public class PlayerMovement : MonoBehaviour
                     calculateShields();                                 
                 }
             }
-            /*
+
             if (availableShields <= maxShieldAmount)
                 shieldCharges[availableShields].fillAmount = shieldFillTime / maxShieldFillTime;
-                */
+                
             
         }
 
