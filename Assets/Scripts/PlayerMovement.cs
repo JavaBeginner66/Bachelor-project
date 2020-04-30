@@ -38,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
     public float maxAttackPower;
     public float attackPowerModifier;
     public float[] attackPowerModifierStages;
+    public float nextPhaseTimer;
 
     public int availableDashes;
     public int availableShields;
@@ -63,7 +64,6 @@ public class PlayerMovement : MonoBehaviour
     private float maxShieldAmount;
     private float gravity;
     private float nextPhaseTimerMax;
-    public float nextPhaseTimer;
 
     private Vector3 addedVelocity;
 
@@ -74,7 +74,6 @@ public class PlayerMovement : MonoBehaviour
     {
         attackPower = StatsScript.ProjectileBaseDamage;
         playerSpeed = runningSpeed;
-        attackPowerModifierStages = new float[10];
         attackPowerModifier = attackPowerModifierStages[0];
         controller = GetComponent<CharacterController>();
         anim = transform.GetComponentInChildren<Animator>();
@@ -121,8 +120,7 @@ public class PlayerMovement : MonoBehaviour
     private void nextChannelingPhase(ChannelingState state)
     {
         // Manages attack power text
-        //lerpTextSizeAndColor(5, colorArray[(int)cState]);       
-
+        lerpTextSizeAndColor(5, colorArray[(int)cState]);       
         
         // state starts at 1, so to target the previous state effect, the correct check is -2
         if((int)state - 2 >= 0)
@@ -295,8 +293,7 @@ public class PlayerMovement : MonoBehaviour
     private void lerpTextSizeAndColor(int newSize, Color color)
     {
         // Animasjon for size
-        attackPowerText.outlineColor = Color.Lerp(attackPowerText.outlineColor, color, 5f);
-        
+        attackPowerText.outlineColor = Color.Lerp(attackPowerText.outlineColor, color, 10f);       
     }
 
     // Teleporting freezes player-movement for a bit and triggers animation
