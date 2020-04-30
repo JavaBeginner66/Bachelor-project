@@ -65,6 +65,7 @@ public class PlayerMovement : MonoBehaviour
     private float gravity;
     private float nextPhaseTimerMax;
     private int baseFontSize;
+    private float nextPhaseTimerBase;
 
     private Vector3 addedVelocity;
 
@@ -94,7 +95,8 @@ public class PlayerMovement : MonoBehaviour
         maxShieldAmount = 3;
         gravity = -1f;
         attackPowerText.outlineColor = Color.blue;
-        nextPhaseTimerMax = 3f;
+        nextPhaseTimerBase = 2f;
+        nextPhaseTimerMax = nextPhaseTimerBase;
         baseFontSize = 50;
     }
 
@@ -119,6 +121,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void nextChannelingPhase(ChannelingState state)
     {
+        // Makes next phase 1 second loner
+        nextPhaseTimerMax++;
         // Manages attack power text
         StartCoroutine(lerpTextSizeAndColor(colorArray[(int)cState]));       
         
@@ -284,7 +288,7 @@ public class PlayerMovement : MonoBehaviour
         // Increase attack power while player is charging
         if(playerIsShooting)
             if (attackPower <= maxAttackPower)
-                attackPower += attackPowerModifier;
+                attackPower += attackPowerModifier * Time.deltaTime;
 
         // Display attack power on GUI text
         attackPowerText.text = attackPower.ToString("F0");
@@ -371,6 +375,7 @@ public class PlayerMovement : MonoBehaviour
         attackPowerText.outlineColor = colorArray[1];
         cState = ChannelingState.STATE_ZERO;
         nextPhaseTimer = 0f;
+        nextPhaseTimerMax = nextPhaseTimerBase;
 
         // Creating a projectile, and setting the projectile damage in this current instance
         GameObject proj = Instantiate(projectileToShoot, projectileSpawnPoint.transform.position, transform.rotation);

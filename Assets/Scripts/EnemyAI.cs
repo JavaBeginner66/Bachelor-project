@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.AI;
 using UnityEngine.UI;
+using TMPro;
 
 public class EnemyAI : MonoBehaviour
 {
@@ -14,6 +13,7 @@ public class EnemyAI : MonoBehaviour
     public GameObject portalEffect;
     public GameObject portalStands;
     public Image healthDisplay;
+    public TextMeshProUGUI livesText;
 
     // Different field abilities
     public GameObject rotatingWallsPrefab;
@@ -26,21 +26,23 @@ public class EnemyAI : MonoBehaviour
     public Phase phase;
 
     [Header("EnemyAI modifiable variables")]
-    public float teleportTimer;
-    public float healthPool;
+    public float teleportTimer;    
     public float phaseMachineTimer;
     public float currentMoveSpeed;
     public float moveSpeed;
+    public int[] healthPoolsArray;
 
     [HideInInspector] // Internal script variables
     public static EnemyAI enemyAI;
-    private int waypointsIndex;   
+    private int waypointsIndex; 
+    private float healthPoolMax;
     private float currentHealth;
     private bool lookAtPlayer;
     private float chaseTimerMax;
     private float chaseTimer;
     private bool phaseRunning;
     private float bossActiveTime;
+    private bool invulnerable;
 
     // Coroutine running checks
     private bool movingBulletHellCoroutine;
@@ -61,13 +63,14 @@ public class EnemyAI : MonoBehaviour
 
     private void Start()
     {
-        enemyAI = this;
-        currentHealth = healthPool;
+        enemyAI = this;      
         state = State.CASTING;
         phase = Phase.PHASE0;
         chaseTimerMax = 2f;
         teleportTimer = 1f;
         bossActiveTime = 10f;
+        healthPoolMax = healthPoolsArray[0];
+        currentHealth = healthPoolMax;
     }
 
     public enum State
@@ -95,19 +98,51 @@ public class EnemyAI : MonoBehaviour
         phase = newPhase;
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider playerProjectile)
     {
-        if (other.tag.Equals(StatsScript.ProjectileBaseDamageTag))
-            takeDamage(other);
+        if (playerProjectile.tag.Equals(StatsScript.PlayerProjectile))
+            takeDamage(playerProjectile);
 
     }
 
     public void takeDamage(Collider projectile)
     {
-        currentHealth -= projectile.GetComponent<Projectile>().getProjectileDamage();
-        healthDisplay.fillAmount = currentHealth / healthPool;
+
+        if (!invulnerable)
+        {
+            Debug.Log("???");
+            currentHealth -= projectile.GetComponent<Projectile>().getProjectileDamage();
+
+            if (currentHealth <= 0)
+            {
+                if ((int)phase >= 8)
+                    Debug.Log("You win");
+
+                nextPhase();
+                // Cast phase into int to get next phase healthpool
+                healthPoolMax = healthPoolsArray[(int)phase];
+                StartCoroutine(fillUpHealthBar());
+                livesText.text = ((int)phase).ToString();
+            }
+            healthDisplay.fillAmount = currentHealth / healthPoolMax;
+        }
     }
 
+    private IEnumerator fillUpHealthBar()
+    {
+        // Colors?
+        invulnerable = true;
+        for (float j = 0; j <= 1.01f; j += .01f)
+        {
+            healthDisplay.fillAmount = j;
+            yield return new WaitForSeconds(.01f);
+        }
+        
+        healthDisplay.fillAmount = 1f;
+        currentHealth = healthPoolMax;
+        
+        invulnerable = false;
+    }
 
     /*
      * Runs coroutines based on which PHASE the boss is currently in.
@@ -118,7 +153,7 @@ public class EnemyAI : MonoBehaviour
         while (GameMasterScript.gameRunning)
         {            
             if (!phaseRunning)
-            {
+            {               
                 switch (phase)
                 {
                     case Phase.PHASE0:                                          
@@ -195,8 +230,9 @@ public class EnemyAI : MonoBehaviour
 
 
     private void Update()
-    {      
-        if(lookAtPlayer)
+    {
+        
+        if (lookAtPlayer)
             transform.LookAt(target);
 
         if (GameMasterScript.gameRunning)
