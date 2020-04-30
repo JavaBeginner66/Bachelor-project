@@ -64,6 +64,7 @@ public class PlayerMovement : MonoBehaviour
     private float maxShieldAmount;
     private float gravity;
     private float nextPhaseTimerMax;
+    private int baseFontSize;
 
     private Vector3 addedVelocity;
 
@@ -94,8 +95,7 @@ public class PlayerMovement : MonoBehaviour
         gravity = -1f;
         attackPowerText.outlineColor = Color.blue;
         nextPhaseTimerMax = 3f;
-        nextPhaseTimer = nextPhaseTimerMax;
-
+        baseFontSize = 50;
     }
 
     public enum ChannelingState
@@ -120,7 +120,7 @@ public class PlayerMovement : MonoBehaviour
     private void nextChannelingPhase(ChannelingState state)
     {
         // Manages attack power text
-        lerpTextSizeAndColor(5, colorArray[(int)cState]);       
+        StartCoroutine(lerpTextSizeAndColor(colorArray[(int)cState]));       
         
         // state starts at 1, so to target the previous state effect, the correct check is -2
         if((int)state - 2 >= 0)
@@ -290,14 +290,23 @@ public class PlayerMovement : MonoBehaviour
         attackPowerText.text = attackPower.ToString("F0");
     }
 
-    private void lerpTextSizeAndColor(int newSize, Color color)
+    private IEnumerator lerpTextSizeAndColor(Color color)
     {
-        // Animasjon for size
-        attackPowerText.outlineColor = Color.Lerp(attackPowerText.outlineColor, color, 10f);       
+        attackPowerText.outlineColor = Color.Lerp(attackPowerText.outlineColor, color, 1f);
+        for (int i = 0; i < 20; i++)
+        {
+            attackPowerText.fontSize += 1f;
+            yield return new WaitForSeconds(.0005f);
+        }
+        for (int i = 0; i < 15; i++)
+        {
+            attackPowerText.fontSize -= 1f;
+            yield return new WaitForSeconds(.0001f);
+        }
     }
 
     // Teleporting freezes player-movement for a bit and triggers animation
-    IEnumerator TeleportLag(Vector3 newPos, float lagDuration)
+    private IEnumerator TeleportLag(Vector3 newPos, float lagDuration)
     {
         teleportEndEffect.SetActive(false);
         teleportStartEffect.SetActive(true);
@@ -358,8 +367,9 @@ public class PlayerMovement : MonoBehaviour
         availableDashes = 0;
         dashFillTime = maxDashFillTime;
         attackPowerModifier = attackPowerModifierStages[0];
+        attackPowerText.fontSize = baseFontSize;
+        attackPowerText.outlineColor = colorArray[1];
         cState = ChannelingState.STATE_ZERO;
-        lerpTextSizeAndColor(5, Color.blue);
         nextPhaseTimer = 0f;
 
         // Creating a projectile, and setting the projectile damage in this current instance
