@@ -12,19 +12,13 @@ public class PlayerMovement : MonoBehaviour
     public Transform groundCheck;
     public LayerMask groundMask;
 
-    // Prefabs
-    public GameObject projectileToShoot;
-    public GameObject projectile1;
-    public GameObject projectile2;
-    public GameObject projectile3;
-    public GameObject projectile4;
+    // Prefabs   
     public GameObject projectileSpawnPoint;
-    public GameObject shootingEffect1;
-    public GameObject shootingEffect2;
-    public GameObject shootingEffect3;
-    public GameObject shootingEffect4;
     public GameObject teleportStartEffect;
     public GameObject teleportEndEffect;
+    public GameObject[] projectileList;
+    public GameObject[] shootingEffectList;
+    public GameObject projectileToShoot;
 
     public Image[] dashCharges;
     public Image[] shieldCharges;
@@ -43,13 +37,7 @@ public class PlayerMovement : MonoBehaviour
     public float attackPower;
     public float maxAttackPower;
     public float attackPowerModifier;
-    public float attackPowerModifierStage1;
-    public float attackPowerModifierStage2;
-    public float attackPowerModifierStage3;
-    public float attackPowerModifierStage4;
-    public float channelStage2;
-    public float channelStage3;
-    public float channelStage4;
+    public float[] attackPowerModifierStages;
 
     public int availableDashes;
     public int availableShields;
@@ -74,7 +62,8 @@ public class PlayerMovement : MonoBehaviour
     private float teleportLagDuration;
     private float maxShieldAmount;
     private float gravity;
-    private int currentPhase;
+    private float nextPhaseTimerMax;
+    public float nextPhaseTimer;
 
     private Vector3 addedVelocity;
 
@@ -85,18 +74,19 @@ public class PlayerMovement : MonoBehaviour
     {
         attackPower = StatsScript.ProjectileBaseDamage;
         playerSpeed = runningSpeed;
-        attackPowerModifier = attackPowerModifierStage1;
+        attackPowerModifierStages = new float[10];
+        attackPowerModifier = attackPowerModifierStages[0];
         controller = GetComponent<CharacterController>();
         anim = transform.GetComponentInChildren<Animator>();
-        shootingEffect1.SetActive(false);
-        shootingEffect2.SetActive(false);      
-        shootingEffect3.SetActive(false);
-        shootingEffect4.SetActive(false);
+        for (int i = 0; i < shootingEffectList.Length; i++)
+        {
+            shootingEffectList[i].SetActive(false);
+        }
         teleportStartEffect.SetActive(false);
         teleportEndEffect.SetActive(false);
 
-        projectileToShoot = projectile1;
-        cState = ChannelingState.PHASE_ZERO;
+        projectileToShoot = projectileList[0];
+        cState = ChannelingState.STATE_ZERO;
         availableDashes = 1;
         availableShields = 0;
         attackCooldown = attackCooldownMax;
@@ -104,17 +94,18 @@ public class PlayerMovement : MonoBehaviour
         maxShieldAmount = 3;
         gravity = -1f;
         attackPowerText.outlineColor = Color.blue;
-
+        nextPhaseTimerMax = 3f;
+        nextPhaseTimer = nextPhaseTimerMax;
 
     }
 
     public enum ChannelingState
     {
-        PHASE_ZERO = 0,
-        PHASE1 = 1,
-        PHASE2 = 2,
-        PHASE3 = 3,
-        PHASE4 = 4,
+        STATE_ZERO = 0,
+        STATE1 = 1,
+        STATE2 = 2,
+        STATE3 = 3,
+        STATE4 = 4,
     }
 
     public ChannelingState getPlayerChannelingState()
@@ -126,48 +117,23 @@ public class PlayerMovement : MonoBehaviour
      * Method monitors which phase channeling is in, and 
      * sets a new attack multiplier and adds new effects for corresponding phase
      */
-    private void monitorChannelEffects()
-    {       
 
-        cState = ChannelingState.PHASE1;
-        currentPhase = (int)cState;
-        //Debug.Log(currentPhase + "      " + (int)cState);
-        if (currentPhase != (int)cState)
-        {
-            
-            lerpTextSizeAndColor(5, colorArray[(int)cState]); 
-            currentPhase = (int)cState;
-        }
+    private void nextChannelingPhase(ChannelingState state)
+    {
+        // Manages attack power text
+        //lerpTextSizeAndColor(5, colorArray[(int)cState]);       
 
-        if (attackPower > channelStage2)
-        {
-            
-            cState = ChannelingState.PHASE2;
-            Debug.Log((int)cState);
-            shootingEffect1.SetActive(false);
-            attackPowerModifier = attackPowerModifierStage2;
-            projectileToShoot = projectile2;
-            if(!shootingEffect2.activeSelf)
-                shootingEffect2.SetActive(true);
-        }
-        if(attackPower > channelStage3)
-        {
-            cState = ChannelingState.PHASE3;
-            shootingEffect2.SetActive(false);
-            attackPowerModifier = attackPowerModifierStage3;
-            projectileToShoot = projectile3;
-            if (!shootingEffect3.activeSelf)
-                shootingEffect3.SetActive(true);
-        }
-        if (attackPower > channelStage4)
-        {
-            cState = ChannelingState.PHASE4;
-            shootingEffect3.SetActive(false);
-            attackPowerModifier = attackPowerModifierStage4;
-            projectileToShoot = projectile4;
-            if (!shootingEffect4.activeSelf)
-                shootingEffect4.SetActive(true);
-        }
+        
+        // state starts at 1, so to target the previous state effect, the correct check is -2
+        if((int)state - 2 >= 0)
+            shootingEffectList[(int)state-2].SetActive(false);
+
+        // ChannelingState index has 0 occupied with no-shooting state, so (int)state-1 is to target the right index
+        attackPowerModifier = attackPowerModifierStages[(int)state];
+        projectileToShoot = projectileList[(int)state-1];
+        if (!shootingEffectList[(int)state-1].activeSelf)
+            shootingEffectList[(int)state-1].SetActive(true);
+             
     }
 
     /**
@@ -190,7 +156,17 @@ public class PlayerMovement : MonoBehaviour
             // If player is in channeling mode, change movement to mouse-oriented
             if (playerIsShooting)
             {
-                monitorChannelEffects();
+                // Manage timer for when next channeling phase starts
+                if (nextPhaseTimer <= 0)
+                {
+                    if(cState <= ChannelingState.STATE3)
+                        nextChannelingPhase(++cState);
+                    nextPhaseTimer = nextPhaseTimerMax;
+                }
+                else
+                {
+                    nextPhaseTimer -= Time.deltaTime;
+                }
 
                 RaycastHit hit;
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -340,7 +316,7 @@ public class PlayerMovement : MonoBehaviour
     private void playerChannelAttack()
     {
         playerIsShooting = true;
-        shootingEffect1.SetActive(true);
+        shootingEffectList[0].SetActive(true);
         // Remove the current charging shield charge
         if (availableShields <= maxShieldAmount)
         {
@@ -379,22 +355,22 @@ public class PlayerMovement : MonoBehaviour
             dashCharges[i].fillAmount = 0f;
         }
         // Reset everything to default or start value
-        shootingEffect1.SetActive(false);
-        shootingEffect2.SetActive(false);
-        shootingEffect3.SetActive(false);
-        shootingEffect4.SetActive(false);
+        for (int i = 0; i < shootingEffectList.Length; i++)
+            shootingEffectList[i].SetActive(false);
+
         availableDashes = 0;
         dashFillTime = maxDashFillTime;
-        attackPowerModifier = attackPowerModifierStage1;
-        cState = ChannelingState.PHASE_ZERO;
+        attackPowerModifier = attackPowerModifierStages[0];
+        cState = ChannelingState.STATE_ZERO;
         lerpTextSizeAndColor(5, Color.blue);
+        nextPhaseTimer = 0f;
 
         // Creating a projectile, and setting the projectile damage in this current instance
         GameObject proj = Instantiate(projectileToShoot, projectileSpawnPoint.transform.position, transform.rotation);
         Destroy(proj, 10f);
         proj.GetComponent<Projectile>().setProjectileDamage(attackPower);
         attackPower = StatsScript.ProjectileBaseDamage;
-        projectileToShoot = projectile1;
+        projectileToShoot = projectileList[0];
 
         // Exit shooting mode
         playerIsShooting = false;    

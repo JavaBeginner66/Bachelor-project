@@ -54,13 +54,13 @@ public class CameraScript : MonoBehaviour
             if (!inTransition)
             {
                 inTransition = true;
-                if(playerScript.getPlayerChannelingState() >= PlayerMovement.ChannelingState.PHASE1)
+                if(playerScript.getPlayerChannelingState() >= PlayerMovement.ChannelingState.STATE1)
                 {
                     StartCoroutine(LerpFromTo(offset,
                             new Vector3(0, positionPhase5.x, positionPhase5.y), 
                             transitionDuration
                             ));
-                    channelingState = PlayerMovement.ChannelingState.PHASE1;
+                    channelingState = PlayerMovement.ChannelingState.STATE1;
                 }
                 else
                 {                   
@@ -68,7 +68,7 @@ public class CameraScript : MonoBehaviour
                             new Vector3(0, positionPhase1.x, positionPhase1.y),
                             transitionDuration
                             ));
-                    channelingState = PlayerMovement.ChannelingState.PHASE_ZERO;
+                    channelingState = PlayerMovement.ChannelingState.STATE_ZERO;
                 }              
             }
         }   
