@@ -5558,8 +5558,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294936658
-  m_fontColor: {r: 0.3254717, g: 0.5335854, b: 1, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -5593,7 +5593,7 @@ MonoBehaviour:
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
   m_enableWordWrapping: 1
-  m_wordWrappingRatios: 0.4
+  m_wordWrappingRatios: 0.48
   m_overflowMode: 0
   m_firstOverflowCharacterIndex: -1
   m_linkedTextComponent: {fileID: 0}
@@ -46767,18 +46767,18 @@ MonoBehaviour:
   - {fileID: 657173196}
   - {fileID: 670159861}
   shootTimerDisplay: {fileID: 0}
-  damageMeterDisplay: {fileID: 0}
   visualShieldCharges:
   - {fileID: 1074313360}
   - {fileID: 143987364}
   - {fileID: 548301488}
   - {fileID: 1297959282}
+  attackPowerText: {fileID: 282225523}
   desiredRotationSpeed: 0.2
   groundDistance: 0.4
   runningSpeed: 12
   ChannelStateSpeed: 2
   attackPower: 0
-  maxAttackPower: 3000
+  maxAttackPower: 999999
   attackPowerModifier: 0
   attackPowerModifierStage1: 0.1
   attackPowerModifierStage2: 0.3
@@ -71912,7 +71912,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 550, y: 125}
+  m_SizeDelta: {x: 350, y: 125}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1784426336
 MonoBehaviour:

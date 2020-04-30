@@ -71,15 +71,14 @@ public class PlayerMovement : MonoBehaviour
     private float playerSpeed;
     private bool playerIsShooting;
     private bool playerInTeleport;
-    private float teleportTimer;
-    private float teleportTimerMax;
     private float teleportLagDuration;
     private float maxShieldAmount;
     private float gravity;
+    private int currentPhase;
 
     private Vector3 addedVelocity;
 
-    private Color phase1 = Color.blue;
+    private Color[] colorArray = {Color.black, Color.blue, Color.red, Color.yellow, Color.cyan };
 
 
     private void Start()
@@ -104,7 +103,7 @@ public class PlayerMovement : MonoBehaviour
         teleportLagDuration = teleportLagMaxDuration;
         maxShieldAmount = 3;
         gravity = -1f;
-
+        attackPowerText.outlineColor = Color.blue;
 
 
     }
@@ -131,10 +130,20 @@ public class PlayerMovement : MonoBehaviour
     {       
 
         cState = ChannelingState.PHASE1;
+        currentPhase = (int)cState;
+        //Debug.Log(currentPhase + "      " + (int)cState);
+        if (currentPhase != (int)cState)
+        {
+            
+            lerpTextSizeAndColor(5, colorArray[(int)cState]); 
+            currentPhase = (int)cState;
+        }
 
         if (attackPower > channelStage2)
         {
+            
             cState = ChannelingState.PHASE2;
+            Debug.Log((int)cState);
             shootingEffect1.SetActive(false);
             attackPowerModifier = attackPowerModifierStage2;
             projectileToShoot = projectile2;
@@ -298,16 +307,6 @@ public class PlayerMovement : MonoBehaviour
         if(availableDashes >= 1)
             dashCharges[availableDashes-1].fillAmount = dashFillTime / maxDashFillTime;
 
-        // Manage teleport timer
-        if (playerInTeleport)
-        {
-            teleportTimer -= Time.deltaTime;
-            if (teleportTimer <= 0)
-            {
-                teleportTimer = teleportTimerMax;
-                playerInTeleport = false;
-            }
-        }
         // Increase attack power while player is charging
         if(playerIsShooting)
             if (attackPower <= maxAttackPower)
@@ -317,12 +316,10 @@ public class PlayerMovement : MonoBehaviour
         attackPowerText.text = attackPower.ToString("F0");
     }
 
-    //private TMP_Text m_TextComponent;
-    private void lerpColorAndSize(int newSize, Color color)
+    private void lerpTextSizeAndColor(int newSize, Color color)
     {
         // Animasjon for size
-        //m_TextComponent = GetComponent<TMP_Text>();
-        //Color.Lerp(m_TextComponent.)
+        attackPowerText.outlineColor = Color.Lerp(attackPowerText.outlineColor, color, 5f);
         
     }
 
@@ -337,6 +334,7 @@ public class PlayerMovement : MonoBehaviour
         transform.position = newPos;
         controller.enabled = true;
         teleportEndEffect.SetActive(true);
+        playerInTeleport = false;
     }
 
     private void playerChannelAttack()
@@ -389,6 +387,7 @@ public class PlayerMovement : MonoBehaviour
         dashFillTime = maxDashFillTime;
         attackPowerModifier = attackPowerModifierStage1;
         cState = ChannelingState.PHASE_ZERO;
+        lerpTextSizeAndColor(5, Color.blue);
 
         // Creating a projectile, and setting the projectile damage in this current instance
         GameObject proj = Instantiate(projectileToShoot, projectileSpawnPoint.transform.position, transform.rotation);
