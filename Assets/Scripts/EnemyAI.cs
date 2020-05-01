@@ -110,7 +110,6 @@ public class EnemyAI : MonoBehaviour
 
         if (!invulnerable)
         {
-            Debug.Log("???");
             currentHealth -= projectile.GetComponent<Projectile>().getProjectileDamage();
 
             if (currentHealth <= 0)
