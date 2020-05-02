@@ -25,7 +25,7 @@ public class GameMasterScript : MonoBehaviour
             gameRunning = true;
 
         if (Input.GetKeyDown(KeyCode.V))
-            enemyAI.nextPhase();
+            gameRunning = false;
 
         if (Input.GetKeyDown(KeyCode.E))
             StartCoroutine (enemyAI.PhaseMachine());
@@ -37,6 +37,11 @@ public class GameMasterScript : MonoBehaviour
             else
                 Resume();
         }      
+    }
+
+    public static void GameOver()
+    {
+        gameRunning = false;
     }
 
     public void Pause()

@@ -66,6 +66,7 @@ public class PlayerMovement : MonoBehaviour
     private float nextPhaseTimerMax;
     private int baseFontSize;
     private float nextPhaseTimerBase;
+    private GameObject currentShootingEffect;
 
     private Vector3 addedVelocity;
 
@@ -133,8 +134,11 @@ public class PlayerMovement : MonoBehaviour
         // ChannelingState index has 0 occupied with no-shooting state, so (int)state-1 is to target the right index
         attackPowerModifier = attackPowerModifierStages[(int)state];
         projectileToShoot = projectileList[(int)state-1];
-        if (!shootingEffectList[(int)state-1].activeSelf)
-            shootingEffectList[(int)state-1].SetActive(true);
+        if (!shootingEffectList[(int)state - 1].activeSelf)
+        {
+            shootingEffectList[(int)state - 1].SetActive(true);
+            currentShootingEffect = shootingEffectList[(int)state - 1];
+        }
              
     }
 
@@ -344,7 +348,24 @@ public class PlayerMovement : MonoBehaviour
 
         
         availableShields--;
+        if (availableShields < 0)
+            GameOver();  
+        
         calculateShields();
+    }
+
+    private void GameOver()
+    {
+      
+        // Stop current running effect
+        if (currentShootingEffect != null)
+          currentShootingEffect.SetActive(false);
+
+        // Stop animations
+        anim.SetBool("GameOver", GameMasterScript.gameRunning);
+        // Death animation
+
+        GameMasterScript.GameOver();
     }
 
     private void calculateShields()
@@ -396,7 +417,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if(!GameMasterScript.gameIsPaused)
+        if(!GameMasterScript.gameIsPaused && GameMasterScript.gameRunning)
             playerMovement();
     }
 }

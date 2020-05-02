@@ -29,7 +29,6 @@ public class PlayerAttributes : MonoBehaviour
 
     private void takeDamage()
     {
-        Debug.Log("Damage taken");
         playerMovement.playerShieldDamage();
     }
 }
