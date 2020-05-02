@@ -67,6 +67,8 @@ public class PlayerMovement : MonoBehaviour
     private int baseFontSize;
     private float nextPhaseTimerBase;
     private GameObject currentShootingEffect;
+    private float shootingCooldownMax;
+    public float shootingCooldown;
 
     private Vector3 addedVelocity;
 
@@ -99,6 +101,7 @@ public class PlayerMovement : MonoBehaviour
         nextPhaseTimerBase = 2f;
         nextPhaseTimerMax = nextPhaseTimerBase;
         baseFontSize = 50;
+        shootingCooldownMax = 2f;
     }
 
     public enum ChannelingState
@@ -203,12 +206,15 @@ public class PlayerMovement : MonoBehaviour
             anim.SetFloat("Blend", animationSpeedMagnitude, 0f, Time.deltaTime);
             anim.SetFloat("InputX", inputX);
             anim.SetFloat("InputZ", inputX);
-      
-        
+
+
+            shootingCooldown -= Time.deltaTime;
 
             if (Input.GetMouseButtonDown(1))
             {
-                playerChannelAttack();              
+                if (shootingCooldown <= 0)
+                    playerChannelAttack();
+
             }
             if (Input.GetMouseButtonUp(1))
             {
@@ -397,6 +403,7 @@ public class PlayerMovement : MonoBehaviour
         cState = ChannelingState.STATE_ZERO;
         nextPhaseTimer = 0f;
         nextPhaseTimerMax = nextPhaseTimerBase;
+        shootingCooldown = shootingCooldownMax;
 
         // Creating a projectile, and setting the projectile damage in this current instance
         GameObject proj = Instantiate(projectileToShoot, projectileSpawnPoint.transform.position, transform.rotation);
