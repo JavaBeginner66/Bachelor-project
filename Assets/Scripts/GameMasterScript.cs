@@ -1,20 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameMasterScript : MonoBehaviour
 {
+    public static GameMasterScript gameMasterScript;
+
     public static bool gameRunning;
     public static bool gameIsPaused;
 
     public GameObject pausePanel;
+    public GameObject gameOverPanel;
 
     public GameObject player;
     public EnemyAI enemyAI;
 
+    public TextMeshProUGUI scoreText;
+
     private void Start()
     {
+        gameMasterScript = this;
         enemyAI = EnemyAI.enemyAI;
         gameIsPaused = false;
     }
@@ -39,14 +44,20 @@ public class GameMasterScript : MonoBehaviour
         }      
     }
 
-    public static void GameOver()
+    public void PlayAgain()
+    {
+        SceneManager.LoadScene(1);
+    }
+
+    public void GameOver()
     {
         gameRunning = false;
+        gameOverPanel.SetActive(true);
+        scoreText.text = "Stage: " + enemyAI.getPhase() +"  " + enemyAI.getPlayerScore().ToString() + " Points";       
     }
 
     public void Pause()
-    {
-        
+    {       
         pausePanel.SetActive(true);
         gameIsPaused = true;
         Time.timeScale = 0f;

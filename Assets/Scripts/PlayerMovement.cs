@@ -364,8 +364,8 @@ public class PlayerMovement : MonoBehaviour
         // Stop animations
         anim.SetBool("GameOver", GameMasterScript.gameRunning);
         // Death animation
-
-        GameMasterScript.GameOver();
+        // coroutine, og i slutten gameover
+        GameMasterScript.gameMasterScript.GameOver();
     }
 
     private void calculateShields()

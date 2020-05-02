@@ -43,6 +43,8 @@ public class EnemyAI : MonoBehaviour
     private bool phaseRunning;
     private float bossActiveTime;
     private bool invulnerable;
+    // Damage done
+    private float score;
 
     // Coroutine running checks
     private bool movingBulletHellCoroutine;
@@ -71,6 +73,7 @@ public class EnemyAI : MonoBehaviour
         bossActiveTime = 10f;
         healthPoolMax = healthPoolsArray[0];
         currentHealth = healthPoolMax;
+        score = 0;
     }
 
     public enum State
@@ -88,9 +91,14 @@ public class EnemyAI : MonoBehaviour
         PHASE6 = 6, PHASE7 = 7, PHASE8 = 8
     }
 
-    public State getState()
+    public int getPhase()
     {
-        return state;
+        return (int)phase;
+    }
+
+    public float getPlayerScore()
+    {
+        return score;
     }
 
     public void setPhase(Phase newPhase)
@@ -110,18 +118,29 @@ public class EnemyAI : MonoBehaviour
 
         if (!invulnerable)
         {
+            // Store currenthealth to add to score if health <= 0
+            float currentHealthTemp = currentHealth;
             currentHealth -= projectile.GetComponent<Projectile>().getProjectileDamage();
 
             if (currentHealth <= 0)
             {
+                score += currentHealthTemp;
                 if ((int)phase >= 8)
-                    Debug.Log("You win");
-
-                nextPhase();
-                // Cast phase into int to get next phase healthpool
-                healthPoolMax = healthPoolsArray[(int)phase];
-                StartCoroutine(fillUpHealthBar());
-                livesText.text = ((int)phase).ToString();
+                {
+                    StartCoroutine(fillUpHealthBar());
+                }
+                else
+                {
+                    nextPhase();
+                    // Cast phase into int to get next phase healthpool
+                    healthPoolMax = healthPoolsArray[(int)phase];
+                    StartCoroutine(fillUpHealthBar());
+                    livesText.text = ((int)phase).ToString();
+                }
+            }
+            else
+            {
+                score += projectile.GetComponent<Projectile>().getProjectileDamage();
             }
             healthDisplay.fillAmount = currentHealth / healthPoolMax;
         }
