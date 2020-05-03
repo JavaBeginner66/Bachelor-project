@@ -72,7 +72,10 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector3 addedVelocity;
 
-    private Color[] colorArray = {Color.black, Color.blue, Color.red, Color.yellow, Color.cyan };
+    private Color[] colorArray = {Color.black, Color.blue, Color.green,
+                                Color.red, Color.magenta, Color.cyan,
+                                Color.red, Color.magenta, Color.cyan,
+                                Color.red, Color.magenta, Color.cyan};
 
 
     private void Start()
@@ -111,6 +114,11 @@ public class PlayerMovement : MonoBehaviour
         STATE2 = 2,
         STATE3 = 3,
         STATE4 = 4,
+        STATE5 = 5,
+        STATE6 = 6,
+        STATE7 = 7,
+        STATE8 = 8,
+        STATE9 = 9,
     }
 
     public ChannelingState getPlayerChannelingState()
@@ -125,7 +133,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void nextChannelingPhase(ChannelingState state)
     {
-        // Makes next phase 1 second loner
+        // Makes next phase 1 second longer
         nextPhaseTimerMax++;
         // Manages attack power text
         StartCoroutine(lerpTextSizeAndColor(colorArray[(int)cState]));       
@@ -168,7 +176,7 @@ public class PlayerMovement : MonoBehaviour
                 // Manage timer for when next channeling phase starts
                 if (nextPhaseTimer <= 0)
                 {
-                    if(cState <= ChannelingState.STATE3)
+                    if(cState <= ChannelingState.STATE8)
                         nextChannelingPhase(++cState);
                     nextPhaseTimer = nextPhaseTimerMax;
                 }
