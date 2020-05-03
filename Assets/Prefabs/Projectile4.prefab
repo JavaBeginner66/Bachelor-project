@@ -4901,7 +4901,7 @@ GameObject:
   - component: {fileID: 2759911677849505962}
   - component: {fileID: 642147984108876494}
   - component: {fileID: 9158387129993145953}
-  - component: {fileID: 3933077053626247220}
+  - component: {fileID: 3641070267978326682}
   m_Layer: 0
   m_Name: Projectile4
   m_TagString: PlayerArrow
@@ -5004,8 +5004,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!65 &3933077053626247220
-BoxCollider:
+--- !u!135 &3641070267978326682
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -5015,8 +5015,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.15777105, y: 0.15004921, z: 1.2666397}
-  m_Center: {x: 0.0011592954, y: 0.0074379332, z: 0.23966898}
+  m_Radius: 1.1741778
+  m_Center: {x: -0.004155278, y: 0.0074379444, z: 0.73027694}
 --- !u!1 &8526816825441413992
 GameObject:
   m_ObjectHideFlags: 0

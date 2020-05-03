@@ -73,9 +73,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 addedVelocity;
 
     private Color[] colorArray = {Color.black, Color.blue, Color.green,
-                                Color.red, Color.magenta, Color.cyan,
-                                Color.red, Color.magenta, Color.cyan,
-                                Color.red, Color.magenta, Color.cyan};
+                                Color.red, new Color(1f,0f,.67f, 1f), new Color(.5f,0f,.5f, 1),
+                                Color.white, Color.cyan, Color.yellow, Color.black};
 
 
     private void Start()
@@ -105,6 +104,8 @@ public class PlayerMovement : MonoBehaviour
         nextPhaseTimerMax = nextPhaseTimerBase;
         baseFontSize = 50;
         shootingCooldownMax = 2f;
+
+
     }
 
     public enum ChannelingState
@@ -314,7 +315,16 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator lerpTextSizeAndColor(Color color)
     {
-        attackPowerText.outlineColor = Color.Lerp(attackPowerText.outlineColor, color, 1f);
+        if(cState == ChannelingState.STATE9)
+        {
+            attackPowerText.outlineColor = Color.Lerp(attackPowerText.outlineColor, Color.black, 1f);
+            attackPowerText.faceColor = Color.Lerp(attackPowerText.faceColor, Color.white, 1f);
+        }            
+        else
+        {
+            attackPowerText.outlineColor = Color.Lerp(attackPowerText.outlineColor, color, 1f);
+        }
+        
         for (int i = 0; i < 20; i++)
         {
             attackPowerText.fontSize += 1f;
@@ -408,6 +418,7 @@ public class PlayerMovement : MonoBehaviour
         attackPowerModifier = attackPowerModifierStages[0];
         attackPowerText.fontSize = baseFontSize;
         attackPowerText.outlineColor = colorArray[1];
+        attackPowerText.faceColor = Color.black;
         cState = ChannelingState.STATE_ZERO;
         nextPhaseTimer = 0f;
         nextPhaseTimerMax = nextPhaseTimerBase;
