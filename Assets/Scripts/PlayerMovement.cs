@@ -309,7 +309,7 @@ public class PlayerMovement : MonoBehaviour
                 attackPower += attackPowerModifier * Time.deltaTime;
 
         // Display attack power on GUI text
-        attackPowerText.text = attackPower.ToString("F0");
+        attackPowerText.text = attackPower.ToString("N0");
     }
 
     private IEnumerator lerpTextSizeAndColor(Color color)
