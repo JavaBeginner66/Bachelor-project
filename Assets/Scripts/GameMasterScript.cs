@@ -16,12 +16,17 @@ public class GameMasterScript : MonoBehaviour
     public EnemyAI enemyAI;
 
     public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI topScoreText;
+
+    public readonly string scoreKey = "Score";
+    public readonly string stageKey = "Stage";
 
     private void Start()
     {
         gameMasterScript = this;
         enemyAI = EnemyAI.enemyAI;
         gameIsPaused = false;
+        //PlayerPrefs.DeleteAll();
     }
 
     private void Update()
@@ -49,11 +54,36 @@ public class GameMasterScript : MonoBehaviour
         SceneManager.LoadScene(1);
     }
 
+
     public void GameOver()
     {
         gameRunning = false;
         gameOverPanel.SetActive(true);
-        scoreText.text = "Stage: " + enemyAI.getPhase() +"  " + enemyAI.getPlayerScore().ToString() + " Points";       
+
+        
+        int stage = enemyAI.getPhase();
+        int score = (int)enemyAI.getPlayerScore();
+        string current = "Stage: " + stage + ",  " + score.ToString("N0") + " Points";
+        string highest = "Highest score: " + "\n" + "Stage: " + PlayerPrefs.GetInt(stageKey) + ",  Score: " + PlayerPrefs.GetInt(scoreKey);
+        if (!PlayerPrefs.HasKey(scoreKey))
+        {
+            scoreText.text = "New topscore! " + "\n" +  current;
+            PlayerPrefs.SetInt(stageKey, stage);
+            PlayerPrefs.SetInt(scoreKey, score);
+        }
+        else
+        {
+            if(stage >= PlayerPrefs.GetInt(stageKey) && score > PlayerPrefs.GetInt(scoreKey))
+            {
+                scoreText.text = "New topscore! " + "\n" + current;
+            }
+            else
+            {
+                scoreText.text = current;
+                topScoreText.text = highest;
+            }
+            
+        }
     }
 
     public void Pause()
