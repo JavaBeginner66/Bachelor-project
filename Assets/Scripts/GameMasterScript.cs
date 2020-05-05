@@ -27,6 +27,10 @@ public class GameMasterScript : MonoBehaviour
         enemyAI = EnemyAI.enemyAI;
         gameIsPaused = false;
         //PlayerPrefs.DeleteAll();
+
+        // Get volume and graphics stored in PlayerPrefs and set them
+        if(PlayerPrefs.HasKey(MenuScript.graphicsKey))
+            QualitySettings.SetQualityLevel(PlayerPrefs.GetInt(MenuScript.graphicsKey));
     }
 
     private void Update()
@@ -60,11 +64,11 @@ public class GameMasterScript : MonoBehaviour
         gameRunning = false;
         gameOverPanel.SetActive(true);
 
-        
+        // Saving and getting highscore from playerprefs
         int stage = enemyAI.getPhase();
         int score = (int)enemyAI.getPlayerScore();
         string current = "Stage: " + stage + ",  " + score.ToString("N0") + " Points";
-        string highest = "Highest score: " + "\n" + "Stage: " + PlayerPrefs.GetInt(stageKey) + ",  Score: " + PlayerPrefs.GetInt(scoreKey);
+        string highest = "Highest score" + "\n" + "Stage: " + PlayerPrefs.GetInt(stageKey) + ",  Score: " + PlayerPrefs.GetInt(scoreKey);
         if (!PlayerPrefs.HasKey(scoreKey))
         {
             scoreText.text = "New topscore! " + "\n" +  current;
