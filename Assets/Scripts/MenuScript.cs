@@ -13,6 +13,8 @@ public class MenuScript : MonoBehaviour
     public Dropdown graphicsDrop;
     public Slider volumeSlider;
 
+    public GameObject optionsPanel;
+
     public readonly static string graphicsKey = "graphics";
     public readonly static string volumeKey = "volume";
 
@@ -52,6 +54,14 @@ public class MenuScript : MonoBehaviour
     public void Exit()
     {
         Application.Quit();
+    }
+
+    public void showOptions()
+    {
+        if (optionsPanel.activeSelf)
+            optionsPanel.SetActive(false);
+        else
+            optionsPanel.SetActive(true);
     }
 
     public void setVolume(float vol)
