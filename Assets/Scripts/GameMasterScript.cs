@@ -55,7 +55,7 @@ public class GameMasterScript : MonoBehaviour
 
     public void PlayAgain()
     {
-        SceneManager.LoadScene(1);
+        FadeTransition.fade.fadeTo(SceneManager.GetActiveScene().buildIndex);
     }
 
 
