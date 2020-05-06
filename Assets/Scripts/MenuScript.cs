@@ -48,7 +48,7 @@ public class MenuScript : MonoBehaviour
 
     public void Play()
     {
-        SceneManager.LoadScene(1);
+        FadeTransition.fade.fadeTo(1);
     }
     
     public void Exit()
