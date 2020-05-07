@@ -27,6 +27,8 @@ public class PlayerMovement : MonoBehaviour
     public GameObject[] visualShieldCharges;
 
     public TextMeshProUGUI attackPowerText;
+    public TextMeshProUGUI shieldChargesText;
+    public TextMeshProUGUI dashChargesText;
 
 
     [Header("Player modifiable variables ")]
@@ -284,7 +286,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (shieldFillTime >= maxShieldFillTime)
             {
-                shieldCharges[0].fillAmount = 1;                   
+                shieldCharges[availableShields].fillAmount = 1;
                 shieldFillTime = 0;
                 if (availableShields <= maxShieldAmount)
                 {
@@ -311,6 +313,10 @@ public class PlayerMovement : MonoBehaviour
 
         // Display attack power on GUI text
         attackPowerText.text = attackPower.ToString("N0");
+
+        // Update shield and dash charge texts
+        shieldChargesText.text = availableShields.ToString();
+        dashChargesText.text = (availableDashes - 1).ToString();
     }
 
     private IEnumerator lerpTextSizeAndColor(Color color)
@@ -399,7 +405,7 @@ public class PlayerMovement : MonoBehaviour
             visualShieldCharges[i].SetActive(false);
         // Enable shields
         for (int i = 0; i < availableShields; i++)
-            visualShieldCharges[i].SetActive(true);
+            visualShieldCharges[i].SetActive(true);       
     }
 
     private void playerReleaseAttack()
@@ -444,6 +450,6 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         if(!GameMasterScript.gameIsPaused && GameMasterScript.gameRunning)
-            playerMovement();
+            playerMovement();       
     }
 }
