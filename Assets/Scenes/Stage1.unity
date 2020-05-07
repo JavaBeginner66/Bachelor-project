@@ -296,7 +296,8 @@ MonoBehaviour:
     type: 3}
   portalStands: {fileID: 1592466911}
   healthDisplay: {fileID: 1049656738}
-  livesText: {fileID: 1799190899}
+  stageText: {fileID: 1799190899}
+  currentPercentText: {fileID: 762335219}
   rotatingWallsPrefab: {fileID: 4672951408493671040, guid: 30787d031f644d245a31531c253a7e49,
     type: 3}
   targetCirclePrefab: {fileID: 5896281267348389144, guid: 47dec6730698c234386dfd3b6da0f938,

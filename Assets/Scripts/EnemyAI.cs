@@ -13,7 +13,8 @@ public class EnemyAI : MonoBehaviour
     public GameObject portalEffect;
     public GameObject portalStands;
     public Image healthDisplay;
-    public TextMeshProUGUI livesText;
+    public TextMeshProUGUI stageText;
+    public TextMeshProUGUI currentPercentText;
 
     // Different field abilities
     public GameObject rotatingWallsPrefab;
@@ -74,6 +75,7 @@ public class EnemyAI : MonoBehaviour
         healthPoolMax = healthPoolsArray[0];
         currentHealth = healthPoolMax;
         score = 0;
+        currentPercentText.text = "100%";
     }
 
     public enum State
@@ -135,7 +137,7 @@ public class EnemyAI : MonoBehaviour
                     // Cast phase into int to get next phase healthpool
                     healthPoolMax = healthPoolsArray[(int)phase];
                     StartCoroutine(fillUpHealthBar());
-                    livesText.text = ((int)phase).ToString();
+                    stageText.text = ((int)phase).ToString();
                 }
             }
             else
@@ -144,6 +146,7 @@ public class EnemyAI : MonoBehaviour
             }
             healthDisplay.fillAmount = currentHealth / healthPoolMax;
         }
+        currentPercentText.text = (healthDisplay.fillAmount*100).ToString("N0") + "%";
     }
 
     private IEnumerator fillUpHealthBar()
@@ -153,6 +156,7 @@ public class EnemyAI : MonoBehaviour
         for (float j = 0; j <= 1.01f; j += .01f)
         {
             healthDisplay.fillAmount = j;
+            currentPercentText.text = (healthDisplay.fillAmount * 100).ToString("N0") + "%";
             yield return new WaitForSeconds(.01f);
         }
         
