@@ -1169,8 +1169,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Play
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9525df331fa041b4eba4c9b5ec029e90, type: 2}
-  m_sharedMaterial: {fileID: 21959376918159670, guid: 9525df331fa041b4eba4c9b5ec029e90,
+  m_fontAsset: {fileID: 11400000, guid: 90e393505b1aa5245acedc26976599d3, type: 2}
+  m_sharedMaterial: {fileID: 21151022382621198, guid: 90e393505b1aa5245acedc26976599d3,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -12300,7 +12300,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2072384137
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12416,8 +12416,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Exit
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9525df331fa041b4eba4c9b5ec029e90, type: 2}
-  m_sharedMaterial: {fileID: 21959376918159670, guid: 9525df331fa041b4eba4c9b5ec029e90,
+  m_fontAsset: {fileID: 11400000, guid: 90e393505b1aa5245acedc26976599d3, type: 2}
+  m_sharedMaterial: {fileID: 21151022382621198, guid: 90e393505b1aa5245acedc26976599d3,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -12695,8 +12695,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Options
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9525df331fa041b4eba4c9b5ec029e90, type: 2}
-  m_sharedMaterial: {fileID: 21959376918159670, guid: 9525df331fa041b4eba4c9b5ec029e90,
+  m_fontAsset: {fileID: 11400000, guid: 90e393505b1aa5245acedc26976599d3, type: 2}
+  m_sharedMaterial: {fileID: 21151022382621198, guid: 90e393505b1aa5245acedc26976599d3,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}

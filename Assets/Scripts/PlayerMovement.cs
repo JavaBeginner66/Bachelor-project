@@ -106,7 +106,8 @@ public class PlayerMovement : MonoBehaviour
         nextPhaseTimerMax = nextPhaseTimerBase;
         baseFontSize = 50;
         shootingCooldownMax = 2f;
-
+        shieldChargesText.text = availableShields.ToString();
+        dashChargesText.text = (availableDashes - 1).ToString();
 
     }
 
