@@ -44,13 +44,16 @@ public class GameMasterScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
             StartCoroutine (enemyAI.PhaseMachine());
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (gameRunning)
         {
-            if (!gameIsPaused)
-                Pause();
-            else
-                Resume();
-        }      
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (!gameIsPaused)
+                    Pause();
+                else
+                    Resume();
+            }
+        }
     }
 
     public void PlayAgain()
@@ -91,17 +94,23 @@ public class GameMasterScript : MonoBehaviour
     }
 
     public void Pause()
-    {       
-        pausePanel.SetActive(true);
-        gameIsPaused = true;
-        Time.timeScale = 0f;
+    {
+        if (gameRunning)
+        {
+            pausePanel.SetActive(true);
+            gameIsPaused = true;
+            Time.timeScale = 0f;
+        }
     }
 
     public void Resume()
     {
-        pausePanel.SetActive(false);
-        gameIsPaused = false;
-        Time.timeScale = 1f;
+        if (gameRunning)
+        {
+            pausePanel.SetActive(false);
+            gameIsPaused = false;
+            Time.timeScale = 1f;
+        }
     }
 
     public GameObject getPlayer()
