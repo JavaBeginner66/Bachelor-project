@@ -30,6 +30,8 @@ public class PlayerMovement : MonoBehaviour
     public TextMeshProUGUI shieldChargesText;
     public TextMeshProUGUI dashChargesText;
 
+    public Transform shieldBreakPosition;
+    public GameObject playerHitEffect;
 
     [Header("Player modifiable variables ")]
     public float desiredRotationSpeed;
@@ -371,7 +373,9 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void playerShieldDamage()
-    {   
+    {
+        Destroy(Instantiate(playerHitEffect, shieldBreakPosition.position, Quaternion.identity), 5f);
+
         if(availableShields >= maxShieldAmount+1)
             shieldCharges[availableShields-1].fillAmount = 0f;
         else
