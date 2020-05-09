@@ -40,32 +40,12 @@ public class Projectile : MonoBehaviour
         return this.projectileDamage;
     }
 
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (!hitObject)
-        {
-            
-        }
-
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag.Equals("Boss1"))
         {
-            
+            Destroy(Instantiate(onHitParticleSystem, transform.position, Quaternion.identity), 3f);
             Destroy(gameObject);
         }
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        hitObject = true;
-
-        
-        //GameObject explosion = Instantiate(ps, transform.position, Quaternion.identity);
-        //Destroy(explosion, 5f);
     }
 }

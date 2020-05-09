@@ -131,7 +131,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 9158387129993145953}
-  onHitParticleSystem: {fileID: 0}
+  onHitParticleSystem: {fileID: 3156695395483535863, guid: d175a1e5210c94d47aeccc8b6b0693e7,
+    type: 3}
   projectileSpeed: 30
   projectileDamage: 0
   hitObject: 0
