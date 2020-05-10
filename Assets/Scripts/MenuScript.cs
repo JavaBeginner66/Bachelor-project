@@ -81,6 +81,7 @@ public class MenuScript : MonoBehaviour
     {
         Screen.fullScreen = isFullScreen;
     }
+
     public void setResolution(int resIndex)
     {
         Resolution res = resolutions[resIndex];
