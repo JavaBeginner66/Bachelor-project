@@ -455,6 +455,7 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         if(!GameMasterScript.gameIsPaused && GameMasterScript.gameRunning)
-            playerMovement();       
+            playerMovement();
+
     }
 }
