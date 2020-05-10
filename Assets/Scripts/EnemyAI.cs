@@ -7,6 +7,7 @@ public class EnemyAI : MonoBehaviour
 {
 
     [Header("Inspector Objects")]
+    public GameObject gameMaster;
     public Transform target;
     public Transform[] waypoints;
     public Transform waypointMiddle;    
@@ -35,6 +36,7 @@ public class EnemyAI : MonoBehaviour
 
     [HideInInspector] // Internal script variables
     public static EnemyAI enemyAI;
+    private ObjectPool pool;
     private int waypointsIndex; 
     private float healthPoolMax;
     private float currentHealth;
@@ -65,8 +67,9 @@ public class EnemyAI : MonoBehaviour
     
 
     private void Start()
-    {
-        enemyAI = this;      
+    {    
+        enemyAI = this;
+        pool = gameMaster.GetComponent<ObjectPool>();
         state = State.CASTING;
         phase = Phase.PHASE0;
         chaseTimerMax = 2f;
@@ -482,8 +485,8 @@ public class EnemyAI : MonoBehaviour
 
 
     private void SpawnBullet(string type)
-    {
-        GameObject obj = ObjectPool.objectPool.getStoredObject(type);
+    {       
+        GameObject obj = pool.getStoredObject(type);
         if (obj != null)
         {
             obj.transform.position = transform.position;          

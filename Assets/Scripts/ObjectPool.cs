@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class ObjectPool : MonoBehaviour
 {
-    public static ObjectPool objectPool;
 
     public readonly static string FrozenOrb = "FrozenOrb";
     public readonly static string FrozenOrbStatic = "FrozenOrbStatic";
@@ -19,7 +18,6 @@ public class ObjectPool : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        objectPool = this;
         // Creating orbs with 20 bullets
         
         for (int i = 0; i<objectAmount; i++)
@@ -30,7 +28,6 @@ public class ObjectPool : MonoBehaviour
             fOrb2.SetActive(false);
             pool.Add(fOrb);
             pool.Add(fOrb2);
-            
         }
     }
 

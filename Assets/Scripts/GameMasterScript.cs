@@ -21,16 +21,22 @@ public class GameMasterScript : MonoBehaviour
     public readonly string scoreKey = "Score";
     public readonly string stageKey = "Stage";
 
+    public GameObject[] minimalismObjects;
+
     private void Start()
     {
         gameMasterScript = this;
         enemyAI = EnemyAI.enemyAI;
         gameIsPaused = false;
-        //PlayerPrefs.DeleteAll();
 
         // Get volume and graphics stored in PlayerPrefs and set them
         if(PlayerPrefs.HasKey(MenuScript.graphicsKey))
             QualitySettings.SetQualityLevel(PlayerPrefs.GetInt(MenuScript.graphicsKey));
+        
+        if (PlayerPrefs.HasKey(MenuScript.minimalismKey))
+            minimalism();
+
+        
     }
 
     private void Update()
@@ -53,6 +59,25 @@ public class GameMasterScript : MonoBehaviour
                 else
                     Resume();
             }
+        }
+    }
+
+    private void minimalism()
+    {
+
+        if (PlayerPrefs.GetInt(MenuScript.minimalismKey) == 1)
+        {
+            foreach (var item in minimalismObjects)
+                item.SetActive(false);
+
+            Debug.Log("on");
+        }
+        else
+        {
+            foreach (var item in minimalismObjects)
+                item.SetActive(true);
+
+            Debug.Log("off");
         }
     }
 

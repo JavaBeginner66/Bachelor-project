@@ -12,11 +12,15 @@ public class MenuScript : MonoBehaviour
     public Dropdown resDrop;
     public Dropdown graphicsDrop;
     public Slider volumeSlider;
+    public Toggle fullScreenToggle;
+    public Toggle minimalismToggle;
 
     public GameObject optionsPanel;
 
     public readonly static string graphicsKey = "graphics";
     public readonly static string volumeKey = "volume";
+    public readonly static string fullscreenKey = "fullscreen";
+    public readonly static string minimalismKey = "minimalism";
 
     private void Start()
     {
@@ -43,6 +47,21 @@ public class MenuScript : MonoBehaviour
         {
             //mixer.SetFloat("volume", PlayerPrefs.GetFloat(volumeKey));
             volumeSlider.value = PlayerPrefs.GetFloat(volumeKey);
+        }
+        if (PlayerPrefs.HasKey(fullscreenKey))
+        {
+            if (PlayerPrefs.GetInt(fullscreenKey) == 1)
+                setFullScreen(true);
+            else
+                setFullScreen(false);
+        }
+
+        if (PlayerPrefs.HasKey(minimalismKey))
+        {
+            if (PlayerPrefs.GetInt(minimalismKey) == 1)
+                minimalism(true);
+            else
+                minimalism(false);
         }
     }
 
@@ -77,9 +96,18 @@ public class MenuScript : MonoBehaviour
         PlayerPrefs.SetInt(graphicsKey, qualityIndex);
     }
 
+    public void minimalism(bool isActive)
+    {
+        PlayerPrefs.SetInt(minimalismKey, isActive ? 1 : 0);
+        minimalismToggle.isOn = isActive;
+    }
+
     public void setFullScreen(bool isFullScreen)
     {
+        PlayerPrefs.SetInt(fullscreenKey, isFullScreen ? 1 : 0);
+        fullScreenToggle.isOn = isFullScreen;
         Screen.fullScreen = isFullScreen;
+        
     }
 
     public void setResolution(int resIndex)
