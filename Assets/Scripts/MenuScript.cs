@@ -16,6 +16,7 @@ public class MenuScript : MonoBehaviour
     public Toggle minimalismToggle;
 
     public GameObject optionsPanel;
+    public GameObject howToPlayPanel;
 
     public readonly static string graphicsKey = "graphics";
     public readonly static string volumeKey = "volume";
@@ -63,6 +64,10 @@ public class MenuScript : MonoBehaviour
             else
                 minimalism(false);
         }
+        else
+        {
+            minimalism(false);
+        }
     }
 
     public void Play()
@@ -81,6 +86,14 @@ public class MenuScript : MonoBehaviour
             optionsPanel.SetActive(false);
         else
             optionsPanel.SetActive(true);
+    }
+
+    public void showHowToPlay()
+    {
+        if (howToPlayPanel.activeSelf)
+            howToPlayPanel.SetActive(false);
+        else
+            howToPlayPanel.SetActive(true);
     }
 
     public void setVolume(float vol)
