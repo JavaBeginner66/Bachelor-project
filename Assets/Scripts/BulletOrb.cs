@@ -16,7 +16,7 @@ public class BulletOrb : MonoBehaviour
     public float maxTimer;
     public float endTimer;
 
-    private void Awake()
+    private void Start()
     {
         orbPoints = new Transform[transform.childCount];
         for (int i = 0; i < orbPoints.Length; i++)

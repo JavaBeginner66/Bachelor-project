@@ -66,19 +66,11 @@ public class GameMasterScript : MonoBehaviour
     {
 
         if (PlayerPrefs.GetInt(MenuScript.minimalismKey) == 1)
-        {
             foreach (var item in minimalismObjects)
                 item.SetActive(false);
-
-            Debug.Log("on");
-        }
         else
-        {
             foreach (var item in minimalismObjects)
                 item.SetActive(true);
-
-            Debug.Log("off");
-        }
     }
 
     public void PlayAgain()
