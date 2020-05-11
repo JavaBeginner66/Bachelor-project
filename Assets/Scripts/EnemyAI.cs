@@ -16,6 +16,7 @@ public class EnemyAI : MonoBehaviour
     public Image healthDisplay;
     public TextMeshProUGUI stageText;
     public TextMeshProUGUI currentPercentText;
+    public Animator animator;
 
     // Different field abilities
     public GameObject rotatingWallsPrefab;
@@ -69,6 +70,7 @@ public class EnemyAI : MonoBehaviour
     private void Start()
     {    
         enemyAI = this;
+        animator = transform.GetChild(0).GetComponent<Animator>();
         pool = gameMaster.GetComponent<ObjectPool>();
         state = State.CASTING;
         phase = Phase.PHASE0;
@@ -123,6 +125,7 @@ public class EnemyAI : MonoBehaviour
 
         if (!invulnerable)
         {
+            animator.SetTrigger("hit");
             // Store currenthealth to add to score if health <= 0
             float currentHealthTemp = currentHealth;
             currentHealth -= projectile.GetComponent<Projectile>().getProjectileDamage();
