@@ -16,7 +16,7 @@ public class BulletOrb : MonoBehaviour
     public float maxTimer;
     public float endTimer;
 
-    private void Start()
+    private void Awake()
     {
         orbPoints = new Transform[transform.childCount];
         for (int i = 0; i < orbPoints.Length; i++)
@@ -25,6 +25,7 @@ public class BulletOrb : MonoBehaviour
             GameObject obj = Instantiate(bulletHellObject);
             obj.SetActive(false); // Hvorfor er de aktiverte....
             bulletHellObjectList.Add(obj);
+            Debug.Log("Bulletorbs: ");
         }   
     }
 

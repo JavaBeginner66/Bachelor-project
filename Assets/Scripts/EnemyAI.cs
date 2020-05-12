@@ -47,6 +47,8 @@ public class EnemyAI : MonoBehaviour
     private bool phaseRunning;
     private float bossActiveTime;
     private bool invulnerable;
+    private bool isWalking;
+    private bool isCasting;
     // Damage done
     private float score;
 
@@ -125,7 +127,8 @@ public class EnemyAI : MonoBehaviour
 
         if (!invulnerable)
         {
-            animator.SetTrigger("hit");
+            if (!bossAttackCoroutine)
+                animator.SetTrigger("hit");
             // Store currenthealth to add to score if health <= 0
             float currentHealthTemp = currentHealth;
             currentHealth -= projectile.GetComponent<Projectile>().getProjectileDamage();
@@ -276,6 +279,11 @@ public class EnemyAI : MonoBehaviour
                 currentMoveSpeed = 0f;
         }
 
+       
+
+        animator.SetBool("isWalking", isWalking);
+        animator.SetBool("isCasting", isCasting);
+            
     }
 
 
@@ -287,6 +295,8 @@ public class EnemyAI : MonoBehaviour
             {
                 lookAtPlayer = true;
                 currentMoveSpeed = moveSpeed;
+                isWalking = true;
+
                 if (Vector3.Distance(this.transform.position, target.transform.position) >= 3f)
                 {
                     transform.position = Vector3.MoveTowards(transform.position, target.position, currentMoveSpeed * Time.deltaTime);
@@ -302,6 +312,7 @@ public class EnemyAI : MonoBehaviour
             else
             {
                 chaseTimer -= Time.deltaTime;
+                isWalking = false;
             }
         }    
     }
@@ -336,6 +347,7 @@ public class EnemyAI : MonoBehaviour
         bossAttackCoroutine = true;
         state = State.CASTING;
         lookAtPlayer = false;
+        animator.SetTrigger("attack");
 
         GameObject damageZone = Instantiate(bossAttackPrefab, new Vector3(transform.position.x, .1f, transform.position.z), transform.rotation);
         Image fillArea = damageZone.transform.Find("FillAreaCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
@@ -360,6 +372,8 @@ public class EnemyAI : MonoBehaviour
     {
         movingBulletHellCoroutine = true;
         lookAtPlayer = true;
+        isCasting = true;
+        isWalking = false;
         Vector3 nextPos = waypoints[Random.Range(0, waypoints.Length)].transform.position;
         for (int i = 0; i<5; i++)
         {
@@ -377,6 +391,7 @@ public class EnemyAI : MonoBehaviour
         }
         movingBulletHellCoroutine = false;
         lookAtPlayer = false;
+        isCasting = false;
     }
 
 
@@ -466,6 +481,8 @@ public class EnemyAI : MonoBehaviour
     IEnumerator RotatingBulletHellEnum()
     {
         rotatingBulletHellCoroutine = true;
+        isCasting = true;
+        isWalking = false;
         transform.position = waypointMiddle.transform.position;
         for (int i = 0; i < 10; i++)
         {
@@ -473,16 +490,20 @@ public class EnemyAI : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
         rotatingBulletHellCoroutine = false;
+        isCasting = false;
     }
 
     IEnumerator RotatingWallsEnum()
     {
+        isCasting = true;
+        isWalking = false;
         rotatingWallsCoroutine = true;
         transform.position = waypointMiddle.transform.position;
         // Lag ut-animasjon
         Destroy(Instantiate(rotatingWallsPrefab), 20f);
         yield return new WaitForSeconds(20f);
         rotatingWallsCoroutine = false;
+        isCasting = false;
     }
     
 
