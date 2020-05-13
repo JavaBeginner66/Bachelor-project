@@ -8,6 +8,7 @@ public class GameMasterScript : MonoBehaviour
 
     public static bool gameRunning;
     public static bool gameIsPaused;
+    private bool gameIsOver;
 
     public GameObject pausePanel;
     public GameObject gameOverPanel;
@@ -29,6 +30,7 @@ public class GameMasterScript : MonoBehaviour
         gameMasterScript = this;
         enemyAI = EnemyAI.enemyAI;
         gameIsPaused = false;
+        gameIsOver = false;
         anyButtonStartText.text = "Click any button to start";
         // Get volume and graphics stored in PlayerPrefs and set them
         if (PlayerPrefs.HasKey(MenuScript.graphicsKey))
@@ -44,9 +46,12 @@ public class GameMasterScript : MonoBehaviour
     {
         if (Input.anyKeyDown)
         {
-            gameRunning = true;
-            StartCoroutine (enemyAI.PhaseMachine());
-            anyButtonStartText.text = "";
+            if (!gameIsOver)
+            {
+                gameRunning = true;
+                StartCoroutine(enemyAI.PhaseMachine());
+                anyButtonStartText.text = "";
+            }
         }
    
 
@@ -82,6 +87,7 @@ public class GameMasterScript : MonoBehaviour
     public void GameOver()
     {
         gameRunning = false;
+        gameIsOver = true;
         gameOverPanel.SetActive(true);
 
         // Saving and getting highscore from playerprefs

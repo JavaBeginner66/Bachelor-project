@@ -1465,7 +1465,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 55
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0f851acdb264c794787eff7b81fca061, type: 2}
   m_sharedMaterial: {fileID: 21151022382621198, guid: 0f851acdb264c794787eff7b81fca061,
@@ -1535,7 +1535,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 282225523}
-    characterCount: 2
+    characterCount: 1
     spriteCount: 0
     spaceCount: 0
     wordCount: 1
@@ -10916,6 +10916,8 @@ MonoBehaviour:
   - {fileID: 985786030}
   - {fileID: 212620697}
   projectileToShoot: {fileID: 0}
+  destructablePlayerModel: {fileID: 7458506140644983246, guid: 5ba4d72edcdfdec419a09369aa48ea9f,
+    type: 3}
   dashCharges:
   - {fileID: 22385581}
   - {fileID: 1701452827}

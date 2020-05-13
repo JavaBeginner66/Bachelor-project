@@ -28,7 +28,6 @@ public class ObjectPool : MonoBehaviour
             fOrb2.SetActive(false);
             pool.Add(fOrb);
             pool.Add(fOrb2);
-            Debug.Log("pool");
         }
     }
 

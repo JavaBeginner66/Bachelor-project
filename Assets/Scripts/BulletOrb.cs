@@ -25,7 +25,6 @@ public class BulletOrb : MonoBehaviour
             GameObject obj = Instantiate(bulletHellObject);
             obj.SetActive(false); // Hvorfor er de aktiverte....
             bulletHellObjectList.Add(obj);
-            Debug.Log("bullet");
         }   
     }
 

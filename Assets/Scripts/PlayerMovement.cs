@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     public GameObject[] projectileList;
     public GameObject[] shootingEffectList;
     public GameObject projectileToShoot;
+    public GameObject destructablePlayerModel;
 
     public Image[] dashCharges;
     public Image[] shieldCharges;
@@ -73,6 +74,8 @@ public class PlayerMovement : MonoBehaviour
     private GameObject currentShootingEffect;
     private float shootingCooldownMax;
     public float shootingCooldown;
+
+
 
     private Vector3 addedVelocity;
 
@@ -385,22 +388,24 @@ public class PlayerMovement : MonoBehaviour
         availableShields--;
         
         if (availableShields < 0)
-            GameOver();  
+            StartCoroutine(GameOver());  
         
         calculateShields();
     }
 
-    private void GameOver()
+    private IEnumerator GameOver()
     {
-      
         // Stop current running effect
         if (currentShootingEffect != null)
           currentShootingEffect.SetActive(false);
-
         // Stop animations
         anim.SetBool("GameOver", GameMasterScript.gameRunning);
-        // Death animation
-        // coroutine, og i slutten gameover
+        // Shatter player
+        Instantiate(destructablePlayerModel, transform.position, Quaternion.identity);
+        // Disabled player model
+        gameObject.transform.GetChild(0).gameObject.SetActive(false);
+        yield return new WaitForSeconds(1f); 
+        // Call gameover in main script
         GameMasterScript.gameMasterScript.GameOver();
     }
 
