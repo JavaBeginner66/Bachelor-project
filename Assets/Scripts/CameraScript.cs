@@ -12,11 +12,8 @@ public class CameraScript : MonoBehaviour
     public float smoothTime;
     private Vector3 velocity = Vector3.zero;
 
-    public Vector2 positionPhase0;
+
     public Vector2 positionPhase1;
-    public Vector2 positionPhase2;
-    public Vector2 positionPhase3;
-    public Vector2 positionPhase4;
     public Vector2 positionPhase5;
     public Vector2 currentPosition;
 

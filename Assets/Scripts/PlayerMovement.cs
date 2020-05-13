@@ -203,7 +203,7 @@ public class PlayerMovement : MonoBehaviour
 
                 if (Physics.Raycast(ray, out hit, 100))
                 {
-                    transform.LookAt(new Vector3(hit.point.x, transform.position.y, hit.point.z));
+                    transform.LookAt(new Vector3(hit.point.x, transform.position.y, hit.point.z));                  
                 }
                 controller.Move(moveDirection * ChannelStateSpeed * Time.deltaTime);
 
