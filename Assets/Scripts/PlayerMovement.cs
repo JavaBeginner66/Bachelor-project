@@ -383,10 +383,10 @@ public class PlayerMovement : MonoBehaviour
 
         
         availableShields--;
-        /*
+        
         if (availableShields < 0)
             GameOver();  
-        */
+        
         calculateShields();
     }
 
