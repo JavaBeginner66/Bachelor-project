@@ -73,6 +73,7 @@ public class MenuScript : MonoBehaviour
     public void Play()
     {
         FadeTransition.fade.fadeTo(1);
+        GameMasterScript.gameRunning = false;
     }
     
     public void Exit()

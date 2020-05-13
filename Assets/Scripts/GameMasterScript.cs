@@ -17,6 +17,7 @@ public class GameMasterScript : MonoBehaviour
 
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI topScoreText;
+    public TextMeshProUGUI anyButtonStartText;
 
     public readonly string scoreKey = "Score";
     public readonly string stageKey = "Stage";
@@ -28,9 +29,9 @@ public class GameMasterScript : MonoBehaviour
         gameMasterScript = this;
         enemyAI = EnemyAI.enemyAI;
         gameIsPaused = false;
-
+        anyButtonStartText.text = "Click any button to start";
         // Get volume and graphics stored in PlayerPrefs and set them
-        if(PlayerPrefs.HasKey(MenuScript.graphicsKey))
+        if (PlayerPrefs.HasKey(MenuScript.graphicsKey))
             QualitySettings.SetQualityLevel(PlayerPrefs.GetInt(MenuScript.graphicsKey));
         
         if (PlayerPrefs.HasKey(MenuScript.minimalismKey))
@@ -41,14 +42,13 @@ public class GameMasterScript : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.C))
+        if (Input.anyKeyDown)
+        {
             gameRunning = true;
-
-        if (Input.GetKeyDown(KeyCode.V))
-            gameRunning = false;
-
-        if (Input.GetKeyDown(KeyCode.E))
             StartCoroutine (enemyAI.PhaseMachine());
+            anyButtonStartText.text = "";
+        }
+   
 
         if (gameRunning)
         {
