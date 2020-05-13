@@ -18,6 +18,8 @@ public class MenuScript : MonoBehaviour
     public GameObject optionsPanel;
     public GameObject howToPlayPanel;
 
+    public GameObject[] minimalismObjects;
+
     public readonly static string graphicsKey = "graphics";
     public readonly static string volumeKey = "volume";
     public readonly static string fullscreenKey = "fullscreen";
@@ -27,7 +29,7 @@ public class MenuScript : MonoBehaviour
     {
         resolutions = Screen.resolutions;
         resDrop.ClearOptions();
-
+       
         int currentResIndex = 0;        
         List<string> options = new List<string>();
         for (int i = 0; i < resolutions.Length; i++)
@@ -66,7 +68,7 @@ public class MenuScript : MonoBehaviour
         }
         else
         {
-            minimalism(false);
+            minimalism(true);
         }
     }
 
@@ -114,6 +116,13 @@ public class MenuScript : MonoBehaviour
     {
         PlayerPrefs.SetInt(minimalismKey, isActive ? 1 : 0);
         minimalismToggle.isOn = isActive;
+
+        if (isActive)
+            foreach (var item in minimalismObjects)
+                item.SetActive(false);
+        else
+            foreach (var item in minimalismObjects)
+                item.SetActive(true);
     }
 
     public void setFullScreen(bool isFullScreen)
