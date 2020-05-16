@@ -68,7 +68,7 @@ public class MenuScript : MonoBehaviour
         }
         else
         {
-            minimalism(true);
+            minimalism(false);
         }
     }
 
