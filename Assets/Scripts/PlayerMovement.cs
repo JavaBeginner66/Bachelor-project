@@ -3,6 +3,11 @@ using UnityEngine.UI;
 using System.Collections;
 using TMPro;
 
+/**
+ * Class takes care of
+ */
+
+    
 public class PlayerMovement : MonoBehaviour
 {
 
@@ -83,14 +88,15 @@ public class PlayerMovement : MonoBehaviour
                                 Color.red, new Color(1f,0f,.67f, 1f), new Color(.5f,0f,.5f, 1),
                                 Color.white, Color.cyan, Color.yellow, Color.black};
 
-
     private void Start()
     {
+        anim = transform.GetComponentInChildren<Animator>();
+
         attackPower = StatsScript.ProjectileBaseDamage;
         playerSpeed = runningSpeed;
         attackPowerModifier = attackPowerModifierStages[0];
         controller = GetComponent<CharacterController>();
-        anim = transform.GetComponentInChildren<Animator>();
+        
         for (int i = 0; i < shootingEffectList.Length; i++)
         {
             shootingEffectList[i].SetActive(false);
