@@ -277,8 +277,10 @@ public class PlayerMovement : MonoBehaviour
                 RaycastHit hitLine;
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 
+                // If player is hovering over a ground with a collider
                 if (Physics.Raycast(ray, out hitRay, 100f))
                 {
+                    // If player is attempting to teleport outside of the arena, limit the teleport position to be inside
                     if (Physics.Linecast(transform.position, new Vector3(hitRay.point.x, transform.position.y, hitRay.point.z), out hitLine))
                     {
                         Vector3 newPos = Vector3.Lerp(transform.position, new Vector3(hitLine.point.x, transform.position.y, hitLine.point.z), .75f);
@@ -348,6 +350,9 @@ public class PlayerMovement : MonoBehaviour
         dashChargesText.text = (availableDashes - 1).ToString();
     }
 
+    /**
+     * IEnumerator that changes color and size of attack power font on new channeling phase
+     */
     private IEnumerator lerpTextSizeAndColor(Color color)
     {
         if(cState == ChannelingState.STATE9)
@@ -371,8 +376,9 @@ public class PlayerMovement : MonoBehaviour
             yield return new WaitForSeconds(.0001f);
         }
     }
-
-    // Teleporting freezes player-movement for a bit and triggers animation
+    /**
+     * IEnumerator freezes player-movement for a bit and triggers animation teleport animation
+     */
     private IEnumerator TeleportLag(Vector3 newPos, float lagDuration)
     {
         teleportEndEffect.SetActive(false);
@@ -386,6 +392,9 @@ public class PlayerMovement : MonoBehaviour
         playerInTeleport = false;
     }
 
+    /**
+     * Method for setting playerIsShooting to true and removing currently charging shields 
+     */
     private void playerChannelAttack()
     {
         playerIsShooting = true;
@@ -398,15 +407,18 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    /**
+     * Method to deal with player taking damage
+     */
     public void playerShieldDamage()
     {
+        // Shield breaking particle effect
         Destroy(Instantiate(playerHitEffect, shieldBreakPosition.position, Quaternion.identity), 5f);
 
         if(availableShields >= maxShieldAmount+1)
             shieldCharges[availableShields-1].fillAmount = 0f;
         else
             shieldCharges[availableShields].fillAmount = 0f;
-
         
         availableShields--;
         
@@ -416,6 +428,9 @@ public class PlayerMovement : MonoBehaviour
         calculateShields();
     }
 
+    /**
+     * Local gameover method for player
+     */
     private IEnumerator GameOver()
     {
         // Stop current running effect
@@ -425,13 +440,16 @@ public class PlayerMovement : MonoBehaviour
         anim.SetBool("GameOver", GameMasterScript.gameRunning);
         // Shatter player
         Instantiate(destructablePlayerModel, transform.position, Quaternion.identity);
-        // Disabled player model
+        // Disable player model
         gameObject.transform.GetChild(0).gameObject.SetActive(false);
         yield return new WaitForSeconds(1f); 
         // Call gameover in main script
         GameMasterScript.gameMasterScript.GameOver();
     }
 
+    /**
+     * Method recalculates shields after taking damage
+     */
     private void calculateShields()
     {
         // Disable all shields
@@ -442,6 +460,9 @@ public class PlayerMovement : MonoBehaviour
             visualShieldCharges[i].SetActive(true);       
     }
 
+    /**
+     * Method resets player to the state before shooting  mode started
+     */
     private void playerReleaseAttack()
     {
         // Reset dash displays
@@ -449,10 +470,11 @@ public class PlayerMovement : MonoBehaviour
         {
             dashCharges[i].fillAmount = 0f;
         }
-        // Reset everything to default or start value
+        
         for (int i = 0; i < shootingEffectList.Length; i++)
             shootingEffectList[i].SetActive(false);
 
+        // Reset everything to default or start value
         availableDashes = 0;
         dashFillTime = maxDashFillTime;
         attackPowerModifier = attackPowerModifierStages[0];
@@ -467,7 +489,9 @@ public class PlayerMovement : MonoBehaviour
         // Creating a projectile, and setting the projectile damage in this current instance
         GameObject proj = Instantiate(projectileToShoot, projectileSpawnPoint.transform.position, transform.rotation);
         Destroy(proj, 10f);
+        // Getting a reference to the Projectile script on projectile, and using method to set attack power
         proj.GetComponent<Projectile>().setProjectileDamage(attackPower);
+        // Resetting attack power after projectile inherited it
         attackPower = StatsScript.ProjectileBaseDamage;
         projectileToShoot = projectileList[0];
 
