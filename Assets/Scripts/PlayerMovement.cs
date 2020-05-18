@@ -4,7 +4,10 @@ using System.Collections;
 using TMPro;
 
 /**
- * Class takes care of
+ * Class takes care of everything that has to do with player.
+ * This includes player movement, player GUI, 
+ * player abilities such as shields and channeling, collision detection,
+ * animations, and current state of alive/dead
  */
 
     
@@ -12,82 +15,79 @@ public class PlayerMovement : MonoBehaviour
 {
 
     [Header("Inspector Objects")]
-    public Animator anim;
-    public CharacterController controller;
-    public Transform groundCheck;
-    public LayerMask groundMask;
+    public Animator anim;                       // Animation controller
+    public CharacterController controller;      // Character controller
+    public Transform groundCheck;               // Empty gameobject placed at players feet to check if touching ground
+    public LayerMask groundMask;                // Mask that describes what is ground
 
     // Prefabs   
-    public GameObject projectileSpawnPoint;
-    public GameObject teleportStartEffect;
-    public GameObject teleportEndEffect;
-    public GameObject[] projectileList;
-    public GameObject[] shootingEffectList;
-    public GameObject projectileToShoot;
-    public GameObject destructablePlayerModel;
+    public GameObject projectileSpawnPoint;     // Location of where a projectile should fire from
+    public GameObject teleportStartEffect;      // Teleport particle effect
+    public GameObject teleportEndEffect;        // Teleport particle effect
+    public GameObject[] projectileList;         // List of projectile particle effects
+    public GameObject[] shootingEffectList;     // List of shooting particle effects
+    public GameObject projectileToShoot;        // References the active shooting effect in shooting mode so the correct projectile shoots
+    public GameObject destructablePlayerModel;  // A model of player that is in pieces
 
-    public Image[] dashCharges;
-    public Image[] shieldCharges;
-    public Image shootTimerDisplay;
+    public Image[] dashCharges;                 // Array of images used both logically in dash code and for display in UI
+    public Image[] shieldCharges;               // Array of images used both logically in shield code and for display in UI
+    public GameObject[] visualShieldCharges;    // Array of shields rotating player to display current amount
 
-    public GameObject[] visualShieldCharges;
+    public TextMeshProUGUI attackPowerText;     // Text displaying attack power
+    public TextMeshProUGUI shieldChargesText;   // Text displaying amount of shield charges
+    public TextMeshProUGUI dashChargesText;     // Text displaying amount of dash charges
 
-    public TextMeshProUGUI attackPowerText;
-    public TextMeshProUGUI shieldChargesText;
-    public TextMeshProUGUI dashChargesText;
+    public Transform shieldBreakPosition;       // Location to trigger shield-breaking effect
+    public GameObject playerHitEffect;          // Shield breaking effect
 
-    public Transform shieldBreakPosition;
-    public GameObject playerHitEffect;
+    private GameObject currentShootingEffect;   // References the active shooting effect in shooting mode so I can disable/enable the next/previous
 
     [Header("Player modifiable variables ")]
-    public float desiredRotationSpeed;
-    public float groundDistance = 0.4f;
-    public float runningSpeed;
-    public float ChannelStateSpeed;
-    public float attackPower;
-    public float maxAttackPower;
-    public float attackPowerModifier;
-    public float[] attackPowerModifierStages;
-    public float nextPhaseTimer;
+    public float desiredRotationSpeed;          // How fast player can rotate when running in base mode
+    public float groundDistance = 0.4f;         // Distance to where ground will register as touched
+    public float runningSpeed;                  // Base speed of player
+    public float ChannelStateSpeed;             // Speed of player while in channel mode
+    public float attackPower;                   // Attack power value
+    public float maxAttackPower;                // Maximum attack power value
+    public float attackPowerModifier;           // Variable attackpower gets multiplied to with increasing channel-stages
+    public float[] attackPowerModifierStages;   // Array of values attackpower can get multiplied by
+    public float nextPhaseTimer;                // Countdown timer that manages when the next channeling stage will start/end
 
-    public int availableDashes;
-    public int availableShields;
-    public float dashFillTime;
-    public float maxDashFillTime;
-    public float shieldFillTime;
-    public float maxShieldFillTime;
-    public float teleportDistance;
-    public float attackCooldown;
-    public float attackCooldownMax;
-    public float teleportLagMaxDuration;
+    public int availableDashes;                 // Value holds current available dashes
+    public int availableShields;                // Value holds current available shields
+    public float dashFillTime;                  // How long each dash charge takes to fill
+    public float maxDashFillTime;               // Countdown roof
+    public float shieldFillTime;                // How long each shield charge takes to fill
+    public float maxShieldFillTime;             // Countdown roof   
+    private float shootingCooldown;             // How long before player can start channeling after releasing
+    private float shootingCooldownMax;          // Countdown roof
+    public float teleportLagMaxDuration;        // Value roof
 
-    public ChannelingState cState;
+    public ChannelingState cState;              // The current channeling state of player
 
     //[HideInInspector] // Internal script variables
-    private float inputX;
-    private float inputZ;    
-    private float animationSpeedMagnitude;
-    private float playerSpeed;
-    private bool playerIsShooting;
-    private bool playerInTeleport;
-    private float teleportLagDuration;
-    private float maxShieldAmount;
-    private float gravity;
-    private float nextPhaseTimerMax;
-    private int baseFontSize;
-    private float nextPhaseTimerBase;
-    private GameObject currentShootingEffect;
-    private float shootingCooldownMax;
-    public float shootingCooldown;
+    private float inputX;                       // Detects x-axis input from player
+    private float inputZ;                       // Detects z-axis input from player
+    private float animationSpeedMagnitude;      // Connects animation speed with player input
+    private float playerSpeed;                  // Current player speed   
+    private bool playerIsShooting;              // True if player is currently in channeling mode
+    private bool playerInTeleport;              // True if player is in the middle of a teleport
+    private float teleportLagDuration;          // The duration which player can't be controlled during a teleport
+    private float maxShieldAmount;              // Max shield amount
+    private float gravity;                      // Variable used to keep player grounded
+    private float nextPhaseTimerMax;            // The value which nextPhaseTimer will copy from on new channeling phase
+    private float nextPhaseTimerBase;           // The value which nextPhaseTimerMax will copy from on release
+    private int baseFontSize;                   // Base font size used to set attackpower size back to normal on release
+    
+    private Vector3 addedVelocity;              // Takes in the gravity value and adds it to the overall movement
 
-
-
-    private Vector3 addedVelocity;
-
-    private Color[] colorArray = {Color.black, Color.blue, Color.green,
+    private Color[] colorArray = {Color.black, Color.blue, Color.green, // Color array used on attack power font
                                 Color.red, new Color(1f,0f,.67f, 1f), new Color(.5f,0f,.5f, 1),
                                 Color.white, Color.cyan, Color.yellow, Color.black};
 
+    /**
+     * Start is used to get some references and set up variable values
+     */
     private void Start()
     {
         anim = transform.GetComponentInChildren<Animator>();
@@ -108,7 +108,6 @@ public class PlayerMovement : MonoBehaviour
         cState = ChannelingState.STATE_ZERO;
         availableDashes = 1;
         availableShields = 0;
-        attackCooldown = attackCooldownMax;
         teleportLagDuration = teleportLagMaxDuration;
         maxShieldAmount = 3;
         gravity = -1f;
@@ -122,6 +121,9 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    /**
+     * Enum that holds all channeling states
+     */
     public enum ChannelingState
     {
         STATE_ZERO = 0,
@@ -136,6 +138,9 @@ public class PlayerMovement : MonoBehaviour
         STATE9 = 9,
     }
 
+    /**
+     * Enum get method
+     */
     public ChannelingState getPlayerChannelingState()
     {
         return this.cState;
@@ -174,12 +179,15 @@ public class PlayerMovement : MonoBehaviour
      */
     private void playerMovement()
     {
-
+        // Detects input from player
         inputX = Input.GetAxisRaw("Horizontal");
         inputZ = Input.GetAxisRaw("Vertical");
 
+        // Puts direction into a Vector3
         Vector3 moveDirection = new Vector3(inputX, 0f, inputZ);
+        // Adds gravity 
         addedVelocity.y += gravity * Time.deltaTime;
+        // Normalizing direction to avoid increased speed obliquely
         moveDirection = moveDirection.normalized;
 
         // Stops player movement if in teleport
@@ -200,21 +208,28 @@ public class PlayerMovement : MonoBehaviour
                     nextPhaseTimer -= Time.deltaTime;
                 }
 
+                
                 RaycastHit hit;
+                // Find location of mouse in 3d space
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                // Find direction in world space as in north/west/south/east (not locally), 
+                //so player can trigger the correct walking animations while aiming somewhere else.
                 float zVel = transform.InverseTransformDirection(moveDirection).z;
                 float xVel = transform.InverseTransformDirection(moveDirection).x;
                 anim.SetFloat("zVel", zVel, .1f, Time.deltaTime);
                 anim.SetFloat("xVel", xVel, .1f, Time.deltaTime);
 
+                // If mouse is hovering over a collider (collider is 3x the size of the arena to guarantee a hit)
                 if (Physics.Raycast(ray, out hit, 100))
                 {
+                    // Look at mouse position
                     transform.LookAt(new Vector3(hit.point.x, transform.position.y, hit.point.z));                  
                 }
                 controller.Move(moveDirection * ChannelStateSpeed * Time.deltaTime);
 
 
             }
+            // If player isn't shooting, use normal player movement (locally)
             else if (moveDirection != Vector3.zero)
             {
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), desiredRotationSpeed);
@@ -230,15 +245,17 @@ public class PlayerMovement : MonoBehaviour
             anim.SetFloat("InputX", inputX);
             anim.SetFloat("InputZ", inputX);
 
-
+           
             shootingCooldown -= Time.deltaTime;
 
+            // If player clicks or holds right mouse button, activate shooting mode
             if (Input.GetMouseButtonDown(1))
             {
                 if (shootingCooldown <= 0)
                     playerChannelAttack();
 
             }
+            // If player releases, go back to base mode
             if (Input.GetMouseButtonUp(1))
             {
                 if (playerIsShooting)
