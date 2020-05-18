@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/**
+ * Script contains static readonly variables for more robust code
+ */
 public class StatsScript : MonoBehaviour
 {
     public static StatsScript statsScript;

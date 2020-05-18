@@ -21,14 +21,6 @@ public class CameraScript : MonoBehaviour
     public bool inTransition;
     public PlayerMovement.ChannelingState channelingState;
 
-    /**
-     *  0: 9 -5,7
-        1: 12  -7.46
-        2: 15  -9.85
-        3: 18   -12.47
-        4: 21  -14.05
-     */
-
     // Start is called before the first frame update
     void Start()
     {

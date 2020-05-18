@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * Script is used as a generic way of rotating objects its put on
+ */
 public class ObjectRotate : MonoBehaviour
 {
     public Vector3 values;

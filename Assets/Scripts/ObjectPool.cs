@@ -37,6 +37,7 @@ public class ObjectPool : MonoBehaviour
     /**
      * Method goes through pools list and checks whether the object is active in the scene.
      * If not, get it and return it. Activation and positioning is dealt with by enemyAI script.
+     * @param type will either be FrozenOrb or FrozenOrbStatic from field.
      */
     public GameObject getStoredObject(string type)
     {
