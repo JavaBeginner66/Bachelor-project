@@ -2,29 +2,35 @@
 using UnityEngine.SceneManagement;
 using TMPro;
 
+/*
+ * Script handles status of game and different UI functions
+ */
 public class GameMasterScript : MonoBehaviour
 {
-    public static GameMasterScript gameMasterScript;
+    public static GameMasterScript gameMasterScript;    // Static reference for easy access
 
-    public static bool gameRunning;
-    public static bool gameIsPaused;
-    private bool gameIsOver;
+    public static bool gameRunning;                     // Status of game
+    public static bool gameIsPaused;                    // True if game is paused
+    private bool gameIsOver;                            // True if player is dead
 
-    public GameObject pausePanel;
-    public GameObject gameOverPanel;
+    public GameObject pausePanel;                       // Pause panel UI object
+    public GameObject gameOverPanel;                    // Game over panel UI object
 
-    public GameObject player;
-    public EnemyAI enemyAI;
+    public GameObject player;                           // Player object reference
+    public EnemyAI enemyAI;                             // Boss object reference
 
-    public TextMeshProUGUI scoreText;
-    public TextMeshProUGUI topScoreText;
-    public TextMeshProUGUI anyButtonStartText;
+    public TextMeshProUGUI scoreText;                   // Score text displayed on game over screen
+    public TextMeshProUGUI topScoreText;                // Top score text displayed on game over screen
+    public TextMeshProUGUI anyButtonStartText;          // "Click any button to start" text at the start of game
 
-    public readonly string scoreKey = "Score";
-    public readonly string stageKey = "Stage";
+    public readonly string scoreKey = "Score";          // Key for saving score in PlayerPrefs
+    public readonly string stageKey = "Stage";          // Key for saving stage in PlayerPrefs
 
-    public GameObject[] minimalismObjects;
+    public GameObject[] minimalismObjects;              // Array of objects that will disappear/appear from scene 
 
+    /*
+     * Start sets up references and checks if PlayerPrefs has existing keys
+     */
     private void Start()
     {
         gameMasterScript = this;
@@ -42,6 +48,9 @@ public class GameMasterScript : MonoBehaviour
         
     }
 
+    /*
+     * Update is used to detect player click to start the game, and "esc" to pause it
+     */
     private void Update()
     {
         if (Input.anyKeyDown)
@@ -67,6 +76,9 @@ public class GameMasterScript : MonoBehaviour
         }
     }
 
+    /*
+     * Method removes/adds some of the objects from the scene
+     */
     private void minimalism()
     {
 
@@ -78,12 +90,17 @@ public class GameMasterScript : MonoBehaviour
                 item.SetActive(true);
     }
 
+    /*
+     * Method listens for click on "Play again" on game over screen, and reloads the scene through FadeTransition script
+     */
     public void PlayAgain()
     {
         FadeTransition.fade.fadeTo(SceneManager.GetActiveScene().buildIndex);
     }
 
-
+    /*
+     * Method stops all game activity, and gets scores to show player in gameover screen
+     */
     public void GameOver()
     {
         gameRunning = false;
@@ -93,8 +110,10 @@ public class GameMasterScript : MonoBehaviour
         // Saving and getting highscore from playerprefs
         int stage = enemyAI.getPhase();
         int score = (int)enemyAI.getPlayerScore();
+        // Building the strings
         string current = "Stage: " + stage + ",  " + score.ToString("N0") + " Points";
         string highest = "Highest score" + "\n" + "Stage: " + PlayerPrefs.GetInt(stageKey) + ",  Score: " + PlayerPrefs.GetInt(scoreKey);
+        // If Playerprefs doesn't already have a key stores, the player plays for the first time and it will be a topscore
         if (!PlayerPrefs.HasKey(scoreKey))
         {
             scoreText.text = "New topscore! " + "\n" +  current;
@@ -103,6 +122,7 @@ public class GameMasterScript : MonoBehaviour
         }
         else
         {
+            // If a key exist, check current score compared to previous
             if(stage >= PlayerPrefs.GetInt(stageKey) && score > PlayerPrefs.GetInt(scoreKey))
             {
                 scoreText.text = "New topscore! " + "\n" + current;
@@ -116,6 +136,9 @@ public class GameMasterScript : MonoBehaviour
         }
     }
 
+    /*
+     * Method pauses the game and freezes gametime
+     */
     public void Pause()
     {
         if (gameRunning)
@@ -126,6 +149,9 @@ public class GameMasterScript : MonoBehaviour
         }
     }
 
+    /*
+     * Method resumes game and unfreezes gametime
+     */
     public void Resume()
     {
         if (gameRunning)
@@ -136,19 +162,29 @@ public class GameMasterScript : MonoBehaviour
         }
     }
 
-    public GameObject getPlayer()
-    {
-        return player;
-    }
-
+    /*
+     * Method detects click on "Menu" on either pause screen or gameover screen, 
+     * and changes scene to Menu trough FadeTransition script
+     */
     public void Menu()
     {
         Time.timeScale = 1f;
         FadeTransition.fade.fadeTo(0);
     }
 
+    /*
+     * Method detects click on "Quit" and quits game
+     */
     public void QuitGame()
     {
         Application.Quit();
+    }
+    
+    /*
+     * Get method
+     */
+    public GameObject getPlayer()
+    {
+        return player;
     }
 }
