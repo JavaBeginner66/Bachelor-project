@@ -2,26 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+     Script instantiates objects(prefabs) and keeps track of them in a list.
+     This is the top level of object pool, and only instatiates 2 variants that each has their 
+     own script with a object pool. (See script BulletOrb)
+*/
 public class ObjectPool : MonoBehaviour
 {
 
     public readonly static string FrozenOrb = "FrozenOrb";
     public readonly static string FrozenOrbStatic = "FrozenOrbStatic";
 
-    public List<GameObject> pool;
+    public List<GameObject> pool;       // List that manages the objects
 
-    public GameObject frozenOrb;
-    public GameObject frozenOrbStatic;
+    public GameObject frozenOrb;        // Prefab variant. Script on prefab has it's own object pool which runs on instantiation.
+    public GameObject frozenOrbStatic;  // Prefab variant. Script on prefab has it's own object pool which runs on instantiation.
 
-    public float objectAmount;
+    public float objectAmount;          // Amount of object to instantiate set in editor
 
-    // Start is called before the first frame update
     void Start()
-    {
-        // Creating orbs with 20 bullets
-        
+    {     
         for (int i = 0; i<objectAmount; i++)
-        {            
+        {   
+            // Instantiate prefab, deactivate and add to list.
             GameObject fOrb = Instantiate(frozenOrb);
             GameObject fOrb2 = Instantiate(frozenOrbStatic);
             fOrb.SetActive(false);
@@ -31,6 +34,10 @@ public class ObjectPool : MonoBehaviour
         }
     }
 
+    /**
+     * Method goes through pools list and checks whether the object is active in the scene.
+     * If not, get it and return it. Activation and positioning is dealt with by enemyAI script.
+     */
     public GameObject getStoredObject(string type)
     {
         for (int i = 0; i < pool.Count; i++)
