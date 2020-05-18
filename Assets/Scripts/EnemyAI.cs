@@ -7,50 +7,48 @@ public class EnemyAI : MonoBehaviour
 {
 
     [Header("Inspector Objects")]
-    public GameObject gameMaster;
-    public Transform target;
-    public Transform[] waypoints;
-    public Transform waypointMiddle;    
-    public GameObject portalEffect;
-    public GameObject portalStands;
-    public Image healthDisplay;
-    public TextMeshProUGUI stageText;
-    public TextMeshProUGUI currentPercentText;
+    public GameObject gameMaster;               // Reference to gamemaster gameobject
+    public Transform target;                    // Reference to Player
+    public Transform[] waypoints;               // Positions which boss can teleport to
+    public Transform waypointMiddle;            // Middle position
+    public GameObject portalEffect;             // Waypoint particle effect
+    public GameObject portalStands;             // Portal model
+    public Image healthDisplay;                 // UI health display on boss
+    public TextMeshProUGUI stageText;           // Number that displays current stage boss is on
+    public TextMeshProUGUI currentPercentText;  // Number that displays current percent boss is on
     public Animator animator;
 
-    // Different field abilities
-    public GameObject rotatingWallsPrefab;
+    // Different field ability prefabs
+    public GameObject rotatingWallsPrefab;      
     public GameObject targetCirclePrefab;
     public GameObject groundQuarterStaticPrefab;
     public GameObject groundQuarterDoublePrefab;
     public GameObject bossAttackPrefab;
 
-    public State state;
-    public Phase phase;
+    public State state;                         // Current boss state
+    public Phase phase;                         // Current boss phase
 
     [Header("EnemyAI modifiable variables")]
-    public float teleportTimer;    
-    public float phaseMachineTimer;
-    public float currentMoveSpeed;
-    public float moveSpeed;
-    public int[] healthPoolsArray;
+    public float teleportTimer;                 // Timer between teleports in MovingBulletHellEnum coroutine
+    public float phaseMachineTimer;             // Timer to maintain/controll boss phases
+    public float currentMoveSpeed;              // Current movement speed of boss
+    public float moveSpeed;                     // Speed value currentModeSpeed takes from
+    public int[] healthPoolsArray;              // The different health pools for the different stages
 
     [HideInInspector] // Internal script variables
-    public static EnemyAI enemyAI;
-    private ObjectPool pool;
-    private int waypointsIndex; 
-    private float healthPoolMax;
-    private float currentHealth;
-    private bool lookAtPlayer;
-    private float chaseTimerMax;
-    private float chaseTimer;
-    private bool phaseRunning;
-    private float bossActiveTime;
-    private bool invulnerable;
-    private bool isWalking;
-    private bool isCasting;
-    // Damage done
-    private float score;
+    public static EnemyAI enemyAI;              // Static reference to this script so GameMaster can easily access it
+    private ObjectPool pool;                    // Reference to ObjectPool script               
+    private float healthPoolMax;                // Max health pool that changes every stage
+    private float currentHealth;                // Current health that copies from healthPoolMax
+    private bool lookAtPlayer;                  // Controlls whether boss should look at player
+    private float chaseTimerMax;                // Countdown roof
+    private float chaseTimer;                   // Puts a cooldown on boss movement after attacking
+    private bool phaseRunning;                  // Limits boss to run 1 phase at a time
+    private float bossActiveTime;               // How long boss will chase player at a time
+    private bool invulnerable;                  // Used to stop boss from taking damage when recovering health after phase change
+    private bool isWalking;                     // Animation condition
+    private bool isCasting;                     // Animation condition
+    private float score;                        // Damage taken
 
     // Coroutine running checks
     private bool movingBulletHellCoroutine;
@@ -69,6 +67,9 @@ public class EnemyAI : MonoBehaviour
     private readonly string EnableBossChaseEnumRef = "EnableBossChaseEnum";
     
 
+    /**
+     *  Start is used to get references and set up values
+     */
     private void Start()
     {    
         enemyAI = this;
@@ -85,6 +86,9 @@ public class EnemyAI : MonoBehaviour
         currentPercentText.text = "100%";
     }
 
+    /**
+     *  Enum for different states
+     */
     public enum State
     {
         CHASE,
@@ -93,13 +97,18 @@ public class EnemyAI : MonoBehaviour
         IDLE
     }
 
+    /**
+     *  Enum for different phases
+     */
     public enum Phase
     {
         PHASE0 = 0, PHASE1 = 1, PHASE2 = 2,
         PHASE3 = 3, PHASE4 = 4, PHASE5 = 5,
         PHASE6 = 6, PHASE7 = 7, PHASE8 = 8
     }
-
+    /**
+    *  Get and set methods
+    */
     public int getPhase()
     {
         return (int)phase;
@@ -115,6 +124,9 @@ public class EnemyAI : MonoBehaviour
         phase = newPhase;
     }
 
+    /**
+     *  Monobehavior method used to detect collision
+     */
     private void OnTriggerEnter(Collider playerProjectile)
     {
         if (playerProjectile.tag.Equals(StatsScript.PlayerProjectile))
@@ -122,6 +134,9 @@ public class EnemyAI : MonoBehaviour
 
     }
 
+    /**
+     *  Method for when boss gets hit by a player projectile
+     */
     public void takeDamage(Collider projectile)
     {
 
@@ -132,9 +147,10 @@ public class EnemyAI : MonoBehaviour
             // Store currenthealth to add to score if health <= 0
             float currentHealthTemp = currentHealth;
             currentHealth -= projectile.GetComponent<Projectile>().getProjectileDamage();
-
+           
             if (currentHealth <= 0)
             {
+                // If projectile deals more than current healthpool, add the remaining healthpool pre-shot to score
                 score += currentHealthTemp;
                 if ((int)phase >= 8)
                 {
@@ -158,9 +174,11 @@ public class EnemyAI : MonoBehaviour
         currentPercentText.text = (healthDisplay.fillAmount*100).ToString("N0") + "%";
     }
 
+    /**
+     *  IEnumerator run as a coroutine for filling up the healthbar slowly and making boss invulnerable for the duration
+     */
     private IEnumerator fillUpHealthBar()
     {
-        // Colors?
         invulnerable = true;
         for (float j = 0; j <= 1.01f; j += .01f)
         {
@@ -182,7 +200,8 @@ public class EnemyAI : MonoBehaviour
     {
         phaseMachineTimer = 3;
         while (GameMasterScript.gameRunning)
-        {            
+        {
+            // The current routines will finish before the next phase starts.
             if (!phaseRunning)
             {               
                 switch (phase)
@@ -225,7 +244,6 @@ public class EnemyAI : MonoBehaviour
 
     /* 
      * Method used to transition to next phase outside of script.
-     * The current routines will finish before the next phase starts.
      */
     public void nextPhase()
     {
@@ -233,7 +251,7 @@ public class EnemyAI : MonoBehaviour
     }
 
     /*
-     * Runs the coroutines given in parameter list in order
+     * IEnumerator runs the coroutines given in parameter list in order
      */
     IEnumerator doCoroutines(params string[] routines)
     {
@@ -257,7 +275,6 @@ public class EnemyAI : MonoBehaviour
 
     private bool mainRoutinesRunning() =>
         rotatingBulletHellCoroutine || movingBulletHellCoroutine || bossAttackCoroutine || rotatingWallsCoroutine || bossChaseEnabled;
-
 
 
     private void Update()
@@ -286,7 +303,9 @@ public class EnemyAI : MonoBehaviour
             
     }
 
-
+    /*
+     * Method makes boss run towards player and activate an attack under certain conditions
+     */
     private void Chase()
     {
         if (bossChaseEnabled)
@@ -318,21 +337,8 @@ public class EnemyAI : MonoBehaviour
     }
 
     /*
-    private void Patrol()
-    {
-
-        if(Vector3.Distance(this.transform.position, waypoints[waypointsIndex].transform.position) >= 2)
-        {
-            agent.SetDestination(waypoints[waypointsIndex].transform.position);
-
-        }
-        else if(Vector3.Distance(this.transform.position, waypoints[waypointsIndex].transform.position) <= 2)
-        {
-            waypointsIndex = (waypointsIndex + 1) % waypoints.Length;
-        }
-    }
-    */
-
+     * IEnumerator which enables Chase() method to be run
+     */
     IEnumerator EnableBossChaseEnum()
     {
         bossChaseEnabled = true;
@@ -342,15 +348,20 @@ public class EnemyAI : MonoBehaviour
         bossChaseEnabled = false;
     }
 
+    /*
+     * IEnumerator for the boss close range attack
+     */
     IEnumerator BossAttackEnum()
     {
         bossAttackCoroutine = true;
         state = State.CASTING;
         lookAtPlayer = false;
         animator.SetTrigger("attack");
-
+        // Instantiates the UI image prefab 
         GameObject damageZone = Instantiate(bossAttackPrefab, new Vector3(transform.position.x, .1f, transform.position.z), transform.rotation);
+        // Get the Image reference to be able to gradually fill it
         Image fillArea = damageZone.transform.Find("FillAreaCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
+        // Get the collider reference to activate it at end of coroutine
         Transform collider = damageZone.transform.Find("Collider").transform;
 
         for (float i = 0; i < 1.01f; i += .01f)
@@ -368,6 +379,9 @@ public class EnemyAI : MonoBehaviour
         bossAttackCoroutine = false;
     }
 
+    /*
+     * IEnumerator for the moving bullethell boss attack
+     */
     IEnumerator MovingBulletHellEnum()
     {
         movingBulletHellCoroutine = true;
@@ -383,7 +397,7 @@ public class EnemyAI : MonoBehaviour
             yield return new WaitForSeconds(teleportTimer);
             SpawnBullet(ObjectPool.FrozenOrb);
             nextPos = waypoints[Random.Range(0, waypoints.Length)].transform.position;
-            // Bør pooles
+            // Instatiating and destroying particle system to indicate next boss position
             if(i <= 3)
                 Destroy(Instantiate(portalEffect, new Vector3(nextPos.x, nextPos.y + .5f, nextPos.z), Quaternion.identity), 10f);
             
@@ -395,23 +409,27 @@ public class EnemyAI : MonoBehaviour
     }
 
 
-   
+    /*
+      * IEnumerator for the single quarter circle area effect boss attack
+      */
     IEnumerator SingleQuarterCircleEnum()
     {
         for (int i = 0; i < 2; i++)
         {
+            // Get a random angle 
             float angle = 90 * Random.Range(0, 4);
-
-
+            // Instantiate the prefab
             GameObject quarterCircleZone = Instantiate(groundQuarterStaticPrefab);
-
+            // Get the image reference to gradually fill it
             Image fillArea = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
+            // Get the collider to activate it at the end of the coroutine
             Transform collider = quarterCircleZone.transform.Find("Collider").transform;
             quarterCircleZone.transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
 
             for (float j = 0; j < 1.01f; j += .005f)
             {
+                // filling up image to indicate when it will damage player
                 fillArea.fillAmount = j;
                 quarterCircleZone.transform.Rotate(new Vector3(0f, 1f, 0f), 30f * Time.deltaTime);
 
@@ -423,30 +441,30 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    /*
+     * IEnumerator for the double quarter circle area effect boss attack
+     */
     IEnumerator DoubleQuarterCircleEnum()
     {
         for (int i = 0; i < 5; i++)
         {
-            GameObject quarterCircleZone;
-            Image fillArea1 = null;
-            Image fillArea2 = null;
+            // Get a random angle
             float angle = 90 * Random.Range(0, 4);
-
-
-            quarterCircleZone = Instantiate(groundQuarterDoublePrefab);
-            fillArea2 = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas2").transform.Find("Outer").Find("Inner").GetComponent<Image>();
-
-            fillArea1 = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
+            // Instantiate the prefab
+            GameObject quarterCircleZone = Instantiate(groundQuarterDoublePrefab);
+            // Get the image references to gradually fill them
+            Image fillArea2 = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas2").transform.Find("Outer").Find("Inner").GetComponent<Image>();
+            Image fillArea1 = quarterCircleZone.transform.Find("GroundQuarterStaticCanvas").transform.Find("Outer").Find("Inner").GetComponent<Image>();
+            // Get the collider to activate it at the end of the coroutine
             Transform collider = quarterCircleZone.transform.Find("Collider").transform;
             quarterCircleZone.transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
 
             for (float j = 0; j < 1.01f; j += .005f)
             {
+                // filling up images to indicate when it will damage player
                 fillArea1.fillAmount = j;
-                if (fillArea2 != null)
-                    fillArea2.fillAmount = j;
-
+                fillArea2.fillAmount = j;
 
                 quarterCircleZone.transform.Rotate(new Vector3(0f, 1f, 0f), 30f * Time.deltaTime);
 
@@ -458,17 +476,23 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    /*
+     * IEnumerator for the target circle that aims in on player
+     */
     IEnumerator TargetCircleEnum()
     {
         for (int i = 0; i < 9; i++)
         {
+            // Instantiate the prefab
             GameObject canvasCircle = Instantiate(targetCirclePrefab, new Vector3(target.position.x, 0f, target.position.z), Quaternion.identity);
-            
+            // Get the collider to activate it at the end of coroutine
             Transform collider = canvasCircle.transform.Find("TargetCircleCollider");
+            // Get reference to the inner UI element to gradually scale it up to base size
             RectTransform fillCircle = canvasCircle.transform.Find("TargetCircleCanvas").Find("Outer").Find("Inner").transform.GetComponent<RectTransform>();
 
             for (float j = 0; j <= 1.01f; j+=.015f)
-            {          
+            {  
+                // Scaling up inner circle to indicate when it will damage player
                 fillCircle.localScale = new Vector3(j, j, j);
                 yield return new WaitForSeconds(.01f);
             }
@@ -478,6 +502,9 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    /*
+     * IEnumerator for the static rotating bullethell boss attack
+     */
     IEnumerator RotatingBulletHellEnum()
     {
         rotatingBulletHellCoroutine = true;
@@ -493,6 +520,9 @@ public class EnemyAI : MonoBehaviour
         isCasting = false;
     }
 
+    /*
+     * IEnumerator for the rotating walls boss attack
+     */
     IEnumerator RotatingWallsEnum()
     {
         isCasting = true;
@@ -505,9 +535,12 @@ public class EnemyAI : MonoBehaviour
         rotatingWallsCoroutine = false;
         isCasting = false;
     }
-    
 
 
+    /*
+     * Method gets a unused orb from the object pool script
+     * @param type describes which bullethell type 
+     */
     private void SpawnBullet(string type)
     {       
         GameObject obj = pool.getStoredObject(type);
