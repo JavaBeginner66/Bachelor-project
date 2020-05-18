@@ -4,22 +4,27 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Audio;
 using System.Collections.Generic;
 
+/*
+ * Script that handles everything related to the menu
+ */
+
 public class MenuScript : MonoBehaviour
 {
 
-    public AudioMixer mixer;
-    Resolution[] resolutions;
-    public Dropdown resDrop;
-    public Dropdown graphicsDrop;
-    public Slider volumeSlider;
-    public Toggle fullScreenToggle;
-    public Toggle minimalismToggle;
+    public AudioMixer mixer;            // Volume object reference
+    Resolution[] resolutions;           // Array of different resolutions
+    public Dropdown resDrop;            // Dropdown UI object for resolutions
+    public Dropdown graphicsDrop;       // Dropdown UI object for graphics
+    public Slider volumeSlider;         // Slider UI object for volume
+    public Toggle fullScreenToggle;     // Toggle UI object for fullscreen/windowed mode
+    public Toggle minimalismToggle;     // Toggle UI object to activate/deactivate minimalism mode
 
-    public GameObject optionsPanel;
-    public GameObject howToPlayPanel;
+    public GameObject optionsPanel;     // Gameobject reference to options panel
+    public GameObject howToPlayPanel;   // Gameobject reference to how to play panel
 
-    public GameObject[] minimalismObjects;
+    public GameObject[] minimalismObjects;  // Array of objects to be disabled/enabled
 
+    // String keys for PlayerPref values
     public readonly static string graphicsKey = "graphics";
     public readonly static string volumeKey = "volume";
     public readonly static string fullscreenKey = "fullscreen";
@@ -27,9 +32,12 @@ public class MenuScript : MonoBehaviour
 
     private void Start()
     {
+        // Get the systems possible resolutions
         resolutions = Screen.resolutions;
         resDrop.ClearOptions();
        
+        // Adds the systems resolutions to the resolution dropdown component, and sets 
+        // the most appropriate resolution as default
         int currentResIndex = 0;        
         List<string> options = new List<string>();
         for (int i = 0; i < resolutions.Length; i++)
@@ -43,6 +51,7 @@ public class MenuScript : MonoBehaviour
         resDrop.value = currentResIndex;
         resDrop.RefreshShownValue();
 
+        // Getting and setting PlayerPref values
         if (PlayerPrefs.HasKey(graphicsKey))
             graphicsDrop.value = PlayerPrefs.GetInt(graphicsKey);
 
@@ -72,17 +81,26 @@ public class MenuScript : MonoBehaviour
         }
     }
 
+    /*
+     * Method to start the game which is detected on "Play" button click in menu
+     */
     public void Play()
     {
         FadeTransition.fade.fadeTo(1);
         GameMasterScript.gameRunning = false;
     }
-    
+
+    /*
+     * Method to exit the game which is detected on "Exit" button click in menu
+     */
     public void Exit()
     {
         Application.Quit();
     }
 
+    /*
+     * Method to show the options panel which is detected on "Options" button click in menu
+     */
     public void showOptions()
     {
         if (optionsPanel.activeSelf)
@@ -91,6 +109,9 @@ public class MenuScript : MonoBehaviour
             optionsPanel.SetActive(true);
     }
 
+    /*
+     * Method to show the how to play panel which is detected on "How to play" button click in menu
+     */
     public void showHowToPlay()
     {
         if (howToPlayPanel.activeSelf)
@@ -99,12 +120,18 @@ public class MenuScript : MonoBehaviour
             howToPlayPanel.SetActive(true);
     }
 
+    /*
+     * Method to change the volume of the game in options panel. Gets called each time volume slider is moved.
+     */
     public void setVolume(float vol)
     {
         mixer.SetFloat("volume", vol);
         PlayerPrefs.SetFloat(volumeKey, vol);
     }
 
+    /*
+     * Method to change quality in options panel
+     */
     public void setQuality(int qualityIndex)
     {
         QualitySettings.SetQualityLevel(qualityIndex);
@@ -112,6 +139,9 @@ public class MenuScript : MonoBehaviour
         PlayerPrefs.SetInt(graphicsKey, qualityIndex);
     }
 
+    /*
+     * Method removes/adds some of the objects from the scene and saves it to PlayerPrefs
+     */
     public void minimalism(bool isActive)
     {
         PlayerPrefs.SetInt(minimalismKey, isActive ? 1 : 0);
@@ -125,6 +155,9 @@ public class MenuScript : MonoBehaviour
                 item.SetActive(true);
     }
 
+    /*
+     * Method to set window to fullscreen/windowed mode in options panel
+     */
     public void setFullScreen(bool isFullScreen)
     {
         PlayerPrefs.SetInt(fullscreenKey, isFullScreen ? 1 : 0);
@@ -132,6 +165,10 @@ public class MenuScript : MonoBehaviour
         Screen.fullScreen = isFullScreen;
         
     }
+
+    /*
+     * Method to set resolution in options panel
+     */
 
     public void setResolution(int resIndex)
     {
