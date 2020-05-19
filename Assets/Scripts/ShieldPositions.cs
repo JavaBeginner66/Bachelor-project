@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * Handles the positions of the shields rotating around player
+ */
 public class ShieldPositions : MonoBehaviour
 {
 

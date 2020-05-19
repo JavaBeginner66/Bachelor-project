@@ -4,11 +4,13 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+/*
+ * Script is used to add a black fade out/in on scene change
+ */
 public class FadeTransition : MonoBehaviour
 {
-    public static FadeTransition fade;
-
-    public Image fadeTransition;
+    public static FadeTransition fade;  // Static reference for easy access
+    public Image fadeTransition;        // Default black image used for fade
 
     private void Start()
     {
@@ -16,16 +18,25 @@ public class FadeTransition : MonoBehaviour
         fadeTransitionOut();
     }
 
+    /*
+     * @param scene describes which scene to fade to
+     */
     public void fadeTo(int scene)
     {
         StartCoroutine(FadeIn(scene));
     }
 
+    /*
+     * Method starts coroutine FadeOut
+     */
     public void fadeTransitionOut()
     {
         StartCoroutine(FadeOut());
     }
 
+    /*
+     * IEnumerator gradually fades the scene to black and then changes the scene
+     */
     IEnumerator FadeIn(int scene)
     {
         float t = 0f;
@@ -41,6 +52,9 @@ public class FadeTransition : MonoBehaviour
 
     }
 
+    /*
+     * IEnumerator gradually fades to the scene
+     */
     IEnumerator FadeOut()
     {
 

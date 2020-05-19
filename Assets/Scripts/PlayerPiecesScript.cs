@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * Script handles velocity for the sliced up player model on gameover
+ */
 public class PlayerPiecesScript : MonoBehaviour
 {
-    private Transform[] playerPieces;
-    private float[] pieceSpeed;
-    // Start is called before the first frame update
+    private Transform[] playerPieces;                   // All the individual pieces of the model
+    private float[] pieceSpeed;                         // Array of speed variables
+
     void Start()
     {
         playerPieces = new Transform[transform.childCount];
@@ -20,6 +23,7 @@ public class PlayerPiecesScript : MonoBehaviour
 
     void Update()
     {       
+        // Loop makes all pieces rotate and float upwards
         for (int i = 0; i < playerPieces.Length; i++)
         {
             playerPieces[i].transform.position += Vector3.up * ((Time.deltaTime * pieceSpeed[i])/20);

@@ -11,6 +11,9 @@ public class StatsScript : MonoBehaviour
     [Header("Tags written out in strings")]
     public static readonly string PlayerProjectile = "PlayerArrow";
     public static readonly string BulletHellDamageTag = "BulletHellObject";
+    public static readonly string TargetCircle = "TargetCircle";
+    public static readonly string QuarterCircle = "QuarterCircle";
+    public static readonly string RotatingWalls = "RotatingWalls";
     public static readonly string Boss = "Boss1";
 
     [Header("Float base stats")]

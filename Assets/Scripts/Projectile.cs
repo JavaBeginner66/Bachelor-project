@@ -2,34 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * Script is put on projectile prefab and carries a attack power value and speed
+ * Projectile will act as a individual object carrying values from player to enemy
+ */
 public class Projectile : MonoBehaviour
 {
     [Header("Inspector Objects")]
-    public Rigidbody rb;
-    public GameObject onHitParticleSystem;
+    public Rigidbody rb;                    // Rigidbody to add force to
+    public GameObject onHitParticleSystem;  // Particlesystem that triggers on hit
 
     [Header("Modifiable variables")]
-    public float projectileSpeed;
-    public float projectileDamage;
-    
-    [HideInInspector]
-    public bool hitObject;
+    public float projectileSpeed;           
+    public float projectileDamage;           
 
 
-
-    // Start is called before the first frame update
     void Start()
     {
-        
-        hitObject = false;
         rb = GetComponent<Rigidbody>();
         rb.AddForce(transform.forward * projectileSpeed, ForceMode.Impulse);
         rb.useGravity = false;
     }
 
-    /**
-     * Projectile will act as a individual object carrying values from player to enemy
-     * */
     public void setProjectileDamage(float dmg)
     {
         this.projectileDamage = dmg;
