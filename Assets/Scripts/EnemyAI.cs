@@ -364,7 +364,7 @@ public class EnemyAI : MonoBehaviour
         // Get the collider reference to activate it at end of coroutine
         Transform collider = damageZone.transform.Find("Collider").transform;
 
-        for (float i = 0; i < 1.01f; i += .01f)
+        for (float i = 0; i < 1.01f; i += Time.deltaTime * 3f)
         {
             fillArea.fillAmount = i;
 
