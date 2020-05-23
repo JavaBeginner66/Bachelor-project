@@ -10948,7 +10948,7 @@ MonoBehaviour:
   maxAttackPower: 100000000
   attackPowerModifier: 0
   attackPowerModifierStages:
-  - 10
+  - 1e+9
   - 30
   - 80
   - 300

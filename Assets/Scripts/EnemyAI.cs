@@ -427,13 +427,13 @@ public class EnemyAI : MonoBehaviour
             quarterCircleZone.transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
 
-            for (float j = 0; j < 1.01f; j += .005f)
+            for (float j = 0; j < 1.01f; j += .25f * Time.deltaTime)
             {
                 // filling up image to indicate when it will damage player
                 fillArea.fillAmount = j;
                 quarterCircleZone.transform.Rotate(new Vector3(0f, 1f, 0f), 30f * Time.deltaTime);
 
-                yield return new WaitForSeconds(.01f);
+                yield return new WaitForSeconds(.1f* Time.deltaTime);
             }
             Destroy(quarterCircleZone, .5f);
             collider.gameObject.SetActive(true);
@@ -460,7 +460,7 @@ public class EnemyAI : MonoBehaviour
             quarterCircleZone.transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
 
-            for (float j = 0; j < 1.01f; j += .005f)
+            for (float j = 0; j < 1.01f; j += .25f * Time.deltaTime)
             {
                 // filling up images to indicate when it will damage player
                 fillArea1.fillAmount = j;
@@ -468,7 +468,7 @@ public class EnemyAI : MonoBehaviour
 
                 quarterCircleZone.transform.Rotate(new Vector3(0f, 1f, 0f), 30f * Time.deltaTime);
 
-                yield return new WaitForSeconds(.01f);
+                yield return new WaitForSeconds(.1f * Time.deltaTime);
             }
             Destroy(quarterCircleZone, .5f);
             collider.gameObject.SetActive(true);
@@ -490,11 +490,11 @@ public class EnemyAI : MonoBehaviour
             // Get reference to the inner UI element to gradually scale it up to base size
             RectTransform fillCircle = canvasCircle.transform.Find("TargetCircleCanvas").Find("Outer").Find("Inner").transform.GetComponent<RectTransform>();
 
-            for (float j = 0; j <= 1.01f; j+=.015f)
+            for (float j = 0; j <= 1.01f; j+=.55f*Time.deltaTime)
             {  
                 // Scaling up inner circle to indicate when it will damage player
                 fillCircle.localScale = new Vector3(j, j, j);
-                yield return new WaitForSeconds(.01f);
+                yield return new WaitForSeconds(.1f * Time.deltaTime);
             }
             collider.gameObject.SetActive(true);
             Destroy(canvasCircle, 0.1f);
