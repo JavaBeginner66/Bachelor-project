@@ -35,6 +35,7 @@ public class MenuScript : MonoBehaviour
         // Get the systems possible resolutions
         resolutions = Screen.resolutions;
         resDrop.ClearOptions();
+
        
         // Adds the systems resolutions to the resolution dropdown component, and sets 
         // the most appropriate resolution as default
@@ -56,10 +57,10 @@ public class MenuScript : MonoBehaviour
             graphicsDrop.value = PlayerPrefs.GetInt(graphicsKey);
 
         if (PlayerPrefs.HasKey(volumeKey))
-        {
-            //mixer.SetFloat("volume", PlayerPrefs.GetFloat(volumeKey));
             volumeSlider.value = PlayerPrefs.GetFloat(volumeKey);
-        }
+        else
+            volumeSlider.value = .2f;
+        
         if (PlayerPrefs.HasKey(fullscreenKey))
         {
             if (PlayerPrefs.GetInt(fullscreenKey) == 1)
@@ -125,7 +126,6 @@ public class MenuScript : MonoBehaviour
      */
     public void setVolume(float vol)
     {
-        mixer.SetFloat("volume", vol);
         PlayerPrefs.SetFloat(volumeKey, vol);
     }
 

@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 /*
- * Script handles the camera zoom/follow
+ * Script handles the camera zoom/follow and music
  */
 public class CameraScript : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class CameraScript : MonoBehaviour
     public Transform player;                    // Player position reference
     public PlayerMovement playerScript;         // Player script reference
     public Vector3 offset;                      // Offset in position to player
+    public AudioSource audio;                   // Audio source component
 
     public float smoothTime;                    // Smooths camera movement
     private Vector3 velocity = Vector3.zero;    // Template variable to fill parameterlist
@@ -31,6 +33,8 @@ public class CameraScript : MonoBehaviour
                             new Vector3(0, positionPhase1.x, positionPhase1.y),
                             transitionDuration
                             ));
+        // Set volume according to volume slider in menu
+        audio.volume = PlayerPrefs.GetFloat(MenuScript.volumeKey);
     }
 
     /*
