@@ -6857,10 +6857,9 @@ MonoBehaviour:
   player: {fileID: 1378917492}
   playerScript: {fileID: 0}
   offset: {x: 0, y: 9, z: -5.7}
-  smoothTime: 0.05
+  smoothTime: 0.1
   positionPhase1: {x: 12, y: -7.46}
   positionPhase5: {x: 24, y: -16.5}
-  currentPosition: {x: 0, y: 0}
   transitionDuration: 0.5
   inTransition: 0
   channelingState: 0
@@ -10930,7 +10929,6 @@ MonoBehaviour:
   - {fileID: 1864007748}
   - {fileID: 657173196}
   - {fileID: 670159861}
-  shootTimerDisplay: {fileID: 0}
   visualShieldCharges:
   - {fileID: 1074313360}
   - {fileID: 143987364}
@@ -10967,12 +10965,8 @@ MonoBehaviour:
   maxDashFillTime: 2
   shieldFillTime: 0
   maxShieldFillTime: 3
-  teleportDistance: 10
-  attackCooldown: 0
-  attackCooldownMax: 0
   teleportLagMaxDuration: 0.2
   cState: 0
-  shootingCooldown: 0
 --- !u!4 &1378917492
 Transform:
   m_ObjectHideFlags: 0
