@@ -78,6 +78,7 @@ public class PlayerMovement : MonoBehaviour
     private float nextPhaseTimerMax;            // The value which nextPhaseTimer will copy from on new channeling phase
     private float nextPhaseTimerBase;           // The value which nextPhaseTimerMax will copy from on release
     private int baseFontSize;                   // Base font size used to set attackpower size back to normal on release
+    private bool deathAnimationActive;          // True if player is in shatter animation
     
     private Vector3 addedVelocity;              // Takes in the gravity value and adds it to the overall movement
 
@@ -433,6 +434,8 @@ public class PlayerMovement : MonoBehaviour
      */
     private IEnumerator GameOver()
     {
+        // Stop player movement
+        deathAnimationActive = true;
         // Stop current running effect
         if (currentShootingEffect != null)
           currentShootingEffect.SetActive(false);
@@ -507,7 +510,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if(!GameMasterScript.gameIsPaused && GameMasterScript.gameRunning)
+        if(!GameMasterScript.gameIsPaused && GameMasterScript.gameRunning && !deathAnimationActive)
             playerMovement();
 
     }
