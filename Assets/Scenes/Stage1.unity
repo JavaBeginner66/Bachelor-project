@@ -11047,7 +11047,7 @@ MonoBehaviour:
   attackPowerModifier: 0
   attackPowerModifierStages:
   - 10
-  - 30
+  - 40
   - 80
   - 300
   - 800
