@@ -1,2 +1,3 @@
 # Bachelor-Project
- Spill med Unity3d
+ Et ferdig spill publisert på https://neonsamuraistudio.itch.io/neon-mage
+ c# ble brukt som programmerings-språk
